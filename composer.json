@@ -1,0 +1,44 @@
+{
+    "name": "rezzza/jobflow",
+    "description": "Makes batch job creation easier",
+    "keywords": ["batch", "job", "etl"],
+    "type": "standalone",
+    "homepage": "https://github.com/rezzza/jobflow",
+    "license": "MIT",
+    "authors": [{
+        "name": "Community contributors",
+        "homepage": "https://github.com/rezzza/jobflow/contributors"
+    }],
+    "require": {
+        "php": ">=5.4.0",
+
+        "symfony/options-resolver": "~2.3",
+        "knplabs/etl": "dev-waiting"
+    },
+    "suggest": {
+        "doctrine/orm": "To use ORM loader"
+    },
+    "require-dev": {
+        "atoum/atoum": "*@dev",
+        "monolog/monolog": "*"
+    },
+    "autoload":     {
+        "psr-0": {
+            "Rezzza\\JobFlow": "src/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0.x-dev"
+        }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/tyx/php-etl"
+        }
+    ],
+    "config": {
+        "bin-dir": "bin"
+    }
+}
