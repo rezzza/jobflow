@@ -12,7 +12,9 @@ class CoreExtension extends BaseExtension
             new Type\JobType(),
             new Type\Extractor\ExtractorType(),
             new Type\Transformer\TransformerType(),
-            new Type\Loader\LoaderType()
+            new Type\Transformer\CallbackTransformerType(),
+            new Type\Loader\LoaderType(),
+            new Type\Loader\FileLoaderType()
         );
     }
 

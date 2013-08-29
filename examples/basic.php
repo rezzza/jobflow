@@ -25,9 +25,9 @@ $job = $jobFactory->createBuilder('job', $io)
     )
     ->add(
         'example_transformer', 
-        'transformer',
+        'callback_transformer',
         array(
-            'transformer_callback' => function($data, $target) {
+            'callback' => function($data, $target) {
                 $target['firstname'] = $data[0];
                 $target['name'] = $data[1];
                 $target['url'] = sprintf('http://www.lequipe.fr/Football/FootballFicheJoueur%s.html', $data[2]);
@@ -38,7 +38,7 @@ $job = $jobFactory->createBuilder('job', $io)
     )
     ->add(
         'example_loader',
-        'loader'
+        'file_loader'
     )
     ->getJob()
 ;

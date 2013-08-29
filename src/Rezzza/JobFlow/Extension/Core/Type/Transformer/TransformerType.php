@@ -15,9 +15,9 @@ class TransformerType extends ETLType
     
     public function buildJob(JobBuilder $builder, array $options)
     {
-        $callback = $options['transformer_callback'];
-        $class = $options['transformer'];
-        $this->transformer = new $class($callback);
+        $args = $options['args'];
+        $class = $options['class'];
+        $this->transformer = new $class($args);
     }
 
     public function execute($input, ExecutionContext $execution)
@@ -36,16 +36,13 @@ class TransformerType extends ETLType
 
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
-        $resolver->setDefaults(array(
-            'transformer' => 'Knp\ETL\Transformer\CallbackTransformer'
-        ));
-
         $resolver->setRequired(array(
-            'transformer_callback'
+            'class'
         ));
 
-        $resolver->setAllowedTypes(array(
-            'transformer_callback' => 'callable'
+        $resolver->setDefaults(array(
+            'args' => null,
+
         ));
     }
 

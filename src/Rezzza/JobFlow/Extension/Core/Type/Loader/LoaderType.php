@@ -34,8 +34,11 @@ class LoaderType extends ETLType
     {
         $type = $this;
 
+        $resolver->setRequired(array(
+            'class'
+        ));
+
         $resolver->setDefaults(array(
-            'class' => 'Knp\ETL\Loader\FileLoader',
             'loader' => function(Options $options) use ($type) { 
                 $class = $options['class'];
 

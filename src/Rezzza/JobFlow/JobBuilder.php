@@ -36,8 +36,6 @@ class JobBuilder
      */
     protected $resolved;
 
-    protected $io;
-
     /**
      * @var array
      */
@@ -51,7 +49,6 @@ class JobBuilder
     public function __construct($name, JobFactory $jobFactory, array $options = array())
     {
         $this->name = $name;
-        //$this->io = $io;
         $this->jobFactory = $jobFactory;
         $this->options = $options;
     }

@@ -49,7 +49,18 @@ class ResolvedJob
      */
     public function execute($input, $execution)
     {
-        return $this->innerType->execute($input, $execution);
+        $res = $this->innerType->execute($input, $execution);
+
+        // Try to execute parent if no result
+        if (null !== $this->getParent() && null === $res) {
+            $res = $this->getParent()->execute($input, $execution);
+        }
+
+        if (null === $res) {
+            throw new \RuntimeException('Job execution should return result');
+        }
+
+        return $res;
     }
 
     /**
