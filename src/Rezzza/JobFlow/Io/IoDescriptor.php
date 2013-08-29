@@ -2,8 +2,6 @@
 
 namespace Rezzza\JobFlow\Io;
 
-use Rezzza\JobFlow\JobStep;
-
 class IoDescriptor implements \IteratorAggregate
 {
     public $stdin;

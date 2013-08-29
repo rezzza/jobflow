@@ -3,8 +3,6 @@
 namespace Rezzza\JobFlow\Scheduler;
 
 use Psr\Log\LoggerAwareTrait;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\EventDispatcher\Event;
 
 use Rezzza\JobFlow\JobContext;
 use Rezzza\JobFlow\JobInterface;

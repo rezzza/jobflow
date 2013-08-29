@@ -4,7 +4,6 @@ namespace Rezzza\JobFlow;
 
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
-use Rezzza\JobFlow\Io\IoDescriptor;
 use Rezzza\JobFlow\Scheduler\ExecutionContext;
 
 /**

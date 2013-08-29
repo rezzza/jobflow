@@ -6,7 +6,6 @@ use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 use Rezzza\JobFlow\AbstractJobType;
-use Rezzza\JobFlow\JobBuilder;
 
 class CallbackTransformerType extends AbstractJobType
 {
