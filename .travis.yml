@@ -7,7 +7,7 @@ php:
 before_script:
     - wget http://getcomposer.org/composer.phar
     - php composer.phar install --dev --prefer-source
-    - mkdir web
+    - mkdir -p web/code-coverage
 
 script:
     - bin/atoum --test-all
