@@ -41,7 +41,7 @@ class JobFactory
      */
     public function create($type, array $options = array())
     {
-        return $this->createBuilder($type, $options)->getJob();
+        return $this->createBuilder($type, null, $options)->getJob();
     }
 
     /**
@@ -77,14 +77,19 @@ class JobFactory
 
         $io = $this->ioResolver->resolve($io);
 
+        // We need to avoid this. Io should be injected in the job which required it
         if (null !== $io && !array_key_exists('io', $options)) {
             $options['io'] = $io;
         }
 
+        if (null === $io) {
+            $io = new IoDescriptor(null);
+        }
+
         if ($type instanceof JobTypeInterface) {
-            $type = $this->createType($type, $io);
+            $type = $this->resolveType($type, $io);
         } elseif (!$type instanceof ResolvedJob) {
-            throw new \InvalidArgumentException(sprintf('Type "%s" should be a string, JobTypeInterface or ResolvedJob', $type));
+            throw new \InvalidArgumentException(sprintf('Type "%s" should be a string, JobTypeInterface or ResolvedJob', (is_object($type) ? get_class($type) : $type)));
         }
 
         return $type->createBuilder($name, $this, $options);
@@ -98,17 +103,21 @@ class JobFactory
      *
      * @return ResolvedJob
      */
-    public function createType(JobTypeInterface $type, IoDescriptor $io)
+    public function resolveType(JobTypeInterface $type, IoDescriptor $io)
     {
         $parentType = $type->getParent();
 
         if ($parentType instanceof JobTypeInterface) {
-            $parentType = $this->createType($parentType, $io);
+            $parentType = $this->resolveType($parentType, $io);
         } elseif (null !== $parentType) {
             $parentType = $this->registry->getType($parentType);
-            $parentType = $this->createType($parentType, $io);
         }
 
+        return $this->createResolvedType($type, $io, $parentType);
+    }
+
+    public function createResolvedType($type, $io, $parentType)
+    {
         return new ResolvedJob($type, $io, $parentType);
     }
 }
