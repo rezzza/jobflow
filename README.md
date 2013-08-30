@@ -1,5 +1,6 @@
 JobFlow
 =======
+[![Build Status](https://travis-ci.org/rezzza/jobflow.png?branch=master)](https://travis-ci.org/rezzza/jobflow)
 
 Makes batch jobs creation Simpler, Easier, Faster. 
 
