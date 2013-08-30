@@ -9,6 +9,13 @@ before_script:
     - php composer.phar install --dev --prefer-source
     - mkdir -p web/code-coverage
 
+after_script:
+    - git checkout --orphan gh-pages
+    - git rm -rf .
+    - git add web/code-coverage
+    - git commit -a -m "Update code coverage"
+    - git push origin gh-pages
+
 script:
     - bin/atoum --test-all
 
