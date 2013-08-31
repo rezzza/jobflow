@@ -4,6 +4,11 @@ namespace Rezzza\JobFlow;
 
 use Rezzza\JobFlow\Extension\Core\CoreExtension;
 
+/**
+ * For standalone use
+ *
+ * @author Timothée Barray <tim@amicalement-web.net>
+ */
 final class Jobs
 {
     /**

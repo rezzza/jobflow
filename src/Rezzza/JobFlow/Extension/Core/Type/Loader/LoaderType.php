@@ -8,26 +8,23 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 use Rezzza\JobFlow\Extension\Core\Type\ETLType;
 use Rezzza\JobFlow\JobBuilder;
+use Rezzza\JobFlow\JobInput;
+use Rezzza\JobFlow\JobOutput;
 use Rezzza\JobFlow\Scheduler\ExecutionContext;
 
 class LoaderType extends ETLType
 {
-    public function buildJob(JobBuilder $builder, array $options)
+    public function execute(JobInput $input, JobOutput $output, ExecutionContext $execution)
     {
-        $this->loader = $options['loader'];
-    }
-
-    public function execute($input, ExecutionContext $execution)
-    {
-        if ($this->isLoggable($this->loader)) {
-            $this->loader->setLogger($execution->getLogger());
+        if ($this->isLoggable($output->getDestination())) {
+            $output->getDestination()->setLogger($execution->getLogger());
         }
 
-        foreach ($input as $d) {
-            $this->loader->load($d, new ETL\Context\Context());
+        foreach ($input->source as $d) {
+            $output->write($d);
         }
 
-        return []; // End chain should return empty array
+        return $output; // End chain should return empty array
     }
 
     public function setDefaultOptions(OptionsResolverInterface $resolver)
@@ -38,11 +35,13 @@ class LoaderType extends ETLType
             'class'
         ));
 
+        // On fait passser la class au Job !
+        // C'est lui qui fera l'instanciation et fera passer le loader via l'output
         $resolver->setDefaults(array(
-            'loader' => function(Options $options) use ($type) { 
-                $class = $options['class'];
-
-                return new $class($options['io']->stdout->getDsn());
+            'etl_config' => function(Options $options) use ($type) { 
+                return array(
+                    'loader' => $options['class']
+                );
             } 
         ));
     }

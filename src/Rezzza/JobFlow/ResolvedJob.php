@@ -4,10 +4,8 @@ namespace Rezzza\JobFlow;
 
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-use Rezzza\JobFlow\Io\IoDescriptor;
-
 /**
- * Wrap JobType and IoDescriptor
+ * Wraps JobType and builder
  *
  * @author Timothée Barray <tim@amicalement-web.net>
  */
@@ -19,11 +17,6 @@ class ResolvedJob
     private $innerType;
 
     /**
-     * @var IoDescriptor
-     */
-    private $io;
-
-    /**
      * @var ResolvedJob
      */
     private $parent;
@@ -33,34 +26,10 @@ class ResolvedJob
      */
     private $optionsResolver;
 
-    public function __construct(JobTypeInterface $innerType, IoDescriptor $io, ResolvedJob $parent = null)
+    public function __construct(JobTypeInterface $innerType, ResolvedJob $parent = null)
     {
         $this->innerType = $innerType;
-        $this->io = $io;
         $this->parent = $parent;
-    }
-
-    /**
-     * Execute innerType
-     *
-     * @param JobContext $context
-     *
-     * @return boolean
-     */
-    public function execute($input, $execution)
-    {
-        $res = $this->innerType->execute($input, $execution);
-
-        // Try to execute parent if no result
-        if (null !== $this->getParent() && null === $res) {
-            $res = $this->getParent()->execute($input, $execution);
-        }
-
-        if (null === $res) {
-            throw new \RuntimeException('Job execution should return result');
-        }
-
-        return $res;
     }
 
     /**
@@ -72,19 +41,34 @@ class ResolvedJob
     }
 
     /**
-     * @return IoDescriptor
-     */
-    public function getIo()
-    {
-        return $this->io;
-    }
-
-    /**
      * @return JobTypeInterface
      */
     public function getInnerType()
     {
         return $this->innerType;
+    }
+
+    /**
+     * Execute innerType
+     *
+     * @param JobContext $context
+     *
+     * @return boolean
+     */
+    public function execute($input, $output, $execution)
+    {
+        $res = $this->innerType->execute($input, $output, $execution);
+
+        // Try to execute parent if no result
+        if (null === $res && null !== $this->getParent()) {
+            $res = $this->getParent()->execute($input, $output, $execution);
+        }
+
+        if (null === $res) {
+            throw new \RuntimeException('Job execution should return result');
+        }
+
+        return $res;
     }
 
     /**

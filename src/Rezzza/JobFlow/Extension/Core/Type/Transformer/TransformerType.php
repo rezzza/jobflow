@@ -7,6 +7,8 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 use Rezzza\JobFlow\Extension\Core\Type\ETLType;
 use Rezzza\JobFlow\JobBuilder;
+use Rezzza\JobFlow\JobInput;
+use Rezzza\JobFlow\JobOutput;
 use Rezzza\JobFlow\Scheduler\ExecutionContext;
 
 class TransformerType extends ETLType
@@ -20,18 +22,16 @@ class TransformerType extends ETLType
         $this->transformer = new $class($args);
     }
 
-    public function execute($input, ExecutionContext $execution)
+    public function execute(JobInput $input, JobOutput $output, ExecutionContext $execution)
     {
-        $results = [];
-
-        foreach ($input as $k => $result) {
+        foreach ($input->source as $k => $result) {
             $execution->getLogger()->debug('transformation '.$k);
             $etlContext = new ETL\Context\Context();
 
-            $results[] = $this->transformer->transform($result, $etlContext);
+            $output->write($this->transformer->transform($result, $etlContext));
         }
 
-        return $results;
+        return $output;
     }
 
     public function setDefaultOptions(OptionsResolverInterface $resolver)

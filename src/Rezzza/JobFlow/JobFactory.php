@@ -3,12 +3,10 @@
 namespace Rezzza\JobFlow;
 
 use Rezzza\JobFlow\Io\IoDescriptor;
-use Rezzza\JobFlow\Io\IoResolver;
 
 /**
  * To create Job or JobBuilder.
  * The started point for the Job component execution.
- * You can called him as a service with `$container->get('job_flow.factory')`
  *
  * @author Timothée Barray <tim@amicalement-web.net>
  */
@@ -19,16 +17,12 @@ class JobFactory
      */
     protected $registry;
 
-    protected $ioResolver;
-
     /**
      * @param JobRegistry $registry
-     * @param IoResolver $ioResolver
      */
-    public function __construct(JobRegistry $registry, IoResolver $ioResolver)
+    public function __construct(JobRegistry $registry)
     {
         $this->registry = $registry;
-        $this->ioResolver = $ioResolver; 
     }
 
     /**
@@ -75,19 +69,13 @@ class JobFactory
             $type = $this->registry->getType($type);
         }
 
-        $io = $this->ioResolver->resolve($io);
-
         // We need to avoid this. Io should be injected in the job which required it
         if (null !== $io && !array_key_exists('io', $options)) {
             $options['io'] = $io;
         }
 
-        if (null === $io) {
-            $io = new IoDescriptor(null);
-        }
-
         if ($type instanceof JobTypeInterface) {
-            $type = $this->resolveType($type, $io);
+            $type = $this->resolveType($type);
         } elseif (!$type instanceof ResolvedJob) {
             throw new \InvalidArgumentException(sprintf('Type "%s" should be a string, JobTypeInterface or ResolvedJob', (is_object($type) ? get_class($type) : $type)));
         }
@@ -103,21 +91,22 @@ class JobFactory
      *
      * @return ResolvedJob
      */
-    public function resolveType(JobTypeInterface $type, IoDescriptor $io)
+    public function resolveType(JobTypeInterface $type)
     {
         $parentType = $type->getParent();
 
         if ($parentType instanceof JobTypeInterface) {
-            $parentType = $this->resolveType($parentType, $io);
+            $parentType = $this->resolveType($parentType);
         } elseif (null !== $parentType) {
             $parentType = $this->registry->getType($parentType);
+            $parentType = $this->resolveType($parentType);
         }
 
-        return $this->createResolvedType($type, $io, $parentType);
+        return $this->createResolvedType($type, $parentType);
     }
 
-    public function createResolvedType($type, $io, $parentType)
+    public function createResolvedType($type, $parentType)
     {
-        return new ResolvedJob($type, $io, $parentType);
+        return new ResolvedJob($type, $parentType);
     }
 }

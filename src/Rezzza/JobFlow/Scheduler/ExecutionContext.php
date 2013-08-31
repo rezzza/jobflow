@@ -39,11 +39,6 @@ class ExecutionContext
      */
     public $job;
 
-    /**
-     * Current child job in execution
-     */
-    public $child;
-
      /**
       * @var array
       */
@@ -55,9 +50,8 @@ class ExecutionContext
      * @param JobGraph $graph
      * @param array $options
      */
-    public function __construct(JobInterface $job, JobMessage $msg, JobGraph $graph)
+    public function __construct(JobMessage $msg, JobGraph $graph)
     {
-        $this->job = $job;
         $this->graph = $graph;
         $this->msg = $msg;
         $this->initCurrentJob();
@@ -73,51 +67,26 @@ class ExecutionContext
      *
      * @param JobInterface $job
      */
-    public function executeJob(JobInterface $job)
+    public function executeJob(JobInterface $parent)
     {
-        $this->addOptions($job->getOptions());
-
         if (null === $this->getCurrentJob()) {
-            return;
+            // No more Job to run. debug
+            return 0;
         }
         
-        $this->child = $job->get($this->getCurrentJob());
-
-        $this->addOptions($this->child->getOptions());
-
-        // Run execution
-        $result = $this->child->execute($this->readData(), $this);
-
-        return $this->writeData($result);
-    }
-
-    /**
-     * Looks for data in Message. If no result, try to read input
-     *
-     * @return mixed
-     */
-    public function readData()
-    {
-        if ($this->msg->hasData()) {
-            return $this->msg->getData();
-        }
-
-        return $this->child->getResolved()->getIo()->read();
-    }
-
-    /**
-     * Write data on current message and update context to follow the next job
-     *
-     * @param mixed $data
-     */
-    public function writeData($data)
-    {
-        $msg = clone $this->msg;
+        $this->job = $parent->get($this->getCurrentJob());
         
-        $msg->setData($data);
-        $msg->context->updateToNextJob($this->graph);
+        return $this->job->execute($this);
+    }
 
-        return $msg;
+    public function isFirstStep()
+    {
+        return $this->graph->key() === 0;
+    }
+
+    public function isLastStep()
+    {
+        return $this->graph->key() === (count($this->graph) - 1);
     }
 
     /**
@@ -168,11 +137,6 @@ class ExecutionContext
         ));
     }
 
-    public function addOptions(array $options)
-    {
-        $this->options = array_merge($this->options, $options);
-    }
-
     public function getOptions()
     {
         return $this->options;
@@ -181,11 +145,6 @@ class ExecutionContext
     public function getLogger()
     {
         return $this->logger;
-    }
-
-    public function getOutput()
-    {
-        return $this->child->getResolved()->getIo()->write();
     }
 
     public function setGlobalOption($key, $value)

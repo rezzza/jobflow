@@ -7,9 +7,13 @@ namespace Rezzza\JobFlow\Io;
  */
 class Input extends AbstractStream
 {
-    public function read()
+    protected $iterator;
+
+    public function getIterator($etl)
     {
-        return $this->getWrapper()->read($this->parts['path']);
+        $class = $etl['extractor'];
+
+        return new $class($this->getDsn());
     }
 
     /**

@@ -9,13 +9,8 @@ use Rezzza\JobFlow\Io\IoDescriptor;
  *
  * @author Timothée Barray <tim@amicalement-web.net>
  */
-class JobBuilder
+class JobBuilder extends JobConfig
 {
-    /**
-     * @var string
-     */
-    protected $name;
-
     /**
      * @var array
      */
@@ -27,30 +22,14 @@ class JobBuilder
     protected $unresolvedChildren = array();
 
     /**
-     * @var JobFactory
-     */
-    protected $jobFactory;
-
-    /**
-     * @var ResolvedJob
-     */
-    protected $resolved;
-
-    /**
-     * @var array
-     */
-    protected $options = array();
-
-    /**
      * @param string $name
      * @param JobFactory $jobFactory
      * @param array $options
      */
     public function __construct($name, JobFactory $jobFactory, array $options = array())
     {
-        $this->name = $name;
-        $this->jobFactory = $jobFactory;
-        $this->options = $options;
+        parent::__construct($name, $options);
+        $this->setJobFactory($jobFactory);
     }
 
     /**
@@ -58,7 +37,6 @@ class JobBuilder
      *
      * @param string $child Name of the child
      * @param mixed $type The JobTypeInterface or the alias of the job type registered as a service
-     * @param IoDescriptor $io To connect jobs together
      * @param array $options
      *
      * @return JobBuilder
@@ -84,9 +62,9 @@ class JobBuilder
      *
      * @return JobBuilder
      */
-    public function create($name, $type, IoDescriptor $io = null, array $options = array())
+    public function create($name, $type, array $options = array())
     {
-        return $this->jobFactory->createNamedBuilder($name, $type, $io, $options);
+        return $this->jobFactory->createNamedBuilder($name, $type, null, $options);
     }
 
     /**
@@ -98,7 +76,7 @@ class JobBuilder
     {
         $this->resolveChildren();
 
-        $job = new Job($this->name, $this->resolved, $this->getOptions());
+        $job = new Job($this->getJobConfig());
 
         foreach ($this->children as $child) {
             $job->add($child->getJob());
@@ -108,55 +86,12 @@ class JobBuilder
     }
 
     /**
-     *  @param ResolvedJob $resolved
-     */
-    public function setResolved(ResolvedJob $resolved)
-    {
-        $this->resolved = $resolved;
-    }
-
-    /**
-     *  @return ResolvedJob
-     */
-    public function getResolved()
-    {
-        return $this->resolved;
-    }
-
-    /**
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
-     *  @return array
-     */
-    public function getOptions()
-    {
-        return $this->options;
-    }
-
-    /**
-     * @param string $name
-     * @param mixed $default
-     *
-     * @return mixed
-     */
-    public function getOption($name, $default = null)
-    {
-        return array_key_exists($name, $this->options) ? $this->options[$name] : $default;
-    }
-
-    /**
      * For each child added, we create a new JobBuilder around it to make fully configurable each sub job
      */
     private function resolveChildren()
     {
         foreach ($this->unresolvedChildren as $name => $info) {
-            $this->children[$name] = $this->create($name, $info['type'], $this->getOption('io'), $info['options']);
+            $this->children[$name] = $this->create($name, $info['type'], $info['options']);
         }
 
         $this->unresolvedChildren = array();

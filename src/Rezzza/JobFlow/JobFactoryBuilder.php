@@ -3,7 +3,6 @@
 namespace Rezzza\JobFlow;
 
 use Rezzza\JobFlow\Extension\JobExtensionInterface;
-use Rezzza\JobFlow\Io\IoResolver;
 
 class JobFactoryBuilder
 {
@@ -22,9 +21,6 @@ class JobFactoryBuilder
      */
     private $wrappers = array();
 
-     /**
-     * {@inheritdoc}
-     */
     public function addExtension(JobExtensionInterface $extension)
     {
         $this->extensions[] = $extension;
@@ -32,9 +28,6 @@ class JobFactoryBuilder
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function addExtensions(array $extensions)
     {
         $this->extensions = array_merge($this->extensions, $extensions);
@@ -42,9 +35,6 @@ class JobFactoryBuilder
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function addType(JobTypeInterface $type)
     {
         $this->types[$type->getName()] = $type;
@@ -52,9 +42,6 @@ class JobFactoryBuilder
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function addTypes(array $types)
     {
         foreach ($types as $type) {
@@ -64,9 +51,6 @@ class JobFactoryBuilder
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function addWrapper(IoWrapperInterface $wrapper)
     {
         $this->wrappers[$wrapper->getName()] = $wrapper;
@@ -74,9 +58,6 @@ class JobFactoryBuilder
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function addWrappers(array $wrappers)
     {
         foreach ($wrappers as $wrapper) {
@@ -86,9 +67,6 @@ class JobFactoryBuilder
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getJobFactory()
     {
         $extensions = $this->extensions;
@@ -108,8 +86,7 @@ class JobFactoryBuilder
         }
 
         $registry = new JobRegistry($extensions);
-        $resolver = new IoResolver($registry);
 
-        return new JobFactory($registry, $resolver);
+        return new JobFactory($registry);
     }
 }

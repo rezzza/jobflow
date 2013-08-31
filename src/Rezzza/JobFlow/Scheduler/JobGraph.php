@@ -7,7 +7,7 @@ use ArrayIterator;
 /**
  * @author Timothée Barray <tim@amicalement-web.net>
  */
-class JobGraph implements \IteratorAggregate
+class JobGraph implements \IteratorAggregate, \Countable
 {
     public $graph;
 
@@ -29,6 +29,11 @@ class JobGraph implements \IteratorAggregate
     public function seek($index)
     {
         return $this->graph->seek($index);
+    }
+
+    public function key()
+    {
+        return $this->graph->key();
     }
 
     /**
@@ -67,5 +72,10 @@ class JobGraph implements \IteratorAggregate
     public function getIterator()
     {
         return $this->graph;
+    }
+
+    public function count()
+    {
+        return $this->getIterator()->count();
     }
 }

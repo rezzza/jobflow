@@ -129,15 +129,17 @@ class JobScheduler
         return $this;
     }
 
+// stocker le message d'entrée et le message de sortie ?
     protected function runJob($msg)
     {
         if (!$msg instanceof JobMessage) {
             return;
         }
 
+        $this->startMsg = $msg;
+
         $context = new ExecutionContext(
-            $this->job,
-            $msg,
+            $this->startMsg,
             $this->jobGraph
         );
 
@@ -145,12 +147,30 @@ class JobScheduler
             $context->setLogger($this->logger);
         }
 
-        return $this->transport->store($context->executeJob($this->job));
+        $output = $context->executeJob($this->job);
+
+        // Check si $context end
+        if ($context->msg->context->isFinished()) {
+            return;
+        }
+
+        // Event ? Pour faire le createEndMsg qui est un peu perdu.
+        return $this->transport->store($this->createEndMsg($output));
     }
 
     private function getInitMessage()
     {
         return new JobMessage(new JobContext($this->getJob()->getName()));
+    }
+
+    private function createEndMsg($output)
+    {
+        $msg = clone $this->startMsg;
+        
+        $msg->setData($output->getData());
+        $msg->context->updateToNextJob($this->jobGraph);
+
+        return $msg;
     }
 
     /**

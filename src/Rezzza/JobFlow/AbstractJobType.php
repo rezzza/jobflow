@@ -14,7 +14,7 @@ abstract class AbstractJobType implements JobTypeInterface
     /**
      * {@inheritdoc}
      */
-    public function execute($input, ExecutionContext $execution)
+    public function execute(JobInput $input, JobOutput $output, ExecutionContext $execution)
     {
     }
 

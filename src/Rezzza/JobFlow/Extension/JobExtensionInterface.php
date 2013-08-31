@@ -3,6 +3,8 @@
 namespace Rezzza\JobFlow\Extension;
 
 /**
+ * Extensions let add functionality to all type
+ *
  * @author Timothée Barray <tim@amicalement-web.net>
  */
 interface JobExtensionInterface

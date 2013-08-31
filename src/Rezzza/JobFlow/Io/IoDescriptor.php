@@ -10,6 +10,9 @@ class IoDescriptor implements \IteratorAggregate
 
     public $stderr;
 
+    // Stock les options propres à la configuration et instantiation de l'etl 
+    public $etlConfig;
+
     public function __construct($stdin, $stdout = null, $stderr = null)
     {
         $this->stdin = $stdin;

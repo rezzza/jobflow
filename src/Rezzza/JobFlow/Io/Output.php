@@ -4,8 +4,20 @@ namespace Rezzza\JobFlow\Io;
 
 class Output extends AbstractStream
 {
-    public function write()
+    protected $loader;
+
+    protected $data;
+
+    public function getLoader($etl)
     {
-        return $this->wrapper->getOutput($this->parts['path']);
+        $class = $etl['loader'];
+        $file = new \SplFileObject($this->getDsn(), 'a+');
+
+        return new $class($file);
+    }
+
+    public function write($result)
+    {
+        
     }
 }

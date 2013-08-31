@@ -2,52 +2,61 @@
 
 namespace Rezzza\JobFlow;
 
+use Rezzza\JobFlow\Scheduler\ExecutionContext;
+
 /**
- * Job can aggregate others jobs.
- *
  * @author Timothée Barray <tim@amicalement-web.net>
  */
 class Job implements \IteratorAggregate, JobInterface
 {
+    /**
+     * @var JobConfig
+     */
+    private $config;
+
+    /**
+     * @var JobInterface
+     */
+    private $parent;
+
     /**
      * @var JobInterface[]
      */
     protected $children = array();
 
     /**
-     * @var string
+     * @var JobConfig $config
      */
-    protected $name;
-
-    /**
-     * Contains Job Service and IoDescriptor. Helps to build Job easier
-     *
-     * @var ResolvedJob
-     */
-    protected $resolved;
-
-    /**
-     * @var array
-     */
-    protected $options;
-
-    /**
-     * When a job is processed by JobScheduler we need to ensure it will not change
-     *
-     * @var boolean
-     */
-    protected $locked = false;
-
-    /**
-     * @var string $name
-     * @var ResolvedJob $resolved
-     * @var array $options
-     */
-    public function __construct($name, ResolvedJob $resolved, array $options = array())
+    public function __construct(JobConfig $config)
     {
-        $this->name = $name;
-        $this->resolved = $resolved;
-        $this->options = $options;
+        $this->config = $config;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setParent(JobInterface $parent = null)
+    {
+        if (null !== $parent && '' === $this->config->getName()) {
+            throw new \LogicException('A form with an empty name cannot have a parent form.');
+        }
+
+        $this->parent = $parent;
+
+        return $this;
+    }
+
+    /**
+     * @var ExecutionContext $context
+     */
+    public function execute(ExecutionContext $context)
+    {
+        $input = $this->getInput($context);
+        $output = $this->getOutput($context);
+
+        $this->getResolved()->execute($input, $output, $context);
+
+        return $output;
     }
 
     /**
@@ -59,16 +68,20 @@ class Job implements \IteratorAggregate, JobInterface
             throw new \RuntimeException('Cannot add child on job locked');
         }
 
+        $child->setParent($this);
+
         $this->children[$child->getName()] = $child;
     }
 
     /**
+     * @param $name
+     *
      * @return JobInterface
      */
     public function get($name)
     {
         if (!array_key_exists($name, $this->children)) {
-            throw new \LogicException(sprintf('No child with name : "%s" in job "%s"', $name, $this->name));
+            throw new \LogicException(sprintf('No child with name : "%s" in job "%s"', $name, $this->getName()));
         }
 
         return $this->children[$name];
@@ -79,7 +92,7 @@ class Job implements \IteratorAggregate, JobInterface
      */
     public function getOptions()
     {
-        return $this->options;
+        return $this->config->getOptions();
     }
 
     /**
@@ -87,7 +100,7 @@ class Job implements \IteratorAggregate, JobInterface
      */
     public function getResolved()
     {
-        return $this->resolved;
+        return $this->config->getResolved();
     }
 
     /**
@@ -95,7 +108,7 @@ class Job implements \IteratorAggregate, JobInterface
      */
     public function getName()
     {
-        return $this->name;
+        return $this->config->getName();
     }
 
     /**
@@ -119,16 +132,71 @@ class Job implements \IteratorAggregate, JobInterface
      */
     public function isLocked()
     {
-        return $this->locked;
+        return false;
     }
 
-    public function execute($input, $context)
+    /**
+     * @return JobInput
+     */
+    public function getInput($context)
     {
-        if ($this->isLocked()) {
-            throw new \RuntimeException('Cannot execute job not locked');
+        $input = new JobInput();
+        $source = null;
+
+        if ($context->msg->hasData()) {
+            $source = $context->msg->getData();
+        } elseif ($context->isFirstStep()) {
+            $source = $this->getParent()->getIo()->stdin->getIterator($this->getEtlConfig());
         }
 
-        return $this->getResolved()->execute($input, $context);
+        if (null === $source) {
+            throw new \LogicException(sprintf('No data found for job "%s" input', $this->getFullName()));
+        }
+
+        $input->setSource($source);
+
+        return $input;
+    }
+
+    /**
+     * @return JobOutput
+     */
+    public function getOutput($context)
+    {
+        $output = new JobOutput();
+        $destination = null;
+
+        if ($context->isLastStep()) {
+            $destination = $this->getParent()->getIo()->stdout->getLoader($this->getEtlConfig());
+        }
+
+        $output->setDestination($destination);
+
+        return $output;
+    }
+
+    /**
+     * @return JobInterface
+     */
+    public function getParent()
+    {
+        return $this->parent;
+    }
+
+    /**
+     * @return IoDescriptor
+     */
+    public function getIo()
+    {
+        return $this->config->getIo();
+    }
+
+    /**
+     * @return array
+     */
+    public function getEtlConfig()
+    {
+        return $this->config->getEtlConfig();
     }
 
     /**
@@ -139,6 +207,14 @@ class Job implements \IteratorAggregate, JobInterface
     public function getIterator()
     {
         return new \RecursiveArrayIterator($this->children);
+    }
+
+    /**
+     * @return string
+     */
+    public function getFullName()
+    {
+        return $this->getParent()->getName().'.'.$this->getName();
     }
 
     public function __toString()

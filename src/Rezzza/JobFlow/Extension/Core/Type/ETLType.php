@@ -5,6 +5,7 @@ namespace Rezzza\JobFlow\Extension\Core\Type;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 use Rezzza\JobFlow\AbstractJobType;
+use Rezzza\JobFlow\JobBuilder;
 
 /**
  * For all type based on ETL pattern we need to specify the step of the process
@@ -13,12 +14,19 @@ use Rezzza\JobFlow\AbstractJobType;
  */
 abstract class ETLType extends AbstractJobType
 {
+    public function buildJob(JobBuilder $builder, array $options)
+    {
+        $builder
+            ->setEtlConfig($options['etl_config'])
+        ;
+    }
+
     abstract function getETLType();
 
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
-        $resolver->setDefaults(array(
-            'etl_type' => $this->getETLType()
+        $resolver->setRequired(array(
+            'etl_config'
         ));
     }
 

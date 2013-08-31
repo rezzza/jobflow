@@ -13,9 +13,10 @@ class Job extends Units\Test
         $this->mockGenerator->orphanize('__construct');
 
         $this
-            ->if($mockResolved = new \mock\Rezzza\JobFlow\ResolvedJob)
-            ->and($job = new TestedClass('test', $mockResolved))
-            ->and($child = new TestedClass('child', $mockResolved))
+            ->if($mockConfig = new \mock\Rezzza\JobFlow\JobConfig)
+            ->and($job = new TestedClass($mockConfig))
+            ->and($child = new TestedClass($mockConfig))
+            ->and($mockConfig->getMockController()->getName = 'child')
             ->then($job->add($child))
                 ->object($job->get('child'))->isIdenticalTo($child)
         ;
@@ -26,8 +27,9 @@ class Job extends Units\Test
         $this->mockGenerator->orphanize('__construct');
 
         $this
-            ->if($mockResolved = new \mock\Rezzza\JobFlow\ResolvedJob)
-            ->then($job = new TestedClass('test', $mockResolved))
+            ->if($mockConfig = new \mock\Rezzza\JobFlow\JobConfig)
+            ->and($mockConfig->getMockController()->getName = 'test')
+            ->then($job = new TestedClass($mockConfig))
                 ->exception(function() use ($job) {
                     $job->get('test');
                 })

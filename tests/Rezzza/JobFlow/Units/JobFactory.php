@@ -10,16 +10,13 @@ class JobFactory extends Units\Test
 {
     protected $registry;
 
-    protected $resolver;
-
     protected $factory;
 
     public function beforeTestMethod($method)
     {
         $this->mockGenerator->orphanize('__construct');
         $this->registry = new \mock\Rezzza\JobFlow\JobRegistry;
-        $this->resolver = new \mock\Rezzza\JobFlow\Io\IoResolver($this->registry);
-        $this->factory = new TestedClass($this->registry, $this->resolver);
+        $this->factory = new TestedClass($this->registry);
     }
 
     public function test_it_creates_simple_builder()
@@ -62,7 +59,7 @@ class JobFactory extends Units\Test
             ->if($builder = $factory->createNamedBuilder('name', $type, $io, $options))
                 ->mock($factory)
                     ->call('createResolvedType')
-                        ->withArguments($type, $io)
+                        ->withArguments($type)
                         ->once()
 
                 ->mock($resolved)
@@ -80,17 +77,17 @@ class JobFactory extends Units\Test
         $options = array('io' => '1', 'b' => '2');
         $factory = $this->getMockFactory();
         $type = new \mock\Rezzza\JobFlow\Extension\Core\Type\JobType();
+        $parentType = new \mock\Rezzza\JobFlow\Extension\Core\Type\JobType();
         $resolved = $this->getMockResolvedJob();
         $parentResolved = $this->getMockResolvedJob();
-        $io = $this->getMockIo();
 
         $type->getMockController()->getParent = 'flex';
-        $this->registry->getMockController()->getType = $parentResolved;
+        $this->registry->getMockController()->getType = $parentType;
         $factory->getMockController()->createResolvedType = $resolved;
         $resolved->getMockController()->createBuilder = 'jean-marc'; 
 
         $this
-            ->if($builder = $factory->createNamedBuilder('name', $type, $io, $options))
+            ->if($builder = $factory->createNamedBuilder('name', $type, null, $options))
 
                 ->mock($this->registry)
                     ->call('getType')
@@ -99,7 +96,7 @@ class JobFactory extends Units\Test
 
                 ->mock($factory)
                     ->call('createResolvedType')
-                        ->withArguments($type, $io, $parentResolved)
+                        ->withArguments($type, $parentResolved)
                         ->once()
 
                 ->mock($resolved)
@@ -261,10 +258,9 @@ class JobFactory extends Units\Test
     {
         $type = new \mock\Rezzza\JobFlow\Extension\Core\Type\JobType();
         $parent = $this->getMockResolvedJob();
-        $io = $this->getMockIo();
 
         $this
-            ->if($resolved = $this->factory->createResolvedType($type, $io, $parent))
+            ->if($resolved = $this->factory->createResolvedType($type, $parent))
 
                 ->object($resolved)
                     ->isInstanceOf('Rezzza\JobFlow\ResolvedJob')
@@ -280,7 +276,7 @@ class JobFactory extends Units\Test
 
     private function getMockFactory()
     {
-        return new \mock\Rezzza\JobFlow\JobFactory($this->registry, $this->resolver);
+        return new \mock\Rezzza\JobFlow\JobFactory($this->registry);
     }
 
     private function getMockIo()
