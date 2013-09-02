@@ -19,6 +19,8 @@ class JobRegistry
      */
     protected $wrappers = array();
 
+    protected $extensions = array();
+
     public function __construct(array $extensions)
     {
         $this->extensions = $extensions;

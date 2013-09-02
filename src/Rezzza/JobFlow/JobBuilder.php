@@ -43,6 +43,14 @@ class JobBuilder extends JobConfig
      */
     public function add($child, $type, array $options = array())
     {
+        if (!is_string($child) && !is_int($child)) {
+            throw new \InvalidArgumentException(sprintf('child name should be string or, integer'));
+        }
+
+        if (null !== $type && !is_string($type) && !$type instanceof JobTypeinterface) {
+            throw new \InvalidArgumentException('type should be string or JobTypeinterface');
+        }
+
         $this->children[$child] = null; // to keep order
         $this->unresolvedChildren[$child] = array(
             'type' => $type,
@@ -53,17 +61,29 @@ class JobBuilder extends JobConfig
     }
 
     /**
+     * @param string $name
+     */
+    public function has($name)
+    {
+        return isset($this->unresolvedChildren[$name]) 
+            || isset($this->children[$name]);
+    }
+
+    /**
      * Create new JobBuilder
      *
      * @param string $name
      * @param mixed $type The JobTypeInterface or the alias of the job type registered as a service
-     * @param IoDescriptor $io To connect jobs together
      * @param array $options
      *
      * @return JobBuilder
      */
-    public function create($name, $type, array $options = array())
+    public function create($name, $type = null, array $options = array())
     {
+        if (null === $type) {
+            $type = 'job';
+        }
+
         return $this->jobFactory->createNamedBuilder($name, $type, null, $options);
     }
 
@@ -85,10 +105,15 @@ class JobBuilder extends JobConfig
         return $job;
     }
 
+    public function hasUnresolvedChildren()
+    {
+        return count($this->unresolvedChildren) > 0;
+    }
+
     /**
      * For each child added, we create a new JobBuilder around it to make fully configurable each sub job
      */
-    private function resolveChildren()
+    protected function resolveChildren()
     {
         foreach ($this->unresolvedChildren as $name => $info) {
             $this->children[$name] = $this->create($name, $info['type'], $info['options']);
