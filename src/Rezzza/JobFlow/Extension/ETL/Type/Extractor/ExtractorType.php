@@ -1,12 +1,12 @@
 <?php
 
-namespace Rezzza\JobFlow\Extension\Core\Type\Extractor;
+namespace Rezzza\JobFlow\Extension\ETL\Type\Extractor;
 
 use Knp\ETL;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
-use Rezzza\JobFlow\Extension\Core\Type\ETLType;
+use Rezzza\JobFlow\Extension\ETL\Type\ETLType;
 use Rezzza\JobFlow\JobInput;
 use Rezzza\JobFlow\JobOutput;
 use Rezzza\JobFlow\Scheduler\ExecutionContext;

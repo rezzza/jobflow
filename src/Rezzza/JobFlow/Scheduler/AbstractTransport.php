@@ -1,6 +1,6 @@
 <?php
 
-namespace Rezzza\JobFlow\Scheduler\Transport;
+namespace Rezzza\JobFlow\Scheduler;
 
 abstract class AbstractTransport implements TransportInterface
 {

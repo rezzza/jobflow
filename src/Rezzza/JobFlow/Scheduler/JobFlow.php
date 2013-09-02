@@ -9,7 +9,6 @@ use Rezzza\JobFlow\JobInterface;
 use Rezzza\JobFlow\JobMessage;
 use Rezzza\JobFlow\JobOutput;
 use Rezzza\JobFlow\Scheduler\ExecutionContext;
-use Rezzza\JobFlow\Scheduler\Transport\TransportInterface;
 
 /**
  * Handles job execution

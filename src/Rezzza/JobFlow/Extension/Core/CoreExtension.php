@@ -9,22 +9,14 @@ class CoreExtension extends BaseExtension
     public function loadTypes()
     {
         return array(
-            new Type\JobType(),
-            new Type\Extractor\ExtractorType(),
-            new Type\Transformer\TransformerType(),
-            new Type\Transformer\CallbackTransformerType(),
-            new Type\Loader\LoaderType(),
-            new Type\Loader\FileLoaderType()
+            new Type\JobType()
         );
     }
 
-    public function loadWrappers()
+    public function loadTransports()
     {
         return array(
-            new Wrapper\JobWrapper(),
-            new Wrapper\CsvWrapper(),
-            new Wrapper\TsvWrapper(),
-            new Wrapper\JsonWrapper()
+            new Transport\PhpTransport()
         );
     }
 }

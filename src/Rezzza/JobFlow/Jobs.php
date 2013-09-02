@@ -2,7 +2,7 @@
 
 namespace Rezzza\JobFlow;
 
-use Rezzza\JobFlow\Extension\Core\CoreExtension;
+use Rezzza\JobFlow\Extension;
 
 /**
  * For standalone use
@@ -29,7 +29,8 @@ final class Jobs
     public static function createJobFactoryBuilder()
     {
         $builder = new JobFactoryBuilder();
-        $builder->addExtension(new CoreExtension());
+        $builder->addExtension(new Extension\Core\CoreExtension());
+        $builder->addExtension(new Extension\ETL\ETLExtension());
 
         return $builder;
     }

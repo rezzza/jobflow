@@ -3,7 +3,7 @@
 namespace Rezzza\JobFlow\Extension;
 
 use Rezzza\JobFlow\JobTypeInterface;
-use Rezzza\JobFlow\Io\IoWrapperInterface;
+use Rezzza\JobFlow\Scheduler\TransportInterface;
 
 abstract class BaseExtension implements JobExtensionInterface
 {
@@ -13,9 +13,9 @@ abstract class BaseExtension implements JobExtensionInterface
     protected $types;
 
     /**
-     * @var IoWrapperInterface[]
+     * @var TransportInterface[]
      */
-    protected $wrappers;
+    protected $transports;
 
     public function addType(JobTypeInterface $type)
     {
@@ -50,37 +50,37 @@ abstract class BaseExtension implements JobExtensionInterface
         return isset($this->types[$name]);
     }
 
-    public function addWrapper(IoWrapperInterface $wrapper)
+    public function addTransport(TransportInterface $transport)
     {
-        $this->wrappers[$wrapper->getName()] = $wrapper;
+        $this->transports[$transport->getName()] = $transport;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getWrapper($name)
+    public function getTransport($name)
     {
-        if (null === $this->wrappers) {
-            $this->initWrappers();
+        if (null === $this->transports) {
+            $this->initTransports();
         }
 
-        if (!isset($this->wrappers[$name])) {
-            throw new \InvalidArgumentException(sprintf('The wrapper "%s" can not be loaded by this extension', $name));
+        if (!isset($this->transports[$name])) {
+            throw new \InvalidArgumentException(sprintf('The transport "%s" can not be loaded by this extension', $name));
         }
 
-        return $this->wrappers[$name];
+        return $this->transports[$name];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function hasWrapper($name)
+    public function hasTransport($name)
     {
-        if (null === $this->wrappers) {
-            $this->initWrappers();
+        if (null === $this->transports) {
+            $this->initTransports();
         }
 
-        return isset($this->wrappers[$name]);
+        return isset($this->transports[$name]);
     }
 
     /**
@@ -96,9 +96,9 @@ abstract class BaseExtension implements JobExtensionInterface
     /**
      * Registers the wrappers.
      *
-     * @return IoWrapperInterface[]
+     * @return TransportInterface[]
      */
-    protected function loadWrappers()
+    protected function loadTransports()
     {
         return array();
     }
@@ -120,18 +120,18 @@ abstract class BaseExtension implements JobExtensionInterface
     }
     
     /**
-     * Initializes the types.
+     * Initializes the transports.
      */
-    private function initWrappers()
+    private function initTransports()
     {
-        $this->wrappers = array();
+        $this->transports = array();
 
-        foreach ($this->loadWrappers() as $wrapper) {
-            if (!$wrapper instanceof IoWrapperInterface) {
-                throw new \InvalidArgumentException(sprintf('Wrapper %s should implements IoWrapperInterface', get_class($wrapper)));
+        foreach ($this->loadTransports() as $transport) {
+            if (!$transport instanceof TransportInterface) {
+                throw new \InvalidArgumentException(sprintf('Transport %s should implements TransportInterface', get_class($transport)));
             }
 
-            $this->wrappers[$wrapper->getName()] = $wrapper;
+            $this->transports[$transport->getName()] = $transport;
         }
     }
 }

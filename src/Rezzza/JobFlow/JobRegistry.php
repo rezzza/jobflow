@@ -15,10 +15,13 @@ class JobRegistry
     protected $types = array();
 
     /**
-     * @var IoWrapperInterface[]
+     * @var TransportInterface[]
      */
-    protected $wrappers = array();
+    protected $transports = array();
 
+    /**
+     * @var JobExtensionInterface[]
+     */
     protected $extensions = array();
 
     public function __construct(array $extensions)
@@ -62,25 +65,25 @@ class JobRegistry
      *
      * @return JobTypeInterface
      */
-    public function getWrapper($name)
+    public function getTransport($name)
     {
-        if (!isset($this->wrappers[$name])) {
-            $wrapper = null;
+        if (!isset($this->transports[$name])) {
+            $transport = null;
 
             foreach ($this->extensions as $extension) {
-                if ($extension->hasWrapper($name)) {
-                    $wrapper = $extension->getWrapper($name);
+                if ($extension->hasTransport($name)) {
+                    $transport = $extension->getTransport($name);
                     break;
                 }
             }
 
-            if (!$wrapper) {
-                throw new \InvalidArgumentException(sprintf('Could not load wrapper "%s"', $name));
+            if (!$transport) {
+                throw new \InvalidArgumentException(sprintf('Could not load transport "%s"', $name));
             }
 
-            $this->wrappers[$wrapper->getName()] = $wrapper;
+            $this->transports[$transport->getName()] = $transport;
         }
 
-        return $this->wrappers[$name];
+        return $this->transports[$name];
     }
 }

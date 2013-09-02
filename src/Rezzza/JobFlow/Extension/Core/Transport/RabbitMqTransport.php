@@ -1,6 +1,8 @@
 <?php
 
-namespace Rezzza\JobFlow\Scheduler\Transport;
+namespace Rezzza\JobFlow\Extension\Core\Transport;
+
+use Rezzza\JobFlow\Scheduler\AbstractTransport;
 
 class RabbitMqTransport implements TransportInterface
 {
@@ -26,5 +28,10 @@ class RabbitMqTransport implements TransportInterface
     public function store($result)
     {
         return $result;
+    }
+
+    public function getName()
+    {
+        return 'rabbitmq';
     }
 }

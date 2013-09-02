@@ -1,6 +1,8 @@
 <?php
 
-namespace Rezzza\JobFlow\Scheduler\Transport;
+namespace Rezzza\JobFlow\Extension\Core\Transport;
+
+use Rezzza\JobFlow\Scheduler\AbstractTransport;
 
 class PhpTransport extends AbstractTransport
 {
@@ -9,5 +11,10 @@ class PhpTransport extends AbstractTransport
     public function store($result)
     {
         $this->addMessage($result);
+    }
+
+    public function getName()
+    {
+        return 'php';
     }
 }

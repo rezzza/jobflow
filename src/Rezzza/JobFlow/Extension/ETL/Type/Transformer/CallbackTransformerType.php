@@ -1,6 +1,6 @@
 <?php
 
-namespace Rezzza\JobFlow\Extension\Core\Type\Transformer;
+namespace Rezzza\JobFlow\Extension\ETL\Type\Transformer;
 
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;

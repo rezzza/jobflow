@@ -13,7 +13,7 @@ interface JobExtensionInterface
 
     public function hasType($name);
 
-    public function getWrapper($name);
+    public function getTransport($name);
 
-    public function hasWrapper($name);
+    public function hasTransport($name);
 }

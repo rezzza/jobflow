@@ -3,6 +3,7 @@
 namespace Rezzza\JobFlow;
 
 use Rezzza\JobFlow\Io\IoDescriptor;
+use Rezzza\JobFlow\Scheduler\JobFlow;
 
 /**
  * To create Job or JobBuilder.
@@ -81,6 +82,13 @@ class JobFactory
         }
 
         return $type->createBuilder($name, $this, $options);
+    }
+
+    public function createJobFlow($transport)
+    {
+        $transport = $this->registry->getTransport($transport);
+
+        return new JobFlow($transport);
     }
 
     /**

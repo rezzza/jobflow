@@ -1,11 +1,11 @@
 <?php
 
-namespace Rezzza\JobFlow\Extension\Core\Type\Transformer;
+namespace Rezzza\JobFlow\Extension\ETL\Type\Transformer;
 
 use Knp\ETL;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
-use Rezzza\JobFlow\Extension\Core\Type\ETLType;
+use Rezzza\JobFlow\Extension\ETL\Type\ETLType;
 use Rezzza\JobFlow\JobBuilder;
 use Rezzza\JobFlow\JobInput;
 use Rezzza\JobFlow\JobOutput;
