@@ -146,7 +146,7 @@ class Job implements \IteratorAggregate, JobInterface
         if ($context->msg->hasData()) {
             $source = $context->msg->getData();
         } elseif ($context->isFirstStep()) {
-            $source = $this->getParent()->getIo()->stdin->getIterator($this->getEtlConfig());
+            $source = $this->getParent()->getIo()->stdin->getWrapper($this->getEtlConfig());
         }
 
         if (null === $source) {
@@ -167,7 +167,7 @@ class Job implements \IteratorAggregate, JobInterface
         $destination = null;
 
         if ($context->isLastStep()) {
-            $destination = $this->getParent()->getIo()->stdout->getLoader($this->getEtlConfig());
+            $destination = $this->getParent()->getIo()->stdout->getWrapper($this->getEtlConfig());
         }
 
         $output->setDestination($destination);

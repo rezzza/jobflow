@@ -8,7 +8,6 @@ use Rezzza\JobFlow\JobContext;
 use Rezzza\JobFlow\JobInterface;
 use Rezzza\JobFlow\JobMessage;
 use Rezzza\JobFlow\Scheduler\ExecutionContext;
-use Rezzza\JobFlow\Scheduler\Strategy\StrategyInterface;
 use Rezzza\JobFlow\Scheduler\Transport\TransportInterface;
 
 /**
@@ -24,11 +23,6 @@ class JobScheduler
     protected $job;
 
     /**
-     * @var StrategyInterface
-     */
-    protected $strategy;
-
-    /**
      * @var TransportInterface
      */
     protected $transport;
@@ -37,22 +31,13 @@ class JobScheduler
      * @param TransportInterface $transport
      * @param StrategyInterface $strategy
      */
-    public function __construct(TransportInterface $transport, StrategyInterface $strategy = null)
+    public function __construct(TransportInterface $transport)
     {
         $this->transport = $transport;
-        $this->strategy = $strategy;
     }
 
     /**
      * @return TransportInterface
-     */
-    public function getStrategy()
-    {
-        return $this->strategy;
-    }
-
-    /**
-     * @return StrategyInterface
      */
     public function getTransport()
     {
