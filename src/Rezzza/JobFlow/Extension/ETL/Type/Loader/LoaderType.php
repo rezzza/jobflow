@@ -14,7 +14,7 @@ class LoaderType extends ETLType
 {
     public function execute(JobInput $input, JobOutput $output, ExecutionContext $execution)
     {
-        if ($this->isLoggable($output->getDestination())) {
+        if ($this->isLoggable($output->getDestination()) && $execution->getLogger()) {
             $output->getDestination()->setLogger($execution->getLogger());
         }
 

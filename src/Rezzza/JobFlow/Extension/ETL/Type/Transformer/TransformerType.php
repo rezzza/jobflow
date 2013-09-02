@@ -25,7 +25,10 @@ class TransformerType extends ETLType
     public function execute(JobInput $input, JobOutput $output, ExecutionContext $execution)
     {
         foreach ($input->source as $k => $result) {
-            $execution->getLogger()->debug('transformation '.$k);
+            if ($execution->getLogger()) {
+                $execution->getLogger()->debug('transformation '.$k);
+            }
+            
             $etlContext = new ETL\Context\Context();
 
             $output->write($this->transformer->transform($result, $etlContext));

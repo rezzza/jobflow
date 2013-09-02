@@ -17,7 +17,7 @@ class ExtractorType extends ETLType
     {
         $input = $input->source;
 
-        if ($this->isLoggable($input)) {
+        if ($this->isLoggable($input) && $execution->getLogger()) {
             $input->setLogger($execution->getLogger());
         }
 
