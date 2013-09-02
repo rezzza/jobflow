@@ -3,7 +3,7 @@
 namespace Rezzza\JobFlow;
 
 /**
- * Store all JobType and IoWrapper availables
+ * Store all JobType and Transport availables
  * 
  * @author Timothée Barray <tim@amicalement-web.net>
  */
