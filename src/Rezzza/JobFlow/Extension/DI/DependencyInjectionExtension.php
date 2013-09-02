@@ -26,7 +26,7 @@ class DependencyInjectionExtension extends BaseExtension
         $this->container = $container;
         $this->typeServiceIds = $typeServiceIds;
         $this->typeExtensionServiceIds = $typeExtensionServiceIds;
-        $this->transportServiceIds = $guesserServiceIds;
+        $this->transportServiceIds = $transportServiceIds;
     }
 
     public function getType($name)
