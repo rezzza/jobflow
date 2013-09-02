@@ -74,15 +74,23 @@ class DependencyInjectionExtension extends BaseExtension
 
     public function getTransport($name)
     {
-        $transports = array();
-
-        if (isset($this->transportServiceIds[$name])) {
-            foreach ($this->transportServiceIds[$name] as $serviceId) {
-                $transports[] = $this->container->get($serviceId);
-            }
+        if (!isset($this->transportServiceIds[$name])) {
+            throw new InvalidArgumentException(sprintf('The transport "%s" is not registered with the service container.', $name));
         }
 
-        return $transports;
+        $transport = $this->container->get($this->transportServiceIds[$name]);
+
+        if ($transport->getName() !== $name) {
+            throw new InvalidArgumentException(
+                sprintf('The transport specified for the service "%s" does not match the actual name. Expected "%s", given "%s"',
+                    $this->transportServiceIds[$name],
+                    $name,
+                    $transport->getName()
+                ))
+            ;
+        }
+
+        return $transport;
     }
 
     public function hasTransport($name)
