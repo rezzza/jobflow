@@ -7,13 +7,16 @@ use Psr\Log\LoggerAwareTrait;
 use Rezzza\JobFlow\JobContext;
 use Rezzza\JobFlow\JobInterface;
 use Rezzza\JobFlow\JobMessage;
+use Rezzza\JobFlow\JobOutput;
 use Rezzza\JobFlow\Scheduler\ExecutionContext;
 use Rezzza\JobFlow\Scheduler\Transport\TransportInterface;
 
 /**
+ * Handles job execution
+ *
  * @author Timothée Barray <tim@amicalement-web.net>
  */
-class JobScheduler
+class JobFlow
 {
     use LoggerAwareTrait;
 
@@ -29,7 +32,6 @@ class JobScheduler
 
     /**
      * @param TransportInterface $transport
-     * @param StrategyInterface $strategy
      */
     public function __construct(TransportInterface $transport)
     {
@@ -52,20 +54,10 @@ class JobScheduler
         return $this->job;
     }
 
-    public function getIo()
-    {
-        return $this->io;
-    }
-
-    public function setIo(IoDescriptor $io)
-    {
-        $this->io = $io;
-    }
-
     /**
      * @param JobInterface $job
      *
-     * @return JobScheduler
+     * @return JobFlow
      */
     public function setJob(JobInterface $job)
     {
@@ -76,6 +68,25 @@ class JobScheduler
         return $this;
     }
 
+    /**
+     * Adds message in transport layer
+     *
+     * @param JobMessage $msg
+     *
+     * @return JobFlow
+     */
+    public function addMessage(JobMessage $msg)
+    {
+        $this->transport->addMessage($msg, $msg->context->getMessageName());
+
+        return $this;
+    }
+
+    /**
+     * Creates init message to start execution.
+     *
+     * @return JobFlow
+     */
     public function init()
     {
         if (null === $this->getJob()) {
@@ -89,38 +100,43 @@ class JobScheduler
         return $this;
     }
 
-    public function run($msg = null)
+    /**
+     * Handles a message in args or look to the transport for next one
+     *
+     * @param JobMessage|null $msg
+     */
+    public function run(JobMessage $msg = null)
     {
         if (null !== $msg) {
             return $this->runJob($msg);
         }
 
-        while ($msg = $this->transport->getMessage()) {
+        while ($msg = $this->wait()) {
             $result = $this->runJob($msg);
         }
 
         return $result;
     }
 
+    /**
+     * Waits for message
+     *
+     * @return JobMessage
+     */
     public function wait()
     {
         return $this->transport->getMessage();
     }
 
-    public function addMessage(JobMessage $msg)
+    /**
+     * Executes current job.
+     * Injects ExecutionContext as Visitor
+     *
+     * @param JobMessage $msg
+     */
+    protected function runJob(JobMessage $msg)
     {
-        $this->transport->addMessage($msg, $msg->context->getMessageName());
-
-        return $this;
-    }
-
-// stocker le message d'entrée et le message de sortie ?
-    protected function runJob($msg)
-    {
-        if (!$msg instanceof JobMessage) {
-            return;
-        }
-
+        // Store input message
         $this->startMsg = $msg;
 
         $context = new ExecutionContext(
@@ -134,21 +150,29 @@ class JobScheduler
 
         $output = $context->executeJob($this->job);
 
-        // Check si $context end
+        // Check if $context ended
         if ($context->msg->context->isFinished()) {
             return;
         }
 
-        // Event ? Pour faire le createEndMsg qui est un peu perdu.
+        // Event ? To handle createEndMsg in a more readable way ?
         return $this->transport->store($this->createEndMsg($output));
     }
 
+    /**
+     * @return JobMessage
+     */
     private function getInitMessage()
     {
         return new JobMessage(new JobContext($this->getJob()->getName()));
     }
 
-    private function createEndMsg($output)
+    /**
+     * @param JobOutput $output
+     *
+     * @return JobMessage
+     */
+    private function createEndMsg(JobOutput $output)
     {
         $msg = clone $this->startMsg;
         
@@ -165,6 +189,7 @@ class JobScheduler
     {
         $children = $this->getJob()->getChildren();
 
+        // For the moment, jobGraph is built following add methods calls
         /*uasort($children, function($a, $b) {
             $stdinA = $a->getResolved()->getIo()->stdin;
             $stdinB = $b->getResolved()->getIo()->stdin;

@@ -38,7 +38,7 @@ class Job implements \IteratorAggregate, JobInterface
     public function setParent(JobInterface $parent = null)
     {
         if (null !== $parent && '' === $this->config->getName()) {
-            throw new \LogicException('A form with an empty name cannot have a parent form.');
+            throw new \LogicException('A job with an empty name cannot have a parent job.');
         }
 
         $this->parent = $parent;

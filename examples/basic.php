@@ -4,13 +4,13 @@ require_once __DIR__.'/../vendor/autoload.php';
 
 use Rezzza\JobFlow\Jobs;
 use Rezzza\JobFlow\Io;
-use Rezzza\JobFlow\Scheduler\JobScheduler;
+use Rezzza\JobFlow\Scheduler\JobFlow;
 use Rezzza\JobFlow\Scheduler\Transport\PhpTransport;
 
 $logger = new \Monolog\Logger('jobflow');
 $jobFactory = Jobs::createJobFactory();
 $transport = new PhpTransport();
-$scheduler = new JobScheduler($transport);
+$scheduler = new JobFlow($transport);
 $scheduler->setLogger($logger);
 
 $io = new Io\IoDescriptor(

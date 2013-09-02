@@ -26,6 +26,13 @@ class ExecutionContext
     public $msg;
 
     /**
+     * Global Context moved from message to message
+     *
+     * @var JobContext
+     */
+    public $globalContext;
+
+    /**
      * Representation of the navigation through the jobs
      *
      * @var RecursiveArrayIterator
@@ -54,11 +61,12 @@ class ExecutionContext
     {
         $this->graph = $graph;
         $this->msg = $msg;
+        $this->globalContext = $this->msg->context;
         $this->initCurrentJob();
  
         $resolver = new OptionsResolver();
         $this->setDefaultOptions($resolver);
-        $this->options = $resolver->resolve($this->msg->context->options);
+        $this->options = $resolver->resolve($this->globalContext->options);
     }
 
     /**
@@ -79,11 +87,21 @@ class ExecutionContext
         return $this->job->execute($this);
     }
 
+    /**
+     * Checks if we starts the graph
+     *
+     * @return boolean
+     */
     public function isFirstStep()
     {
         return $this->graph->key() === 0;
     }
 
+    /**
+     * Checks if we ends the graph
+     *
+     * @return boolean
+     */
     public function isLastStep()
     {
         return $this->graph->key() === (count($this->graph) - 1);
@@ -96,7 +114,7 @@ class ExecutionContext
      */
     public function getCurrentJob()
     {
-        return $this->msg->context->current;
+        return $this->globalContext->current;
     }
 
     /**
@@ -104,7 +122,7 @@ class ExecutionContext
      */
     public function getJobId()
     {
-        return $this->msg->context->jobId;
+        return $this->globalContext->jobId;
     }
 
     /**
@@ -112,13 +130,13 @@ class ExecutionContext
      */
     public function initCurrentJob()
     {
-        if ($this->msg->context->isStarting()) {
-            $this->msg->context->current = $this->graph->current();
+        if ($this->globalContext->isStarting()) {
+            $this->globalContext->current = $this->graph->current();
 
             return;
         }
 
-        $index = array_search($this->msg->context->current, $this->graph->getArrayCopy());
+        $index = array_search($this->globalContext->current, $this->graph->getArrayCopy());
         $this->graph->seek($index);
     }
 
@@ -149,6 +167,6 @@ class ExecutionContext
 
     public function setGlobalOption($key, $value)
     {
-        $this->msg->context->options[$key] = $value;
+        $this->globalContext->options[$key] = $value;
     }
 }
