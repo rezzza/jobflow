@@ -2,8 +2,6 @@
 
 namespace Rezzza\JobFlow\Extension\RabbitMq\Transport;
 
-use Rezzza\JobFlow\Scheduler\AbstractTransport;
-
 class RabbitMqTransport implements TransportInterface
 {
     protected $rpcClient;

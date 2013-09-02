@@ -2,12 +2,10 @@
 
 namespace Rezzza\JobFlow\Extension\ETL\Type\Loader;
 
-use Knp\ETL;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 use Rezzza\JobFlow\Extension\ETL\Type\ETLType;
-use Rezzza\JobFlow\JobBuilder;
 use Rezzza\JobFlow\JobInput;
 use Rezzza\JobFlow\JobOutput;
 use Rezzza\JobFlow\Scheduler\ExecutionContext;

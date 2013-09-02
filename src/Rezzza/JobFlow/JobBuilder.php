@@ -2,8 +2,6 @@
 
 namespace Rezzza\JobFlow;
 
-use Rezzza\JobFlow\Io\IoDescriptor;
-
 /**
  * Make Job creation easier, better, stronger
  *

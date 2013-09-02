@@ -25,7 +25,6 @@ class ExtractorType extends ETLType
 
         $offset = $execution->getOption('offset');
         $limit = $execution->getOption('limit');
-        $results = array();
 
         $input->seek($offset);
         $etl = new ETL\Context\Context();

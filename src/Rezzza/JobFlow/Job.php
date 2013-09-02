@@ -138,7 +138,7 @@ class Job implements \IteratorAggregate, JobInterface
     /**
      * @return JobInput
      */
-    public function getInput($context)
+    public function getInput(ExecutionContext $context)
     {
         $input = new JobInput();
         $source = null;
@@ -161,7 +161,7 @@ class Job implements \IteratorAggregate, JobInterface
     /**
      * @return JobOutput
      */
-    public function getOutput($context)
+    public function getOutput(ExecutionContext $context)
     {
         $output = new JobOutput();
         $destination = null;
