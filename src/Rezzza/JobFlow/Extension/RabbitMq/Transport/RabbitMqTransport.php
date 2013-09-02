@@ -1,6 +1,6 @@
 <?php
 
-namespace Rezzza\JobFlow\Extension\Core\Transport;
+namespace Rezzza\JobFlow\Extension\RabbitMq\Transport;
 
 use Rezzza\JobFlow\Scheduler\AbstractTransport;
 
