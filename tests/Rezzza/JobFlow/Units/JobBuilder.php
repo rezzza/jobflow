@@ -118,7 +118,7 @@ class JobBuilder extends Units\Test
 
                 ->mock($mockBuilder)
                     ->call('create')
-                        ->withArguments(123, $mockType, array())
+                        ->withArguments(123, $mockType, array('io' => null))
                         ->once()
 
                 ->boolean($mockBuilder->hasUnresolvedChildren())
