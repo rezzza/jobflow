@@ -147,7 +147,7 @@ class Job implements \IteratorAggregate, JobInterface
             $source = $context->msg->getData();
         } elseif ($context->isFirstStep()) {
             $etl = $this->getEtlConfig();
-            $source = $etl['extractor'];
+            $source = isset($etl['extractor']) ? $etl['extractor'] : null;
         }
 
         if (null === $source) {
@@ -169,7 +169,7 @@ class Job implements \IteratorAggregate, JobInterface
 
         if ($context->isLastStep()) {
             $etl = $this->getEtlConfig();
-            $destination = $etl['loader'];
+            $destination = isset($etl['loader']) ? $etl['loader'] : null;
         }
 
         $output->setDestination($destination);
