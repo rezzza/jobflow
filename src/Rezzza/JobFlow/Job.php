@@ -168,7 +168,8 @@ class Job implements \IteratorAggregate, JobInterface
         $destination = null;
 
         if ($context->isLastStep()) {
-            $destination = $this->getParent()->getIo()->stdout->getWrapper($this->getEtlConfig());
+            $etl = $this->getEtlConfig();
+            $destination = $etl['loader'];
         }
 
         $output->setDestination($destination);

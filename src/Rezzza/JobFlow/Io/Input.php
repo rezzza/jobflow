@@ -7,8 +7,4 @@ namespace Rezzza\JobFlow\Io;
  */
 class Input extends AbstractStream
 {
-    public function getWrapper($etl)
-    {
-        return $etl['extractor'];
-    }
 }

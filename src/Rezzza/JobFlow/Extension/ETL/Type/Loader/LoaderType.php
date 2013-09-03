@@ -36,9 +36,12 @@ class LoaderType extends ETLType
         // On fait passser la class au Job !
         // C'est lui qui fera l'instanciation et fera passer le loader via l'output
         $resolver->setDefaults(array(
-            'etl_config' => function(Options $options) use ($type) { 
+            'etl_config' => function(Options $options) use ($type) {
+                $class = $options['class'];
+                $io = $options['io'];
+
                 return array(
-                    'loader' => $options['class']
+                    'loader' => new $class($io->stdout->getDsn())
                 );
             } 
         ));

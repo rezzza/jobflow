@@ -2,6 +2,7 @@
 
 namespace Rezzza\JobFlow\Extension\ETL\Type\Loader;
 
+use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 use Rezzza\JobFlow\AbstractJobType;
@@ -10,8 +11,19 @@ class FileLoaderType extends AbstractJobType
 {
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
+        $type = $this;
+
         $resolver->setDefaults(array(
             'class' => 'Knp\ETL\Loader\FileLoader',
+            'etl_config' => function(Options $options) use ($type) {
+                $class = $options['class'];
+                $io = $options['io'];
+                $file = new \SplFileObject($io->stdout->getDsn(), 'a+');
+
+                return array(
+                    'loader' => new $class($file)
+                );
+            } 
         ));
     }
 
