@@ -19,10 +19,7 @@ $io = new Io\IoDescriptor(
 $job = $jobFactory->createBuilder('job', $io)
     ->add(
         'example_extractor', 
-        'extractor',
-        array(
-            'class' => 'Knp\ETL\Extractor\CsvExtractor'
-        )
+        'csv_extractor'
     )
     ->add(
         'example_transformer', 
