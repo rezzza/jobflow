@@ -26,6 +26,9 @@ class JobContext implements JobContextInterface
      */
     public $steps = array();
 
+    /**
+     * @var array
+     */
     public $options = array();
     
     public function __construct($jobId)
@@ -68,14 +71,9 @@ class JobContext implements JobContextInterface
         return end($this->steps);
     }
 
-    public function setNext(array $next)
+    public function hasNextJob()
     {
-        $this->next = $next;
-    }
-
-    public function hasNext()
-    {
-        return count($this->next) > 0;
+        return null !== $this->current;
     }
 
     public function isFinished()
@@ -90,6 +88,6 @@ class JobContext implements JobContextInterface
 
     public function getMessageName()
     {
-        return sprintf('%s', $this->jobId);
+        return sprintf('%s.%s', $this->jobId, $this->current);
     }
 }

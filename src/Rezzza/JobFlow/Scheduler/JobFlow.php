@@ -111,6 +111,10 @@ class JobFlow
         }
 
         while ($msg = $this->wait()) {
+            if (!$msg instanceof JobMessage) {
+                return;
+            }
+
             $result = $this->runJob($msg);
         }
 

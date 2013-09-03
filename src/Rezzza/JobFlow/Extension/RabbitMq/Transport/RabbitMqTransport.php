@@ -2,6 +2,8 @@
 
 namespace Rezzza\JobFlow\Extension\RabbitMq\Transport;
 
+use Rezzza\JobFlow\Scheduler\TransportInterface;
+
 class RabbitMqTransport implements TransportInterface
 {
     protected $rpcClient;
@@ -20,7 +22,7 @@ class RabbitMqTransport implements TransportInterface
 
     public function getMessage()
     {
-        $this->rpcClient->getReplies();
+        return $this->rpcClient->getReplies();
     }
 
     public function store($result)
