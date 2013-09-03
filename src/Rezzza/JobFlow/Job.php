@@ -146,7 +146,8 @@ class Job implements \IteratorAggregate, JobInterface
         if ($context->msg->hasData()) {
             $source = $context->msg->getData();
         } elseif ($context->isFirstStep()) {
-            $source = $this->getParent()->getIo()->stdin->getWrapper($this->getEtlConfig());
+            $etl = $this->getEtlConfig();
+            $source = $etl['extractor'];
         }
 
         if (null === $source) {
