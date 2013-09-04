@@ -33,12 +33,13 @@ class ExtractorType extends ETLType
 
         // Skip Header
         if ($offset === 0) {
-            $input->extract($etl);
+            // We need to get the current to do the next. Va comprendre charles
+            $input->current();
+            $input->next();
         }
 
         for ($i = 0; $i < $limit && $input->valid(); $i++) {
-            $output->write($input->current());
-            $input->next();
+            $output->write($input->extract($etl));
         }
 
         return $output;

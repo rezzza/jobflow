@@ -19,12 +19,11 @@ class EntityLoader extends AbstractJobType
 
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
-        $type = $this;
         $doctrine = $this->doctrine;
 
         $resolver->setDefaults(array(
             'class' => 'Knp\ETL\Loader\Doctrine\ORMLoader',
-            'etl_config' => function(Options $options) use ($type, $doctrine) {
+            'etl_config' => function(Options $options) use ($doctrine) {
                 $class = $options['class'];
 
                 return array(

@@ -17,15 +17,17 @@ class TransformerType extends ETLType
     protected $transformer;
 
     protected $etlContext;
-    
+
+    protected $updateMethod;
+
+    protected $transformClass;
+
     public function buildJob(JobBuilder $builder, array $options)
     {
         $this->transformer = $options['etl_config']['transformer'];
         $this->etlContext = new ETL\Context\Context();
-
-        if (null !== $options['transform_class']) {
-            $this->etlContext->setTransformedData(new $options['transform_class']);
-        }
+        $this->updateMethod = $options['update_method'];
+        $this->transformClass = $options['transform_class'];
     }
 
     public function execute(JobInput $input, JobOutput $output, ExecutionContext $execution)
@@ -34,8 +36,16 @@ class TransformerType extends ETLType
             if ($execution->getLogger()) {
                 $execution->getLogger()->debug('transformation '.$k);
             }
+
+            $this->etlContext->setTransformedData(new $this->transformClass);
+
+            $transformedData = $this->transformer->transform($result, $this->etlContext);
+
+            if ($this->updateMethod) {
+                call_user_func($this->updateMethod, $transformedData);
+            }
             
-            $output->write($this->transformer->transform($result, $this->etlContext));
+            $output->write($transformedData);
         }
 
         return $output;
@@ -49,6 +59,7 @@ class TransformerType extends ETLType
 
         $resolver->setDefaults(array(
             'transform_class' => null,
+            'update_method' => null,
             'etl_config' => function(Options $options) {
                 $class = $options['class'];
 
