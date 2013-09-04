@@ -12,6 +12,7 @@ class ETLExtension extends BaseExtension
             new Type\Extractor\ExtractorType(),
             new Type\Extractor\CsvExtractorType(),
             new Type\Extractor\TsvExtractorType(),
+            new Type\Extractor\JsonExtractorType(),
 
             new Type\Transformer\TransformerType(),
             new Type\Transformer\CallbackTransformerType(),
