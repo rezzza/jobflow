@@ -3,6 +3,7 @@
 namespace Rezzza\JobFlow\Extension\ETL\Type\Transformer;
 
 use Knp\ETL;
+use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 use Rezzza\JobFlow\Extension\ETL\Type\ETLType;
@@ -14,12 +15,17 @@ use Rezzza\JobFlow\Scheduler\ExecutionContext;
 class TransformerType extends ETLType
 {
     protected $transformer;
+
+    protected $etlContext;
     
     public function buildJob(JobBuilder $builder, array $options)
     {
-        $args = $options['args'];
-        $class = $options['class'];
-        $this->transformer = new $class($args);
+        $this->transformer = $options['etl_config']['transformer'];
+        $this->etlContext = new ETL\Context\Context();
+
+        if (null !== $options['transform_class']) {
+            $this->etlContext->setTransformedData(new $options['transform_class']);
+        }
     }
 
     public function execute(JobInput $input, JobOutput $output, ExecutionContext $execution)
@@ -29,9 +35,7 @@ class TransformerType extends ETLType
                 $execution->getLogger()->debug('transformation '.$k);
             }
             
-            $etlContext = new ETL\Context\Context();
-
-            $output->write($this->transformer->transform($result, $etlContext));
+            $output->write($this->transformer->transform($result, $this->etlContext));
         }
 
         return $output;
@@ -44,8 +48,14 @@ class TransformerType extends ETLType
         ));
 
         $resolver->setDefaults(array(
-            'args' => null,
+            'transform_class' => null,
+            'etl_config' => function(Options $options) {
+                $class = $options['class'];
 
+                return array(
+                    'transformer' => new $class()
+                );
+            } 
         ));
     }
 

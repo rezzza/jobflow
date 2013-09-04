@@ -150,7 +150,6 @@ class ExecutionContext
         $resolver->setDefaults(array(
             'offset' => null,
             'limit' => null,
-            'mapping' => null,
             'total' => null
         ));
     }

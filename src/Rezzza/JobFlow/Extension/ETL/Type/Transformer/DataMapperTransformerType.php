@@ -13,8 +13,12 @@ class DataMapperTransformerType extends AbstractJobType
     {
         $resolver->setDefaults(array(
             'class' => 'Knp\ETL\Transformer\DataMap',
-            'args' => function(Options $options) {
-                return $options['mapping'];
+            'etl_config' => function(Options $options) {
+                $class = $options['class'];
+
+                return array(
+                    'transformer' => new $class($options['mapping']),
+                );
             }
         ));
 
