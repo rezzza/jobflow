@@ -37,7 +37,9 @@ class TransformerType extends ETLType
                 $execution->getLogger()->debug('transformation '.$k);
             }
 
-            $this->etlContext->setTransformedData(new $this->transformClass);
+            if ($this->transformClass) {
+                $this->etlContext->setTransformedData(new $this->transformClass);
+            }
 
             $transformedData = $this->transformer->transform($result, $this->etlContext);
 
