@@ -21,14 +21,16 @@ class ExtractorType extends ETLType
             $input->setLogger($execution->getLogger());
         }
 
-        $execution->setGlobalOption('total', $input->count());
+        if (null === $execution->getOption('total')) {
+            $execution->setGlobalOption('total', $input->count());
+        }
 
         $offset = $execution->getOption('offset');
         $limit = $execution->getOption('limit');
 
         $input->seek($offset);
         $etl = new ETL\Context\Context();
-        
+
         // Skip Header
         if ($offset === 0) {
             $input->extract($etl);

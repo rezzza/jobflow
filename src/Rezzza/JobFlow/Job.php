@@ -143,11 +143,11 @@ class Job implements \IteratorAggregate, JobInterface
         $input = new JobInput();
         $source = null;
 
-        if ($context->msg->hasData()) {
-            $source = $context->msg->getData();
-        } elseif ($context->isFirstStep()) {
+        if ($context->isFirstStep()) {
             $etl = $this->getEtlConfig();
             $source = isset($etl['extractor']) ? $etl['extractor'] : null;
+        } elseif ($context->msg->hasData()) {
+            $source = $context->msg->getData();
         }
 
         if (null === $source) {

@@ -91,7 +91,7 @@ class JobFlow
         if (null === $this->getJob()) {
             throw new \RuntimeException('You need to set a job');
         }
-        
+
         $name = sprintf('%s.%s', $this->getJob()->getName(), $this->jobGraph->current());
 
         $this->transport->addMessage($this->getInitMessage(), $name);

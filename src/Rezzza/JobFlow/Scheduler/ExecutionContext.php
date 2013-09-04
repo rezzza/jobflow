@@ -140,9 +140,9 @@ class ExecutionContext
         $this->graph->seek($index);
     }
 
-    public function getOption($name)
+    public function getOption($name, $default = null)
     {
-        return $this->options[$name];
+        return array_key_exists($name, $this->options) ? $this->options[$name] : $default;
     }
 
     public function setDefaultOptions(OptionsResolverInterface $resolver)
