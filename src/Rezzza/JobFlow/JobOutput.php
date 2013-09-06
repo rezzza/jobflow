@@ -8,6 +8,8 @@ class JobOutput
 
     private $data = array();
 
+    private $pipe;
+
     public function setDestination($destination)
     {
         $this->destination = $destination;
@@ -20,11 +22,28 @@ class JobOutput
 
     public function write($result)
     {
-        if (null !== $this->getDestination()) {
-            return $this->getDestination()->load($result, new \Knp\ETL\Context\Context);
+        if (null === $this->getDestination()) {
+            $this->data[] = $result;
+
+            return;
         }
 
-        $this->data[] = $result;
+        if ($this->getDestination() instanceof Pipe) {
+            if (null === $this->pipe) {
+                $this->pipe = $this->getDestination();
+            }
+
+            $this->pipe->addParam($result);
+
+            return;
+        }
+
+        return $this->getDestination()->load($result, new \Knp\ETL\Context\Context);
+    }
+
+    public function getPipe()
+    {
+        return $this->pipe;
     }
 
     public function getData()

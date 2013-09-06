@@ -159,7 +159,11 @@ class JobFlow
         }
 
         // Event ? To handle createEndMsg in a more readable way ?
-        return $this->transport->store($this->createEndMsg($output));
+        $msgs = $this->createEndMsg($output);
+
+        foreach ($msgs as $msg) {
+            $this->transport->store($msg);
+        }
     }
 
     /**
@@ -177,12 +181,37 @@ class JobFlow
      */
     private function createEndMsg(JobOutput $output)
     {
+        $pipe = $output->getPipe();
+
+        if ($pipe) {
+            $msgs = array();
+
+            // Start to send context global message
+            $msg = clone $this->startMsg;
+            $msg->context->updateToNextJob($this->jobGraph);
+            $msgs[] = $msg;
+
+            // Send message from pipe
+            foreach ($pipe->params as $p) {
+                $msg = clone $this->startMsg;
+                $msg->setData(array());
+                $msg->setInput($p);
+                $msg->context->initOptions();
+                $msg->context->updateToNextJob($this->jobGraph);
+
+                $msgs[] = $msg;
+            }
+
+            return $msgs;
+        }
+
         $msg = clone $this->startMsg;
         
         $msg->setData($output->getData());
+
         $msg->context->updateToNextJob($this->jobGraph);
 
-        return $msg;
+        return array($msg);
     }
 
     /**

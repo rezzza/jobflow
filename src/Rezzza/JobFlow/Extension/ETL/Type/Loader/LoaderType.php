@@ -18,7 +18,7 @@ class LoaderType extends ETLType
             $output->getDestination()->setLogger($execution->getLogger());
         }
 
-        foreach ($input->source as $d) {
+        foreach ($input->getData() as $d) {
             $output->write($d);
         }
 
@@ -27,6 +27,8 @@ class LoaderType extends ETLType
 
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
+        parent::setDefaultOptions($resolver);
+        
         $resolver->setRequired(array(
             'class'
         ));
@@ -35,11 +37,11 @@ class LoaderType extends ETLType
         // C'est lui qui fera l'instanciation et fera passer le loader via l'output
         $resolver->setDefaults(array(
             'etl_config' => function(Options $options) {
-                $class = $options['class'];
                 $io = $options['io'];
 
                 return array(
-                    'loader' => new $class($io->stdout->getDsn())
+                    'class' => $options['class'],
+                    'args' => array($io->stdout->getDsn())
                 );
             } 
         ));
@@ -52,6 +54,6 @@ class LoaderType extends ETLType
 
     public function getETLType()
     {
-        return 'loader';
+        return self::TYPE_LOADER;
     }
 }

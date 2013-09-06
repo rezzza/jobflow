@@ -4,10 +4,39 @@ namespace Rezzza\JobFlow;
 
 class JobInput
 {
-    public $source;
+    private $extractor;
 
-    public function setSource($source)
+    private $transformer;
+
+    private $data = array();
+
+    public function getExtractor()
     {
-        $this->source = $source;
+        return $this->extractor;
+    }
+
+    public function getTransformer()
+    {
+        return $this->transformer;
+    }
+
+    public function getData()
+    {
+        return $this->data;
+    }
+
+    public function setExtractor($extractor)
+    {
+        $this->extractor = $extractor;
+    }
+
+    public function setData($data)
+    {
+        $this->data = $data;
+    }
+
+    public function setTransformer($transformer)
+    {
+        $this->transformer = $transformer;
     }
 }

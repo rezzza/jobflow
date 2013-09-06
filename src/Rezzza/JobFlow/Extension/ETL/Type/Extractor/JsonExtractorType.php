@@ -13,14 +13,18 @@ class JsonExtractorType extends AbstractJobType
     {
         $resolver->setDefaults(array(
             'class' => 'Knp\ETL\Extractor\JsonExtractor',
-            'start_node' => null,
+            'path' => null,
             'adapter' => null,
             'etl_config' => function(Options $options) {
-                $class = $options['class'];
                 $io = $options['io'];
 
                 return array(
-                    'extractor' => new $class($io->stdin->getDsn(), $options['start_node'], $options['adapter'])
+                    'class' => $options['class'],
+                    'args' => array(
+                        'dsn' => $io ? $io->stdin->getDsn() : null, 
+                        'path' => $options['path'],
+                        'adapter' => $options['adapter']
+                    )
                 );
             } 
         ));

@@ -14,25 +14,32 @@ use Rezzza\JobFlow\Scheduler\ExecutionContext;
 
 class TransformerType extends ETLType
 {
-    protected $transformer;
-
     protected $etlContext;
 
     protected $updateMethod;
 
     protected $transformClass;
 
+    protected $transformer;
+
     public function buildJob(JobBuilder $builder, array $options)
     {
-        $this->transformer = $options['etl_config']['transformer'];
+        parent::buildJob($builder, $options);
+
         $this->etlContext = new ETL\Context\Context();
         $this->updateMethod = $options['update_method'];
         $this->transformClass = $options['transform_class'];
+
+        $builder
+            ->setETLWrapper($options['etl_config']['transformer'])
+        ;
     }
 
     public function execute(JobInput $input, JobOutput $output, ExecutionContext $execution)
-    {
-        foreach ($input->source as $k => $result) {
+    {       
+        $transformer = $input->getTransformer();
+
+        foreach ($input->getData() as $k => $result) {
             if ($execution->getLogger()) {
                 $execution->getLogger()->debug('transformation '.$k);
             }
@@ -41,7 +48,7 @@ class TransformerType extends ETLType
                 $this->etlContext->setTransformedData(new $this->transformClass);
             }
 
-            $transformedData = $this->transformer->transform($result, $this->etlContext);
+            $transformedData = $transformer->transform($result, $this->etlContext);
 
             if ($this->updateMethod) {
                 call_user_func($this->updateMethod, $transformedData);
@@ -55,6 +62,8 @@ class TransformerType extends ETLType
 
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
+        parent::setDefaultOptions($resolver);
+
         $resolver->setRequired(array(
             'class'
         ));
@@ -72,6 +81,11 @@ class TransformerType extends ETLType
         ));
     }
 
+    public function setTransformer($transformer)
+    {
+        $this->transformer = $transformer;
+    }
+
     public function getName()
     {
         return 'transformer';
@@ -79,6 +93,6 @@ class TransformerType extends ETLType
 
     public function getETLType()
     {
-        return 'transformer';
+        return self::TYPE_TRANSFORMER;
     }
 }

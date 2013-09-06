@@ -34,11 +34,7 @@ class JobContext implements JobContextInterface
     public function __construct($jobId)
     {
         $this->jobId = $jobId;
-        $this->options = array(
-            'total' => null,
-            'offset' => 0,
-            'limit' => 10
-        );
+        $this->initOptions();
     }
 
     public function updateToNextJob(JobGraph $graph)
@@ -89,5 +85,14 @@ class JobContext implements JobContextInterface
     public function getMessageName()
     {
         return sprintf('%s.%s', $this->jobId, $this->current);
+    }
+
+    public function initOptions()
+    {
+        $this->options = array(
+            'total' => null,
+            'offset' => 0,
+            'limit' => 10
+        );
     }
 }

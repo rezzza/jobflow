@@ -2,6 +2,7 @@
 
 namespace Rezzza\JobFlow;
 
+use Rezzza\JobFlow\Extension\ETL\Type\ETLType;
 use Rezzza\JobFlow\Scheduler\ExecutionContext;
 
 /**
@@ -143,18 +144,26 @@ class Job implements \IteratorAggregate, JobInterface
         $input = new JobInput();
         $source = null;
 
-        if ($context->isFirstStep()) {
+        if ($this->isExtractor()) {
             $etl = $this->getEtlConfig();
-            $source = isset($etl['extractor']) ? $etl['extractor'] : null;
-        } elseif ($context->msg->hasData()) {
-            $source = $context->msg->getData();
-        }
+            
+            if ($context->msg->hasInput()) {
+                foreach ($context->msg->getInput() as $key => $value) {
+                    // need to ensure key exists, if not exception
+                    $etl['args'][$key] = $value;
+                }
+            }
 
-        if (null === $source) {
-            throw new \LogicException(sprintf('No data found for job "%s" input', $this->getFullName()));
-        }
+            $input->setExtractor($this->getETLWrapper($etl));
+        } 
 
-        $input->setSource($source);
+        if ($context->msg->hasData()) {
+            $input->setData($context->msg->getData());
+        } 
+
+        if ($this->isTransformer()) {
+            $input->setTransformer($this->config->getETLWrapper());
+        }
 
         return $input;
     }
@@ -167,9 +176,9 @@ class Job implements \IteratorAggregate, JobInterface
         $output = new JobOutput();
         $destination = null;
 
-        if ($context->isLastStep()) {
+        if ($this->isLoader()) {
             $etl = $this->getEtlConfig();
-            $destination = isset($etl['loader']) ? $etl['loader'] : null;
+            $destination = $this->getETLWrapper($etl);
         }
 
         $output->setDestination($destination);
@@ -217,6 +226,37 @@ class Job implements \IteratorAggregate, JobInterface
     public function getFullName()
     {
         return $this->getParent()->getName().'.'.$this->getName();
+    }
+
+    public function isExtractor()
+    {
+        return $this->config->getEtlType() === ETLType::TYPE_EXTRACTOR;
+    }
+
+    public function isTransformer()
+    {
+        return $this->config->getEtlType() === ETLType::TYPE_TRANSFORMER;
+    }
+
+    public function isLoader()
+    {
+        return $this->config->getEtlType() === ETLType::TYPE_LOADER;
+    }
+
+    public function getETLWrapper($etlConfig)
+    {
+        if (!is_array($etlConfig)) {
+            throw new \RuntimeException('etlConfig in JobConfig should be an array to built ETL Wrapper');
+        }
+
+        if (!array_key_exists('class', $etlConfig) || !array_key_exists('args', $etlConfig)) {
+            throw new \RuntimeException('etlConfig should have "class" and "args" keys');
+        }
+
+        return call_user_func_array(
+            array(new \ReflectionClass($etlConfig['class']), 'newInstance'),
+            $etlConfig['args']
+        );
     }
 
     public function __toString()

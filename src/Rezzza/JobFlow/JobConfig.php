@@ -28,6 +28,11 @@ class JobConfig
     private $etlConfig;
 
     /**
+     * @var string
+     */
+    private $etlType;
+
+    /**
      * @var IoDescriptor
      */
     private $io;
@@ -36,6 +41,8 @@ class JobConfig
      * @var array
      */
     private $options;
+
+    private $etlWrapper;
 
     /**
      * @param string $name
@@ -69,6 +76,14 @@ class JobConfig
     public function getEtlConfig()
     {
         return $this->etlConfig;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEtlType()
+    {
+        return $this->etlType;
     }
 
     /**
@@ -128,6 +143,18 @@ class JobConfig
     }
 
     /**
+     * @param string $etlType
+     *
+     * @return JobConfig
+     */
+    public function setEtlType($etlType)
+    {
+        $this->etlType = $etlType;
+
+        return $this;
+    }
+
+    /**
      * @param IoDescriptor $io
      *
      * @return JobConfig
@@ -149,6 +176,18 @@ class JobConfig
         $this->jobFactory = $jobFactory;
 
         return $this;
+    }
+
+    public function setETLWrapper($wrapper)
+    {
+        $this->etlWrapper = $wrapper;
+
+        return $this;
+    }
+
+    public function getETLWrapper()
+    {
+        return $this->etlWrapper;
     }
 
     /**

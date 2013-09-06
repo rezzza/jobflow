@@ -15,31 +15,37 @@ class ExtractorType extends ETLType
 {
     public function execute(JobInput $input, JobOutput $output, ExecutionContext $execution)
     {
-        $input = $input->source;
+        $extractor = $input->getExtractor();
 
-        if ($this->isLoggable($input) && $execution->getLogger()) {
-            $input->setLogger($execution->getLogger());
+        if ($this->isLoggable($extractor) && $execution->getLogger()) {
+            $extractor->setLogger($execution->getLogger());
         }
 
         if (null === $execution->getOption('total')) {
-            $execution->setGlobalOption('total', $input->count());
+            $execution->setGlobalOption('total', $extractor->count());
         }
 
         $offset = $execution->getOption('offset');
         $limit = $execution->getOption('limit');
 
-        $input->seek($offset);
+        try {
+            $extractor->seek($offset);
+        } catch (\OutOfBoundsException $e) {
+            $execution->getLogger()->debug('No data');
+        }
+
         $etl = new ETL\Context\Context();
 
         // Skip Header
         if ($offset === 0) {
             // We need to get the current to do the next. Va comprendre charles
-            $input->current();
-            $input->next();
+            $extractor->current();
+            $extractor->next();
         }
 
-        for ($i = 0; $i < $limit && $input->valid(); $i++) {
-            $output->write($input->extract($etl));
+        for ($i = 0; $i < $limit && $extractor->valid(); $i++) {
+            $output->write($extractor->current());
+            $extractor->next();
         }
 
         return $output;
@@ -47,17 +53,19 @@ class ExtractorType extends ETLType
 
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
+        parent::setDefaultOptions($resolver);
+
         $resolver->setRequired(array(
             'class'
         ));
 
         $resolver->setDefaults(array(
             'etl_config' => function(Options $options) {
-                $class = $options['class'];
                 $io = $options['io'];
 
                 return array(
-                    'extractor' => new $class($io->stdin->getDsn())
+                    'class' => $options['class'],
+                    'args' => array($io->stdin->getDsn())
                 );
             } 
         ));
@@ -70,6 +78,6 @@ class ExtractorType extends ETLType
 
     public function getETLType()
     {
-        return 'extractor';
+        return self::TYPE_EXTRACTOR;
     }
 }

@@ -83,6 +83,7 @@ class ExecutionContext
         }
         
         $this->job = $parent->get($this->getCurrentJob());
+        $this->logger->debug('Try to execute '.$this->job->getName());
         
         return $this->job->execute($this);
     }

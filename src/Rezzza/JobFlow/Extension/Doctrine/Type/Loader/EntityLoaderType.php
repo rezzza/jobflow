@@ -8,7 +8,7 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 use Rezzza\JobFlow\AbstractJobType;
 
-class EntityLoader extends AbstractJobType
+class EntityLoaderType extends AbstractJobType
 {
     private $doctrine;
 
@@ -27,7 +27,8 @@ class EntityLoader extends AbstractJobType
                 $class = $options['class'];
 
                 return array(
-                    'loader' => new $class($doctrine)
+                    'class' => $class,
+                    'args' => array($doctrine)
                 );
             } 
         ));

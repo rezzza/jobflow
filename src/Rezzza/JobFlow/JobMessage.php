@@ -8,6 +8,8 @@ class JobMessage
 
     public $data = array();
 
+    public $input;
+
     public function __construct($context)
     {
         $this->context = $context;
@@ -26,6 +28,21 @@ class JobMessage
     public function setData($data)
     {
         $this->data = $data;
+    }
+
+    public function hasInput()
+    {
+        return null !== $this->input;
+    }
+
+    public function getInput()
+    {
+        return $this->input;
+    }
+
+    public function setInput($input)
+    {
+        $this->input = $input;
     }
 
     public function __clone()
