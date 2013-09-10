@@ -2,6 +2,11 @@
 
 namespace Rezzza\JobFlow;
 
+/**
+ * Output for execute method in JobType
+ *
+ * @author Timothée Barray <tim@amicalement-web.net>
+ */
 class JobOutput
 {
     private $destination;

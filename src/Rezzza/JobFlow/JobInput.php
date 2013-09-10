@@ -2,6 +2,11 @@
 
 namespace Rezzza\JobFlow;
 
+/**
+ * Input for execute method in JobType
+ *
+ * @author Timothée Barray <tim@amicalement-web.net>
+ */
 class JobInput
 {
     private $extractor;
