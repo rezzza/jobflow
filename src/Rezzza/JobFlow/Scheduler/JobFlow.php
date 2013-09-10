@@ -164,6 +164,8 @@ class JobFlow
         foreach ($msgs as $msg) {
             $this->transport->store($msg);
         }
+
+        return reset($msgs);
     }
 
     /**

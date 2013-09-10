@@ -31,7 +31,9 @@ class ExtractorType extends ETLType
         try {
             $extractor->seek($offset);
         } catch (\OutOfBoundsException $e) {
-            $execution->getLogger()->debug('No data');
+            if ($execution->getLogger()) {
+                $execution->getLogger()->debug('No data');
+            }
         }
 
         $etl = new ETL\Context\Context();
