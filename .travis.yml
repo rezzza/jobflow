@@ -10,7 +10,7 @@ before_script:
     - mkdir -p web/code-coverage
 
 script:
-    - bin/atoum --test-all
+    - bin/atoum
 
 notifications:
     email:
