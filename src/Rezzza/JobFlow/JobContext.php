@@ -5,31 +5,37 @@ namespace Rezzza\JobFlow;
 use Rezzza\JobFlow\Scheduler\JobGraph;
 
 /**
+ * Keeps state for the job execution
+ *
  * @author Timothée Barray <tim@amicalement-web.net>
  */
 class JobContext implements JobContextInterface
 {
     /**
-     * The job id to execute
+     * The job we run
      *
      * @var string
      */
-    public $jobId;
+    private $jobId;
 
     /**
-     * Current child job in execution
+     * Current job name in execution
+     *
+     * @var string
      */
-    public $current;
+    private $current;
 
     /**
      * Steps already executed
+     *
+     * @var array
      */
-    public $steps = array();
+    private $steps = array();
 
     /**
      * @var array
      */
-    public $options = array();
+    private $options = array();
     
     public function __construct($jobId)
     {
@@ -37,6 +43,11 @@ class JobContext implements JobContextInterface
         $this->initOptions();
     }
 
+    /**
+     * Moves the execution graph to the next job
+     *
+     * @param JobGraph $graph
+     */
     public function updateToNextJob(JobGraph $graph)
     {
         // We stock we executed this job
@@ -49,7 +60,6 @@ class JobContext implements JobContextInterface
             $nextJob = null;
 
             if (!$this->isFinished()) {
-                // Check if we should reloop
                 $nextJob = $graph->getJob(0);
             }
         }
@@ -57,36 +67,86 @@ class JobContext implements JobContextInterface
         $this->current = $nextJob;
     }
 
-    public function addStep($step)
+    /**
+     * @param string $current
+     */
+    public function setCurrent($current)
     {
-        $this->steps[] = $step;
+        $this->current = $current;
+
+        return $this;
     }
 
+    /**
+     * @return string
+     */
+    public function getCurrent()
+    {
+        return $this->current;
+    }
+
+    /**
+     * @return array
+     */
+    public function getOptions()
+    {
+        return $this->options;
+    }
+
+    /**
+     * @param mixed $key
+     * @param mixed $value
+     *
+     * @return JobContext
+     */
+    public function setOption($key, $value)
+    {
+        $this->options[$key] = $value;
+
+        return $this;
+    }
+
+    /**
+     * Gets the previous job executed
+     *
+     * @return string
+     */
     public function getPrevious()
     {
         return end($this->steps);
     }
 
-    public function hasNextJob()
-    {
-        return null !== $this->current;
-    }
-
+    /**
+     * Checks we need to requeue job again
+     *
+     * @return boolean
+     */
     public function isFinished()
     {
         return $this->options['total'] <= $this->options['offset'];
     }
 
+    /**
+     * Checks if JobContext has already traveled
+     *
+     * @return boolean
+     */
     public function isStarting()
     {
         return count($this->steps) === 0;
     }
 
+    /**
+     * @return string
+     */
     public function getMessageName()
     {
         return sprintf('%s.%s', $this->jobId, $this->current);
     }
 
+    /**
+     * Inits default options
+     */
     public function initOptions()
     {
         $this->options = array(
@@ -94,5 +154,13 @@ class JobContext implements JobContextInterface
             'offset' => 0,
             'limit' => 10
         );
+    }
+
+    /**
+     * Adds step to keep trace
+     */
+    protected function addStep($step)
+    {
+        $this->steps[] = $step;
     }
 }

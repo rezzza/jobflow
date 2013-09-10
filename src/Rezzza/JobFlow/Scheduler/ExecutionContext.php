@@ -66,7 +66,7 @@ class ExecutionContext
  
         $resolver = new OptionsResolver();
         $this->setDefaultOptions($resolver);
-        $this->options = $resolver->resolve($this->globalContext->options);
+        $this->options = $resolver->resolve($this->globalContext->getOptions());
     }
 
     /**
@@ -118,7 +118,7 @@ class ExecutionContext
      */
     public function getCurrentJob()
     {
-        return $this->globalContext->current;
+        return $this->globalContext->getCurrent();
     }
 
     /**
@@ -135,12 +135,12 @@ class ExecutionContext
     public function initCurrentJob()
     {
         if ($this->globalContext->isStarting()) {
-            $this->globalContext->current = $this->graph->current();
+            $this->globalContext->setCurrent($this->graph->current());
 
             return;
         }
 
-        $index = array_search($this->globalContext->current, $this->graph->getArrayCopy());
+        $index = array_search($this->globalContext->getCurrent(), $this->graph->getArrayCopy());
         $this->graph->seek($index);
     }
 
@@ -170,6 +170,6 @@ class ExecutionContext
 
     public function setGlobalOption($key, $value)
     {
-        $this->globalContext->options[$key] = $value;
+        $this->globalContext->setOption($key, $value);
     }
 }
