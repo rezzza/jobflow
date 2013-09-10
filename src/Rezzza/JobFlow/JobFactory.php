@@ -4,6 +4,7 @@ namespace Rezzza\JobFlow;
 
 use Rezzza\JobFlow\Io\IoDescriptor;
 use Rezzza\JobFlow\Scheduler\JobFlow;
+use Rezzza\JobFlow\Scheduler\TransportInterface;
 
 /**
  * To create Job or JobBuilder.
@@ -84,15 +85,26 @@ class JobFactory
         return $type->createBuilder($name, $this, $options);
     }
 
+    /**
+     * Creates a JobFlow
+     *
+     * @param string|TransportInterface $transport
+     *
+     * @return JobFlow
+     */
     public function createJobFlow($transport)
     {
-        $transport = $this->registry->getTransport($transport);
+        if (is_string($transport)) {
+            $transport = $this->registry->getTransport($transport);
+        } elseif (!$transport instanceof TransportInterface) {
+            throw new \InvalidArgumentException('$transport should a string or a TransportInterface');
+        }
 
         return new JobFlow($transport);
     }
 
     /**
-     * Create wrapper for combination of JobType and JobConnector
+     * Creates wrapper for combination of JobType and JobConnector
      *
      * @param JobTypeInterface $type
      * @param IoDescriptor $io
