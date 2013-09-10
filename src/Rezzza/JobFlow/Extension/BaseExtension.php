@@ -5,7 +5,7 @@ namespace Rezzza\JobFlow\Extension;
 use Rezzza\JobFlow\JobTypeInterface;
 use Rezzza\JobFlow\Scheduler\TransportInterface;
 
-abstract class BaseExtension implements JobExtensionInterface
+class BaseExtension implements JobExtensionInterface
 {
     /**
      * @var JobTypeInterface[]

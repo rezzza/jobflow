@@ -67,6 +67,11 @@ class JobContext implements JobContextInterface
         $this->current = $nextJob;
     }
 
+    public function getJobId()
+    {
+        return $this->jobId;
+    }
+
     /**
      * @param string $current
      */

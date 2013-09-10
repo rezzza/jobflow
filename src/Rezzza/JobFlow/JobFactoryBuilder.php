@@ -2,6 +2,7 @@
 
 namespace Rezzza\JobFlow;
 
+use Rezzza\JobFlow\Extension\BaseExtension;
 use Rezzza\JobFlow\Extension\JobExtensionInterface;
 
 class JobFactoryBuilder
