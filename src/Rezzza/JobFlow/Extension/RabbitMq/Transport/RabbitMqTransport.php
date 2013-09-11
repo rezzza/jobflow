@@ -2,32 +2,27 @@
 
 namespace Rezzza\JobFlow\Extension\RabbitMq\Transport;
 
+use Rezzza\JobFlow\JobMessage;
 use Rezzza\JobFlow\Scheduler\TransportInterface;
 
 class RabbitMqTransport implements TransportInterface
 {
     protected $rpcClient;
 
-    public $result = null;
-
     public function __construct($rpcClient)
     {
         $this->rpcClient = $rpcClient;
     }
 
-    public function addMessage($msg, $name = null)
+    public function addMessage(JobMessage $msg)
     {
-        $this->rpcClient->addRequest(serialize($msg), 'jobflow', $name.uniqid());
+        $name = $msg->context->getMessageName().uniqid();
+        $this->rpcClient->addRequest(serialize($msg), 'jobflow', $name);
     }
 
     public function getMessage()
     {
         return $this->rpcClient->getReplies();
-    }
-
-    public function store($result)
-    {
-        return $result;
     }
 
     public function getName()

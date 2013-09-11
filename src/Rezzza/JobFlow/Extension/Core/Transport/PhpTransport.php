@@ -2,15 +2,26 @@
 
 namespace Rezzza\JobFlow\Extension\Core\Transport;
 
-use Rezzza\JobFlow\Scheduler\AbstractTransport;
+use Rezzza\JobFlow\JobMessage;
+use Rezzza\JobFlow\Scheduler\TransportInterface;
 
-class PhpTransport extends AbstractTransport
+class PhpTransport implements TransportInterface
 {
-    public $result = null;
+    /**
+     * @var JobMessage[]
+     */
+    protected $messages = array();
     
-    public function store($result)
+    public function addMessage(JobMessage $msg)
     {
-        $this->addMessage($result);
+        $this->messages[] = $msg;
+
+        return $this;
+    }
+
+    public function getMessage()
+    {
+        return array_shift($this->messages);
     }
 
     public function getName()

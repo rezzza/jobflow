@@ -2,9 +2,11 @@
 
 namespace Rezzza\JobFlow\Scheduler;
 
+use Rezzza\JobFlow\JobMessage;
+
 interface TransportInterface
 {
-    public function addMessage($msg, $name = null);
+    public function addMessage(JobMessage $msg);
 
     public function getMessage();
 
