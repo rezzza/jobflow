@@ -19,6 +19,7 @@ class ETLExtension extends BaseExtension
             new Type\Transformer\DataMapperTransformerType(),
             
             new Type\Loader\LoaderType(),
+            new Type\Loader\PipeLoaderType(),
             new Type\Loader\FileLoaderType()
         );
     }

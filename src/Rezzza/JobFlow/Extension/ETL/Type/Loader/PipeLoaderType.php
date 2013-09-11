@@ -19,7 +19,7 @@ class PipeLoaderType extends AbstractJobType
             'class' => 'Rezzza\JobFlow\Pipe',
             'args' => function(Options $options) {
                 return array(
-                    'mapping' => array($options['mapping'])
+                    'mapping' => $options['mapping']
                 );
             } 
         ));
