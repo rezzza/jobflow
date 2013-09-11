@@ -46,16 +46,9 @@ class ExecutionContext
      */
     public $job;
 
-     /**
-      * @var array
-      */
-    protected $options;
-
     /**
-     * @param JobInterface $job
      * @param JobMessage $msg
      * @param JobGraph $graph
-     * @param array $options
      */
     public function __construct(JobMessage $msg, JobGraph $graph)
     {
@@ -63,10 +56,6 @@ class ExecutionContext
         $this->msg = $msg;
         $this->globalContext = $this->msg->context;
         $this->initCurrentJob();
- 
-        $resolver = new OptionsResolver();
-        $this->setDefaultOptions($resolver);
-        $this->options = $resolver->resolve($this->globalContext->getOptions());
     }
 
     /**
@@ -144,25 +133,6 @@ class ExecutionContext
         $this->graph->seek($index);
     }
 
-    public function getOption($name, $default = null)
-    {
-        return array_key_exists($name, $this->options) ? $this->options[$name] : $default;
-    }
-
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
-    {
-        $resolver->setDefaults(array(
-            'offset' => null,
-            'limit' => null,
-            'total' => null
-        ));
-    }
-
-    public function getOptions()
-    {
-        return $this->options;
-    }
-
     public function getLogger()
     {
         return $this->logger;
@@ -171,5 +141,10 @@ class ExecutionContext
     public function setGlobalOption($key, $value)
     {
         $this->globalContext->setOption($key, $value);
+    }
+
+    public function getGlobalOption($name)
+    {
+        $this->globalContext->getOption($name);
     }
 }

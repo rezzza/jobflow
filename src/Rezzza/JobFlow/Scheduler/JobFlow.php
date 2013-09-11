@@ -173,7 +173,12 @@ class JobFlow
      */
     private function getInitMessage()
     {
-        return new JobMessage(new JobContext($this->getJob()->getName()));
+        return new JobMessage(
+            new JobContext(
+                $this->getJob()->getName(),
+                $this->getJob()->getOption('context')
+            )
+        );
     }
 
     /**

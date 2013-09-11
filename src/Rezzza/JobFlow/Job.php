@@ -97,6 +97,14 @@ class Job implements \IteratorAggregate, JobInterface
     }
 
     /**
+     * @return array
+     */
+    public function getOption($name, $default = null)
+    {
+        return $this->config->getOption($name, $default);
+    }
+
+    /**
      * @return ResolvedJob
      */
     public function getResolved()

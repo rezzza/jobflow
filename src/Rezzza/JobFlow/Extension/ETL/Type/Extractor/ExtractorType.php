@@ -21,12 +21,12 @@ class ExtractorType extends ETLType
             $extractor->setLogger($execution->getLogger());
         }
 
-        if (null === $execution->getOption('total')) {
+        if (null === $execution->getGlobalOption('total')) {
             $execution->setGlobalOption('total', $extractor->count());
         }
 
-        $offset = $execution->getOption('offset');
-        $limit = $execution->getOption('limit');
+        $offset = $execution->getGlobalOption('offset');
+        $limit = $execution->getGlobalOption('limit');
 
         try {
             $extractor->seek($offset);

@@ -2,6 +2,9 @@
 
 namespace Rezzza\JobFlow;
 
+use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+
 use Rezzza\JobFlow\Scheduler\JobGraph;
 
 /**
@@ -37,10 +40,13 @@ class JobContext implements JobContextInterface
      */
     private $options = array();
     
-    public function __construct($jobId)
+    public function __construct($jobId, array $options = array())
     {
         $this->jobId = $jobId;
-        $this->initOptions();
+
+        $resolver = new OptionsResolver();
+        $this->setDefaultOptions($resolver);
+        $this->options = $resolver->resolve($options);
     }
 
     /**
@@ -98,6 +104,16 @@ class JobContext implements JobContextInterface
         return $this->options;
     }
 
+    public function setOptions(array $options)
+    {
+        $this->options = $options;
+    }
+
+    public function getOption($name, $default = null)
+    {
+        return array_key_exists($name, $this->options) ? $this->options[$name] : $default;
+    }
+
     /**
      * @param mixed $key
      * @param mixed $value
@@ -149,16 +165,13 @@ class JobContext implements JobContextInterface
         return sprintf('%s.%s', $this->jobId, $this->current);
     }
 
-    /**
-     * Inits default options
-     */
-    public function initOptions()
+    public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
-        $this->options = array(
-            'total' => null,
+        $resolver->setDefaults(array(
             'offset' => 0,
-            'limit' => 10
-        );
+            'limit' => 50,
+            'total' => null
+        ));
     }
 
     /**

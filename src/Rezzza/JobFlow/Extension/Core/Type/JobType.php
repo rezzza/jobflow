@@ -28,7 +28,8 @@ class JobType extends AbstractJobType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'io' => null
+            'io' => null,
+            'context' => array()
         ));
     }
 
