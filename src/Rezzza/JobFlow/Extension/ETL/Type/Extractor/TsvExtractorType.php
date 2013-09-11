@@ -11,15 +11,13 @@ class TsvExtractorType extends AbstractJobType
 {
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
-        $type = $this;
-
         $resolver->setDefaults(array(
-            'etl_config' => function(Options $options) use ($type) {
+            'args' => function(Options $options) use ($type) {
                 $io = $options['io'];
 
                 return array(
-                    'class' => $options['class'],
-                    'args' => array($io->stdin->getDsn(), "\t")
+                    'dsn' => $io->stdin->getDsn(), 
+                    'delimiter' => "\t"
                 );
             } 
         ));

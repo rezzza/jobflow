@@ -42,8 +42,6 @@ class JobConfig
      */
     private $options;
 
-    private $etlWrapper;
-
     /**
      * @param string $name
      * @param array $options
@@ -176,18 +174,6 @@ class JobConfig
         $this->jobFactory = $jobFactory;
 
         return $this;
-    }
-
-    public function setETLWrapper($wrapper)
-    {
-        $this->etlWrapper = $wrapper;
-
-        return $this;
-    }
-
-    public function getETLWrapper()
-    {
-        return $this->etlWrapper;
     }
 
     /**

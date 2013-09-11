@@ -12,19 +12,16 @@ class JsonExtractorType extends AbstractJobType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'class' => 'Knp\ETL\Extractor\JsonExtractor',
             'path' => null,
             'adapter' => null,
-            'etl_config' => function(Options $options) {
+            'class' => 'Knp\ETL\Extractor\JsonExtractor',
+            'args' => function(Options $options) {
                 $io = $options['io'];
 
                 return array(
-                    'class' => $options['class'],
-                    'args' => array(
-                        'dsn' => $io ? $io->stdin->getDsn() : null, 
-                        'path' => $options['path'],
-                        'adapter' => $options['adapter']
-                    )
+                    'dsn' => $io ? $io->stdin->getDsn() : null, 
+                    'path' => $options['path'],
+                    'adapter' => $options['adapter']
                 );
             } 
         ));

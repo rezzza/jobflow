@@ -28,20 +28,13 @@ class LoaderType extends ETLType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         parent::setDefaultOptions($resolver);
-        
-        $resolver->setRequired(array(
-            'class'
-        ));
 
-        // On fait passser la class au Job !
-        // C'est lui qui fera l'instanciation et fera passer le loader via l'output
         $resolver->setDefaults(array(
-            'etl_config' => function(Options $options) {
+            'args' => function(Options $options) {
                 $io = $options['io'];
 
                 return array(
-                    'class' => $options['class'],
-                    'args' => array($io->stdout->getDsn())
+                    'dsn' => $io->stdout->getDsn()
                 );
             } 
         ));

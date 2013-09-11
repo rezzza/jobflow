@@ -2,6 +2,7 @@
 
 namespace Rezzza\JobFlow\Extension\ETL\Type;
 
+use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 use Rezzza\JobFlow\AbstractJobType;
@@ -30,12 +31,19 @@ abstract class ETLType extends AbstractJobType
 
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
-        $resolver->setDefaults(array(
-            'etl_type' => $this->getETLType()
+        $resolver->setRequired(array(
+            'class'
         ));
 
-        $resolver->setRequired(array(
-            'etl_config'
+        $resolver->setDefaults(array(
+            'args' => array(),
+            'etl_type' => $this->getETLType(),
+            'etl_config' => function(Options $options) {
+                return array(
+                    'class' => $options['class'],
+                    'args' => $options['args']
+                );
+            } 
         ));
     }
 

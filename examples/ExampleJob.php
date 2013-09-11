@@ -4,6 +4,7 @@ use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 use Rezzza\JobFlow\AbstractJobType;
+use Rezzza\JobFlow\DelayedArg;
 use Rezzza\JobFlow\Io;
 use Rezzza\JobFlow\JobBuilder;
 
@@ -42,11 +43,13 @@ class ExampleJob extends AbstractJobType
                 array(
                     'etl_config' => function(Options $options) {
                         $class = $options['class'];
-                        $file = new \SplFileObject(__DIR__.'/temp/job-'.uniqid().'.jpeg', 'w+');
+                        $file = function() {
+                            return new \SplFileObject(__DIR__.'/temp/job-'.uniqid().'.jpeg', 'w+');
+                        };
 
                         return array(
                             'class' => $class,
-                            'args' => array($file)
+                            'args' => array(new DelayedArg($file))
                         );
                     } 
                 )

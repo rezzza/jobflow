@@ -6,6 +6,7 @@ use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 use Rezzza\JobFlow\AbstractJobType;
+use Rezzza\JobFlow\DelayedArg;
 
 class FileLoaderType extends AbstractJobType
 {
@@ -13,16 +14,17 @@ class FileLoaderType extends AbstractJobType
     {
         $resolver->setDefaults(array(
             'class' => 'Knp\ETL\Loader\FileLoader',
-            'etl_config' => function(Options $options) {
-                $class = $options['class'];
+            'args' => function(Options $options) {
                 $io = $options['io'];
-                $file = new \SplFileObject($io->stdout->getDsn(), 'a+');
+
+                $file = function() use ($io) {
+                    return new \SplFileObject($io->stdout->getDsn(), 'a+');
+                };
 
                 return array(
-                    'class' => $class,
-                    'args' => array($file)
+                    'file' => new DelayedArg($file)
                 );
-            } 
+            }
         ));
     }
 

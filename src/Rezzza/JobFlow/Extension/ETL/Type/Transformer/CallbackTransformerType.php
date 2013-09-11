@@ -13,11 +13,9 @@ class CallbackTransformerType extends AbstractJobType
     {
         $resolver->setDefaults(array(
             'class' => 'Knp\ETL\Transformer\CallbackTransformer',
-            'etl_config' => function(Options $options) {
-                $class = $options['class'];
-
+            'args' => function(Options $options) {
                 return array(
-                    'transformer' => new $class($options['callback']),
+                    'callback' => $options['callback']
                 );
             }
         ));

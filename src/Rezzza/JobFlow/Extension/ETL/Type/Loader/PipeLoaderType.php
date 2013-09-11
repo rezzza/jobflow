@@ -17,10 +17,9 @@ class PipeLoaderType extends AbstractJobType
 
         $resolver->setDefaults(array(
             'class' => 'Rezzza\JobFlow\Pipe',
-            'etl_config' => function(Options $options) {
+            'args' => function(Options $options) {
                 return array(
-                    'class' => $options['class'],
-                    'args' => array($options['mapping'])
+                    'mapping' => array($options['mapping'])
                 );
             } 
         ));

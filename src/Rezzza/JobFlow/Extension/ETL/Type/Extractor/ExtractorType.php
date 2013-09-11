@@ -57,18 +57,13 @@ class ExtractorType extends ETLType
     {
         parent::setDefaultOptions($resolver);
 
-        $resolver->setRequired(array(
-            'class'
-        ));
-
         $resolver->setDefaults(array(
             'skip_headers' => false,
-            'etl_config' => function(Options $options) {
+            'args' => function(Options $options) {
                 $io = $options['io'];
 
                 return array(
-                    'class' => $options['class'],
-                    'args' => array($io->stdin->getDsn())
+                    'filename' => $io->stdin->getDsn()
                 );
             } 
         ));

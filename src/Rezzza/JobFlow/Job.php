@@ -170,7 +170,9 @@ class Job implements \IteratorAggregate, JobInterface
         } 
 
         if ($this->isTransformer()) {
-            $input->setTransformer($this->config->getETLWrapper());
+            $etl = $this->getEtlConfig();
+
+            $input->setTransformer($this->getETLWrapper($etl));
         }
 
         return $input;
@@ -261,9 +263,20 @@ class Job implements \IteratorAggregate, JobInterface
             throw new \RuntimeException('etlConfig should have "class" and "args" keys');
         }
 
+        $args = array();
+
+        // We execute all DelayedArg
+        foreach ($etlConfig['args'] as $arg) {
+            if ($arg instanceof DelayedArg) {
+                $arg = $arg();
+            }
+
+            $args[] = $arg;
+        }
+
         return call_user_func_array(
             array(new \ReflectionClass($etlConfig['class']), 'newInstance'),
-            $etlConfig['args']
+            $args
         );
     }
 
