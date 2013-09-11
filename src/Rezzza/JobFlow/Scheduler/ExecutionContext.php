@@ -72,7 +72,7 @@ class ExecutionContext
         }
         
         $this->job = $parent->get($this->getCurrentJob());
-        
+
         if ($this->logger) {
             $this->logger->debug('Try to execute '.$this->job->getName());
         }
@@ -145,6 +145,11 @@ class ExecutionContext
 
     public function getGlobalOption($name)
     {
-        $this->globalContext->getOption($name);
+        return $this->globalContext->getOption($name);
+    }
+
+    public function getJobOption($name)
+    {
+        return $this->job->getOption($name);
     }
 }

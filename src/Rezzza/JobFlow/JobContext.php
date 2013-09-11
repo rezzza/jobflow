@@ -144,7 +144,7 @@ class JobContext implements JobContextInterface
      */
     public function isFinished()
     {
-        return $this->options['total'] <= $this->options['offset'];
+        return is_integer($this->options['total']) && $this->options['total'] <= $this->options['offset'];
     }
 
     /**

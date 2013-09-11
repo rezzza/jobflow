@@ -38,8 +38,8 @@ class ExtractorType extends ETLType
 
         $etl = new ETL\Context\Context();
 
-        // Skip Header
-        if ($offset === 0) {
+        // Skip Header if needed
+        if ($offset === 0 && $execution->getJobOption('skip_headers')) {
             // We need to get the current to do the next. Va comprendre charles
             $extractor->current();
             $extractor->next();
@@ -62,6 +62,7 @@ class ExtractorType extends ETLType
         ));
 
         $resolver->setDefaults(array(
+            'skip_headers' => false,
             'etl_config' => function(Options $options) {
                 $io = $options['io'];
 
