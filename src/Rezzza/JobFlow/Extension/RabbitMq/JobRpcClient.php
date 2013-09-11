@@ -22,11 +22,12 @@ class JobRpcClient extends RpcClient
 
         if (null === $body) {
             // Fin
+            echo 'no more response'.PHP_EOL;
             return false;
         }
 
         echo sprintf('Just executed : %s', $body->context->getPrevious()).PHP_EOL;
-
+echo count($this->replies).'/'.$this->requests.PHP_EOL;
         if (null !== $body->context->getCurrent()) {
             // If job need to continue to be executed, we queue again the message
             $name = $body->context->getMessageName();
