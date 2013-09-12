@@ -8,7 +8,7 @@ use Rezzza\JobFlow\DelayedArg;
 use Rezzza\JobFlow\Io;
 use Rezzza\JobFlow\JobBuilder;
 
-class ExampleJob extends AbstractJobType
+class PlaceToStreetJob extends AbstractJobType
 {
     public function buildJob(JobBuilder $builder, array $options)
     {
@@ -32,8 +32,6 @@ class ExampleJob extends AbstractJobType
                         );
 
                         return file_get_contents($img);
-
-                        return $target;
                     }
                 )
             )
@@ -44,7 +42,7 @@ class ExampleJob extends AbstractJobType
                     'etl_config' => function(Options $options) {
                         $class = $options['class'];
                         $file = function() {
-                            return new \SplFileObject(__DIR__.'/temp/job-'.uniqid().'.jpeg', 'w+');
+                            return new \SplFileObject(__DIR__."/../temp/job-".uniqid().".jpeg", 'w+');
                         };
 
                         return array(
@@ -61,7 +59,7 @@ class ExampleJob extends AbstractJobType
     {
         $resolver->setDefaults(array(
             'io' => new Io\IoDescriptor(
-                new Io\Input('https://maps.googleapis.com/maps/api/place/textsearch/json?query=pub+in+marseille+france&sensor=false&key=AIzaSyCuR9yU9lRmzdnyU7YWVKZZRUIsymWkQdU')
+                new Io\Input('https://maps.googleapis.com/maps/api/place/textsearch/json?query=pub+in+marseille+france&sensor=false&key=AIzaSyCgYbLbVd7g2dfjDLJCBGjcZJvpqT-4Dsc')
             ),
             'context' => array(
                 'limit' => 1
@@ -71,6 +69,6 @@ class ExampleJob extends AbstractJobType
 
     public function getName()
     {
-        return 'example';
+        return 'place_to_street';
     }
 }

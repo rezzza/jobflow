@@ -1,7 +1,6 @@
 <?php
 
-require_once __DIR__.'/../vendor/autoload.php';
-require_once __DIR__.'/ExampleJob.php';
+require_once __DIR__.'/init.php';
 
 use Rezzza\JobFlow\Jobs;
 use Rezzza\JobFlow\Extension;
@@ -10,15 +9,13 @@ use Rezzza\JobFlow\Extension;
 $rmqClient = new Thumper\RpcClient('localhost', 5672, 'guest', 'guest', '/');
 $rmqClient->initClient();
 
-// Create the JobFactory.
-$builder = Jobs::createJobFactoryBuilder();
-$builder->addExtension(new Extension\Core\CoreExtension());
-$builder->addExtension(new Extension\ETL\ETLExtension());
+// Add rabbitmq Extension
 $builder->addExtension(new Extension\RabbitMq\RabbitMqExtension($rmqClient));
-$builder->addType(new ExampleJob());
 
+// Creates job factory
 $jobFactory = $builder->getJobFactory();
 
+// Create worker
 $server = new Thumper\RpcServer('localhost', 5672, 'guest', 'guest', '/');
 $server->initServer('jobflow');
 $server->setCallback(new Extension\RabbitMq\JobWorker($jobFactory));

@@ -1,38 +1,33 @@
 <?php
 
-require_once __DIR__.'/../vendor/autoload.php';
-require_once __DIR__.'/ExampleJob.php';
+require_once __DIR__.'/init.php';
 
-use Rezzza\JobFlow\Jobs;
-use Rezzza\JobFlow\Io;
-use Rezzza\JobFlow\Extension\ETL\Type;
 use Rezzza\JobFlow\Extension;
+use Rezzza\JobFlow\Io;
 
 // Create RabbitMq Client
 $rmqClient = new Extension\RabbitMq\JobRpcClient('localhost', 5672, 'guest', 'guest', '/');
 $rmqClient->initClient();
 
-// Create the JobFactory.
-$builder = Jobs::createJobFactoryBuilder();
-$builder->addExtension(new Extension\Core\CoreExtension());
-$builder->addExtension(new Extension\ETL\ETLExtension());
+// Add RabbitMqExtension
 $builder->addExtension(new Extension\RabbitMq\RabbitMqExtension($rmqClient));
 
-// Add our custom JobType. With RabbitMq calling job type with alias system is required.
-// So we add it rather than  : $jobFactory->createBuilder(new ExampleJob()) 
-$builder->addType(new ExampleJob());
-
+// Create JobFactory
 $jobFactory = $builder->getJobFactory();
+$rmqClient->setJobFactory($jobFactory);
 
 // Create the scheduler responsible for the job execution
 $jobflow = $jobFactory->createJobFlow('rabbitmq');
 
-// We can inject Logger
+// We can inject Logger... or not
 $jobflow->setLogger(new \Monolog\Logger('jobflow'));
 
-// Here we go
+// Warning io is set in PlaceToStreetJob as we need also the same in worker.php
+// Moreover : Don't forget to insert your google api key
+
+// Here we go, gets the job
 $job = $jobFactory
-    ->createBuilder('example') 
+    ->createBuilder('place_to_street') 
     ->getJob()
 ;
 
@@ -44,3 +39,5 @@ $jobflow
     ->run()
 ;
 echo 'Ended...'.PHP_EOL;
+
+// Then you have to launch the worker.php

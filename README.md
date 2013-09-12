@@ -11,7 +11,10 @@ ETL pattern support thanks to : https://github.com/docteurklein/php-etl
 Usage
 -----
 
-Have a look to the [first example](/examples/basic.php)
+Have a look to the examples:
+- [first basic example](/examples/basic.php)
+- [advanced rabbitmq example](/examples/placetostreet-rmq.php)
+- [advanced rabbitmq example with pipe](/examples/github-contributor-email.php)
 
 Tests
 -----

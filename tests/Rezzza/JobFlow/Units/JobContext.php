@@ -27,50 +27,6 @@ class JobContext extends Units\Test
         ;
     }
 
-    public function test_it_should_be_terminated()
-    {
-        $this
-            ->if($this->mockGenerator->orphanize('__construct'))
-            ->and($mockGraph = new \mock\Rezzza\JobFlow\Scheduler\JobGraph)
-            ->and($mockGraph->getMockController()->hasNextJob = false)
-            ->and($context = new \mock\Rezzza\JobFlow\JobContext('job'))
-            ->and($context->getMockController()->isFinished = true)
-            ->then($context->updateToNextJob($mockGraph))
-
-                ->variable($context->getCurrent())
-                    ->isNull()
-
-                ->mock($context)
-                    ->call('isFinished')
-                    ->once()
-        ;
-    }
-
-    public function test_it_updates_to_the_beggining()
-    {
-        $this
-            ->if($this->mockGenerator->orphanize('__construct'))
-            ->and($mockGraph = new \mock\Rezzza\JobFlow\Scheduler\JobGraph)
-            ->and($mockGraph->getMockController()->hasNextJob = false)
-            ->and($mockGraph->getMockController()->getJob = 'first')
-            ->and($context = new \mock\Rezzza\JobFlow\JobContext('job'))
-            ->and($context->getMockController()->isFinished = false)
-            ->then($context->updateToNextJob($mockGraph))
-
-                ->variable($context->getCurrent())
-                    ->isEqualTo('first')
-
-                ->mock($mockGraph)
-                    ->call('getJob')
-                    ->withArguments(0)
-                    ->once()
-
-                ->mock($context)
-                    ->call('isFinished')
-                    ->once()
-        ;
-    }
-
     public function test_it_returns_previous_step()
     {
         $this
