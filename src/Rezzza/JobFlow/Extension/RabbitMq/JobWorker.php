@@ -17,9 +17,10 @@ class JobWorker
 
         $job = $this->jobFactory->create($jobMsg->context->getJobId());
 
-        $scheduler = $this->jobFactory->createJobFlow('rabbitmq');
+        $jobflow = $this->jobFactory->createJobFlow('rabbitmq');
+        $jobflow->setLogger(new \Monolog\Logger('jobflow'));
 
-        $result = $scheduler
+        $result = $jobflow
             ->setJob($job)
             ->run($jobMsg)
         ;

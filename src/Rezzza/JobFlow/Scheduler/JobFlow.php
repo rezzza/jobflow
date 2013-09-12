@@ -76,7 +76,7 @@ class JobFlow
      */
     public function addMessage(JobMessage $msg)
     {
-        $this->transport->addMessage($msg, $msg->context->getMessageName());
+        $this->transport->addMessage($msg);
 
         return $this;
     }
@@ -92,9 +92,7 @@ class JobFlow
             throw new \RuntimeException('You need to set a job');
         }
 
-        $name = sprintf('%s.%s', $this->getJob()->getName(), $this->jobGraph->current());
-
-        $this->transport->addMessage($this->getInitMessage(), $name);
+        $this->addMessage($this->getInitMessage());
 
         return $this;
     }
@@ -116,6 +114,8 @@ class JobFlow
             }
 
             $result = $this->runJob($msg);
+
+            //$this->handleMessage($result);
         }
 
         return $result;
@@ -130,6 +130,47 @@ class JobFlow
     {
         return $this->transport->getMessage();
     }
+
+    public function handleMessage($msg)
+    {
+        $msg = clone $msg;
+        $msg->context->moveToCurrent($this->jobGraph);
+        $msg->input = $msg->output;
+        $msg->output = null;
+
+        $index = $this->jobGraph->search($msg->context->getCurrent());
+
+        if ($this->jobGraph->isLoader($index)) {
+            if ($msg->pipe) {
+                foreach ($msg->pipe->params as $pipe) {
+                    $forward = clone $msg;
+                    $forward->context->initOptions();
+                    $forward->pipe = $pipe;
+                    $graph = clone $this->jobGraph;
+                    $forward->context->updateToNextJob($graph);
+                    $this->addMessage($forward);
+                }
+            } else {
+                $msg->context->tick();
+
+                if (!$msg->context->isFinished()) {
+                    $msg->context->addStep($msg->context->getCurrent());
+                    $next = $this->jobGraph->getExtractor($index);
+                    $msg->context->setCurrent($next);
+                } else {
+                    $msg = null;
+                }
+            }
+        } else {
+            $msg->context->updateToNextJob($this->jobGraph);
+        }
+
+        if (null !== $msg) {
+            $this->addMessage($msg);
+        }
+
+        return $this;
+    } 
 
     /**
      * Executes current job.
@@ -153,19 +194,14 @@ class JobFlow
 
         $output = $context->executeJob($this->job);
 
-        // Check if $context ended
-        if ($context->msg->context->isFinished()) {
-            return;
-        }
-
         // Event ? To handle createEndMsg in a more readable way ?
-        $msgs = $this->createEndMsg($output);
-
-        foreach ($msgs as $msg) {
-            $this->transport->store($msg);
+        if (!$output instanceof JobOutput) {
+            return $output;
         }
 
-        return reset($msgs);
+        $end = $this->createEndMsg($output);
+
+        return $end;
     }
 
     /**
@@ -188,37 +224,12 @@ class JobFlow
      */
     private function createEndMsg(JobOutput $output)
     {
-        $pipe = $output->getPipe();
-
-        if ($pipe) {
-            $msgs = array();
-
-            // Start to send context global message
-            $msg = clone $this->startMsg;
-            $msg->context->updateToNextJob($this->jobGraph);
-            $msgs[] = $msg;
-
-            // Send message from pipe
-            foreach ($pipe->params as $p) {
-                $msg = clone $this->startMsg;
-                $msg->setData(array());
-                $msg->setInput($p);
-                $msg->context->initOptions();
-                $msg->context->updateToNextJob($this->jobGraph);
-
-                $msgs[] = $msg;
-            }
-
-            return $msgs;
-        }
-
         $msg = clone $this->startMsg;
         
-        $msg->setData($output->getData());
+        $msg->output = $output->getData();
+        $msg->pipe = $output->getPipe();
 
-        $msg->context->updateToNextJob($this->jobGraph);
-
-        return array($msg);
+        return $msg;
     }
 
     /**
@@ -227,45 +238,6 @@ class JobFlow
     private function buildGraph()
     {
         $children = $this->getJob()->getChildren();
-
-        // For the moment, jobGraph is built following add methods calls
-        /*uasort($children, function($a, $b) {
-            $stdinA = $a->getResolved()->getIo()->stdin;
-            $stdinB = $b->getResolved()->getIo()->stdin;
-
-            if ($stdinA && $stdinA->isFirstStep()) {
-                return -1;
-            }
-
-            if ($stdinB && $stdinB->isFirstStep()) {
-                return 1;
-            }
-
-            if ($stdinB && $stdinB->isConnectedTo($a->getName())) {
-                return -1;
-            }
-
-            if ($stdinA && $stdinB && $stdinA->getDsn() === $stdinB->getDsn()) {
-                return 0;
-            }
-
-            if ($stdinA && $stdinA->isConnectedTo($b->getName())) {
-                return 1;
-            }
-        });
-
-        $i = 0;
-        foreach ($children as $child) {
-            $stdin = $child->getResolved()->getIo()->stdin;
-
-            if ($i++ > 0) {
-                if (false === $stdin->isConnectedTo($last->getName())) {
-                    throw new \RuntimeException('Job Graph is not consistent');
-                }
-            }
-
-            $last = $child;
-        }*/
 
         $this->jobGraph = new JobGraph(new \ArrayIterator(array_keys($children)));
     }

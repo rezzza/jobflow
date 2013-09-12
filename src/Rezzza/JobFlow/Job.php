@@ -147,17 +147,16 @@ class Job implements \IteratorAggregate, JobInterface
     /**
      * @return JobInput
      */
-    public function getInput(ExecutionContext $context)
+    public function getInput(ExecutionContext $execution)
     {
         $input = new JobInput();
-        $source = null;
 
         if ($this->isExtractor()) {
             $etl = $this->getEtlConfig();
-            
-            if ($context->msg->hasInput()) {
-                foreach ($context->msg->getInput() as $key => $value) {
-                    // need to ensure key exists, if not exception
+
+            // Mapping du Pipe
+            if ($execution->msg->pipe) {
+                foreach($execution->msg->pipe as $key => $value) {
                     $etl['args'][$key] = $value;
                 }
             }
@@ -165,8 +164,8 @@ class Job implements \IteratorAggregate, JobInterface
             $input->setExtractor($this->getETLWrapper($etl));
         } 
 
-        if ($context->msg->hasData()) {
-            $input->setData($context->msg->getData());
+        if ($execution->msg->input) {
+            $input->setData($execution->msg->input);
         } 
 
         if ($this->isTransformer()) {

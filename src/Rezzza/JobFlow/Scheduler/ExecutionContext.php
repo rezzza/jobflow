@@ -55,7 +55,7 @@ class ExecutionContext
         $this->graph = $graph;
         $this->msg = $msg;
         $this->globalContext = $this->msg->context;
-        $this->initCurrentJob();
+        $this->globalContext->moveToCurrent($this->graph);
     }
 
     /**
@@ -118,20 +118,6 @@ class ExecutionContext
         return $this->globalContext->jobId;
     }
 
-    /**
-     * At the begining get the first item of the graph
-     */
-    public function initCurrentJob()
-    {
-        if ($this->globalContext->isStarting()) {
-            $this->globalContext->setCurrent($this->graph->current());
-
-            return;
-        }
-
-        $index = array_search($this->globalContext->getCurrent(), $this->graph->getArrayCopy());
-        $this->graph->seek($index);
-    }
 
     public function getLogger()
     {

@@ -44,9 +44,22 @@ class JobContext implements JobContextInterface
     {
         $this->jobId = $jobId;
 
-        $resolver = new OptionsResolver();
-        $this->setDefaultOptions($resolver);
-        $this->options = $resolver->resolve($options);
+        $this->initOptions($options);
+    }
+
+    /**
+     * At the begining get the first item of the graph
+     */
+    public function moveToCurrent($graph)
+    {
+        if ($this->isStarting()) {
+            $this->setCurrent($graph->current());
+
+            return;
+        }
+
+        $index = $graph->search($this->getCurrent());
+        $graph->seek($index);
     }
 
     /**
@@ -58,16 +71,13 @@ class JobContext implements JobContextInterface
     {
         // We stock we executed this job
         $this->addStep($this->current);
+        $nextJob = null;
 
+        // We need to separate ETL processes. 
+        // A loader should always refer to the extractor of its process !
+        // And add to the message, the pipe info. (input data, next job)
         if ($graph->hasNextJob()) {
             $nextJob = $graph->getNextJob();
-        } else {
-            $this->options['offset'] += $this->options['limit'];
-            $nextJob = null;
-
-            if (!$this->isFinished()) {
-                $nextJob = $graph->getJob(0);
-            }
         }
 
         $this->current = $nextJob;
@@ -174,10 +184,22 @@ class JobContext implements JobContextInterface
         ));
     }
 
+    public function initOptions(array $options = array())
+    {
+        $resolver = new OptionsResolver();
+        $this->setDefaultOptions($resolver);
+        $this->options = $resolver->resolve($options);
+    }
+
+    public function tick()
+    {
+        $this->options['offset'] += $this->options['limit'];
+    }
+
     /**
      * Adds step to keep trace
      */
-    protected function addStep($step)
+    public function addStep($step)
     {
         $this->steps[] = $step;
     }
