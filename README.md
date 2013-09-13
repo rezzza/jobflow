@@ -25,6 +25,10 @@ Have a look to the examples:
     - [Client](/examples/github-contributor-email.php)
     - [Job](/examples/jobs/GithubEmailJob.php)
 
+Frameworks
+----------
+- Symfony : https://github.com/rezzza/JobFlowBundle
+
 Tests
 -----
 
