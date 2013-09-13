@@ -115,7 +115,7 @@ class JobFlow
 
             $result = $this->runJob($msg);
 
-            //$this->handleMessage($result);
+            $this->handleMessage($result);
         }
 
         return $result;
