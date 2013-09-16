@@ -115,7 +115,9 @@ class Jobflow
 
             $result = $this->runJob($msg);
 
-            $this->handleMessage($result);
+            if ($result instanceof JobMessage) {
+                $this->handleMessage($result);
+            }
         }
 
         return $result;
@@ -131,7 +133,7 @@ class Jobflow
         return $this->transport->getMessage();
     }
 
-    public function handleMessage($msg)
+    public function handleMessage(JobMessage $msg)
     {
         $msg = clone $msg;
         $msg->context->moveToCurrent($this->jobGraph);
