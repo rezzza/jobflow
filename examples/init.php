@@ -4,8 +4,8 @@ require_once __DIR__.'/../vendor/autoload.php';
 require_once __DIR__.'/jobs/PlaceToStreetJob.php';
 require_once __DIR__.'/jobs/GithubEmailJob.php';
 
-use Rezzza\JobFlow\Jobs;
-use Rezzza\JobFlow\Extension;
+use Rezzza\Jobflow\Jobs;
+use Rezzza\Jobflow\Extension;
 
 // Create the JobFactory.
 $builder = Jobs::createJobFactoryBuilder();

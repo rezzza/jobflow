@@ -1,10 +1,10 @@
 <?php
 
-namespace Rezzza\JobFlow\Tests\Units;
+namespace Rezzza\Jobflow\Tests\Units;
 
 use mageekguy\atoum as Units;
 
-use Rezzza\JobFlow\JobBuilder as TestedClass;
+use Rezzza\Jobflow\JobBuilder as TestedClass;
 
 class JobBuilder extends Units\Test
 {
@@ -15,8 +15,8 @@ class JobBuilder extends Units\Test
     public function beforeTestMethod($method)
     {
         $this->mockGenerator->orphanize('__construct');
-        $registry = new \mock\Rezzza\JobFlow\JobRegistry;
-        $this->factory = new \mock\Rezzza\JobFlow\JobFactory($registry);
+        $registry = new \mock\Rezzza\Jobflow\JobRegistry;
+        $this->factory = new \mock\Rezzza\Jobflow\JobFactory($registry);
         $this->builder = new TestedClass('name', $this->factory);
     }
 
@@ -83,7 +83,7 @@ class JobBuilder extends Units\Test
             ->boolean($this->builder->has(123))
                 ->isFalse()
 
-            ->if($mockType = new \mock\Rezzza\JobFlow\Extension\Core\Type\JobType)
+            ->if($mockType = new \mock\Rezzza\Jobflow\Extension\Core\Type\JobType)
             ->then($builder = $this->builder->add(123, $mockType, array('bar' => 'baz')))
                 ->boolean($builder->has(123))
                     ->isTrue()
@@ -105,8 +105,8 @@ class JobBuilder extends Units\Test
     public function test_it_returns_a_job()
     {
         $this
-            ->if($mockType = new \mock\Rezzza\JobFlow\Extension\Core\Type\JobType)
-            ->and($mockBuilder = new \mock\Rezzza\JobFlow\JobBuilder('name', $this->factory))
+            ->if($mockType = new \mock\Rezzza\Jobflow\Extension\Core\Type\JobType)
+            ->and($mockBuilder = new \mock\Rezzza\Jobflow\JobBuilder('name', $this->factory))
             ->and($mockBuilder->add(123, $mockType))
 
                 ->boolean($mockBuilder->hasUnresolvedChildren())
@@ -114,7 +114,7 @@ class JobBuilder extends Units\Test
 
             ->if($job = $mockBuilder->getJob())
                 ->object($job)
-                    ->isInstanceOf('Rezzza\JobFlow\Job')
+                    ->isInstanceOf('Rezzza\Jobflow\Job')
 
                 ->mock($mockBuilder)
                     ->call('create')

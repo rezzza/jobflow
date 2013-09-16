@@ -2,8 +2,8 @@
 
 require_once __DIR__.'/init.php';
 
-use Rezzza\JobFlow\Jobs;
-use Rezzza\JobFlow\Extension;
+use Rezzza\Jobflow\Jobs;
+use Rezzza\Jobflow\Extension;
 
 // Create RabbitMq Client
 $rmqClient = new Thumper\RpcClient('localhost', 5672, 'guest', 'guest', '/');

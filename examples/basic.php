@@ -2,9 +2,9 @@
 
 require_once __DIR__.'/../vendor/autoload.php';
 
-use Rezzza\JobFlow\Jobs;
-use Rezzza\JobFlow\Io;
-use Rezzza\JobFlow\Extension\ETL\Type;
+use Rezzza\Jobflow\Jobs;
+use Rezzza\Jobflow\Io;
+use Rezzza\Jobflow\Extension\ETL\Type;
 
 // Create the JobFactory. 
 // By default it comes with CoreExtension and ETLExtension
@@ -14,7 +14,7 @@ use Rezzza\JobFlow\Extension\ETL\Type;
 $jobFactory = Jobs::createJobFactory();
 
 // Create the scheduler responsible for the job execution
-$jobflow = $jobFactory->createJobFlow('php');
+$jobflow = $jobFactory->createJobflow('php');
 
 // We can inject Logger
 $jobflow->setLogger(new \Monolog\Logger('jobflow'));

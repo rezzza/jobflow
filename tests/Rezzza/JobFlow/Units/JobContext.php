@@ -1,10 +1,10 @@
 <?php
 
-namespace Rezzza\JobFlow\Tests\Units;
+namespace Rezzza\Jobflow\Tests\Units;
 
 use mageekguy\atoum as Units;
 
-use Rezzza\JobFlow\JobContext as TestedClass;
+use Rezzza\Jobflow\JobContext as TestedClass;
 
 class JobContext extends Units\Test
 {
@@ -12,7 +12,7 @@ class JobContext extends Units\Test
     {
         $this
             ->if($this->mockGenerator->orphanize('__construct'))
-            ->and($mockGraph = new \mock\Rezzza\JobFlow\Scheduler\JobGraph)
+            ->and($mockGraph = new \mock\Rezzza\Jobflow\Scheduler\JobGraph)
             ->and($mockGraph->getMockController()->hasNextJob = true)
             ->and($mockGraph->getMockController()->getNextJob = 'next')
             ->and($context = new TestedClass('job'))
@@ -31,7 +31,7 @@ class JobContext extends Units\Test
     {
         $this
             ->if($this->mockGenerator->orphanize('__construct'))
-            ->and($mockGraph = new \mock\Rezzza\JobFlow\Scheduler\JobGraph)
+            ->and($mockGraph = new \mock\Rezzza\Jobflow\Scheduler\JobGraph)
             ->and($mockGraph->getMockController()->hasNextJob = true)
             ->and($mockGraph->getMockController()->getNextJob = 'next')
             ->and($context = new TestedClass('job'))
@@ -67,7 +67,7 @@ class JobContext extends Units\Test
     {
         $this
             ->if($this->mockGenerator->orphanize('__construct'))
-            ->and($mockGraph = new \mock\Rezzza\JobFlow\Scheduler\JobGraph)
+            ->and($mockGraph = new \mock\Rezzza\Jobflow\Scheduler\JobGraph)
             ->and($mockGraph->getMockController()->hasNextJob = true)
             ->and($mockGraph->getMockController()->getNextJob = 'next')
             

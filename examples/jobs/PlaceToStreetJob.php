@@ -3,10 +3,10 @@
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
-use Rezzza\JobFlow\AbstractJobType;
-use Rezzza\JobFlow\DelayedArg;
-use Rezzza\JobFlow\Io;
-use Rezzza\JobFlow\JobBuilder;
+use Rezzza\Jobflow\AbstractJobType;
+use Rezzza\Jobflow\DelayedArg;
+use Rezzza\Jobflow\Io;
+use Rezzza\Jobflow\JobBuilder;
 
 class PlaceToStreetJob extends AbstractJobType
 {

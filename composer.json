@@ -28,7 +28,7 @@
     "minimum-stability": "dev",
     "autoload":     {
         "psr-0": {
-            "Rezzza\\JobFlow": "src/"
+            "Rezzza\\Jobflow": "src/"
         }
     },
     "extra": {

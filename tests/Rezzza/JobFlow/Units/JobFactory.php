@@ -1,10 +1,10 @@
 <?php
 
-namespace Rezzza\JobFlow\Tests\Units;
+namespace Rezzza\Jobflow\Tests\Units;
 
 use mageekguy\atoum as Units;
 
-use Rezzza\JobFlow\JobFactory as TestedClass;
+use Rezzza\Jobflow\JobFactory as TestedClass;
 
 class JobFactory extends Units\Test
 {
@@ -15,7 +15,7 @@ class JobFactory extends Units\Test
     public function beforeTestMethod($method)
     {
         $this->mockGenerator->orphanize('__construct');
-        $this->registry = new \mock\Rezzza\JobFlow\JobRegistry;
+        $this->registry = new \mock\Rezzza\Jobflow\JobRegistry;
         $this->factory = new TestedClass($this->registry);
     }
 
@@ -48,7 +48,7 @@ class JobFactory extends Units\Test
     {
         $options = array('io' => '1', 'b' => '2');
         $resolved = $this->getMockResolvedJob();
-        $type = new \mock\Rezzza\JobFlow\Extension\Core\Type\JobType();
+        $type = new \mock\Rezzza\Jobflow\Extension\Core\Type\JobType();
         $factory = $this->getMockFactory();
         $io = $this->getMockIo();
 
@@ -76,8 +76,8 @@ class JobFactory extends Units\Test
     {
         $options = array('io' => '1', 'b' => '2');
         $factory = $this->getMockFactory();
-        $type = new \mock\Rezzza\JobFlow\Extension\Core\Type\JobType();
-        $parentType = new \mock\Rezzza\JobFlow\Extension\Core\Type\JobType();
+        $type = new \mock\Rezzza\Jobflow\Extension\Core\Type\JobType();
+        $parentType = new \mock\Rezzza\Jobflow\Extension\Core\Type\JobType();
         $resolved = $this->getMockResolvedJob();
         $parentResolved = $this->getMockResolvedJob();
 
@@ -110,8 +110,8 @@ class JobFactory extends Units\Test
     {
         $options = array('io' => '1', 'b' => '2');
         $factory = $this->getMockFactory();
-        $type = new \mock\Rezzza\JobFlow\Extension\Core\Type\JobType();
-        $parentType = new \mock\Rezzza\JobFlow\Extension\Core\Type\JobType();
+        $type = new \mock\Rezzza\Jobflow\Extension\Core\Type\JobType();
+        $parentType = new \mock\Rezzza\Jobflow\Extension\Core\Type\JobType();
         $resolved = $this->getMockResolvedJob();
         $parentResolved = $this->getMockResolvedJob();
         $io = $this->getMockIo();
@@ -256,24 +256,24 @@ class JobFactory extends Units\Test
 
     public function test_it_creates_resolved_job()
     {
-        $type = new \mock\Rezzza\JobFlow\Extension\Core\Type\JobType();
+        $type = new \mock\Rezzza\Jobflow\Extension\Core\Type\JobType();
         $parent = $this->getMockResolvedJob();
 
         $this
             ->if($resolved = $this->factory->createResolvedType($type, $parent))
 
                 ->object($resolved)
-                    ->isInstanceOf('Rezzza\JobFlow\ResolvedJob')
+                    ->isInstanceOf('Rezzza\Jobflow\ResolvedJob')
         ;
     }
 
     public function test_it_creates_jobflow()
     {
         $this
-            ->if($this->registry->getMockController()->getTransport = new \Rezzza\JobFlow\Extension\Core\Transport\PhpTransport)
-            ->then($jobflow = $this->factory->createJobFlow('php'))
+            ->if($this->registry->getMockController()->getTransport = new \Rezzza\Jobflow\Extension\Core\Transport\PhpTransport)
+            ->then($jobflow = $this->factory->createJobflow('php'))
 
-                ->object($jobflow)->isInstanceOf('Rezzza\JobFlow\Scheduler\JobFlow')
+                ->object($jobflow)->isInstanceOf('Rezzza\Jobflow\Scheduler\Jobflow')
         ;
     }
 
@@ -283,7 +283,7 @@ class JobFactory extends Units\Test
 
         $this
             ->exception(function() use ($factory) {
-                $this->factory->createJobFlow(123);
+                $this->factory->createJobflow(123);
             })
                 ->hasMessage('$transport should a string or a TransportInterface')
         ;
@@ -293,23 +293,23 @@ class JobFactory extends Units\Test
     {
         $this->mockGenerator->orphanize('__construct');
 
-        return new \mock\Rezzza\JobFlow\ResolvedJob;
+        return new \mock\Rezzza\Jobflow\ResolvedJob;
     }
 
     private function getMockFactory()
     {
-        return new \mock\Rezzza\JobFlow\JobFactory($this->registry);
+        return new \mock\Rezzza\Jobflow\JobFactory($this->registry);
     }
 
     private function getMockIo()
     {
-        return new \mock\Rezzza\JobFlow\Io\IoDescriptor(null);
+        return new \mock\Rezzza\Jobflow\Io\IoDescriptor(null);
     }
 
     private function getMockBuilder()
     {
         $this->mockGenerator->orphanize('__construct');
 
-        return new \mock\Rezzza\JobFlow\JobBuilder;
+        return new \mock\Rezzza\Jobflow\JobBuilder;
     }
 }

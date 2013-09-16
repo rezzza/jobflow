@@ -2,8 +2,8 @@
 
 require_once __DIR__.'/init.php';
 
-use Rezzza\JobFlow\Extension;
-use Rezzza\JobFlow\Io;
+use Rezzza\Jobflow\Extension;
+use Rezzza\Jobflow\Io;
 
 // Create RabbitMq Client
 $rmqClient = new Extension\RabbitMq\JobRpcClient('localhost', 5672, 'guest', 'guest', '/');
@@ -17,7 +17,7 @@ $jobFactory = $builder->getJobFactory();
 $rmqClient->setJobFactory($jobFactory);
 
 // Create the scheduler responsible for the job execution
-$jobflow = $jobFactory->createJobFlow('rabbitmq');
+$jobflow = $jobFactory->createJobflow('rabbitmq');
 
 // We can inject Logger
 $jobflow->setLogger(new \Monolog\Logger('jobflow'));

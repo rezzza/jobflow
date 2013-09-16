@@ -1,10 +1,10 @@
 <?php
 
-namespace Rezzza\JobFlow\Tests\Units;
+namespace Rezzza\Jobflow\Tests\Units;
 
 use mageekguy\atoum as Units;
 
-use Rezzza\JobFlow\Job as TestedClass;
+use Rezzza\Jobflow\Job as TestedClass;
 
 class Job extends Units\Test
 {
@@ -13,7 +13,7 @@ class Job extends Units\Test
         $this->mockGenerator->orphanize('__construct');
 
         $this
-            ->if($mockConfig = new \mock\Rezzza\JobFlow\JobConfig)
+            ->if($mockConfig = new \mock\Rezzza\Jobflow\JobConfig)
             ->and($job = new TestedClass($mockConfig))
             ->and($child = new TestedClass($mockConfig))
             ->and($mockConfig->getMockController()->getName = 'child')
@@ -27,7 +27,7 @@ class Job extends Units\Test
         $this->mockGenerator->orphanize('__construct');
 
         $this
-            ->if($mockConfig = new \mock\Rezzza\JobFlow\JobConfig)
+            ->if($mockConfig = new \mock\Rezzza\Jobflow\JobConfig)
             ->and($mockConfig->getMockController()->getName = 'test')
             ->then($job = new TestedClass($mockConfig))
                 ->exception(function() use ($job) {

@@ -1,4 +1,4 @@
-JobFlow
+Jobflow
 =======
 [![Build Status](https://travis-ci.org/rezzza/jobflow.png?branch=master)](https://travis-ci.org/rezzza/jobflow)
 
@@ -27,7 +27,7 @@ Have a look to the examples:
 
 Frameworks
 ----------
-- Symfony : https://github.com/rezzza/JobFlowBundle
+- Symfony : https://github.com/rezzza/JobflowBundle
 
 Tests
 -----
