@@ -22,13 +22,12 @@ class EntityLoaderType extends AbstractJobType
         $doctrine = $this->doctrine;
 
         $resolver->setDefaults(array(
+            'flush_every' => 50,
             'class' => 'Knp\ETL\Loader\Doctrine\ORMLoader',
-            'etl_config' => function(Options $options) use ($doctrine) {
-                $class = $options['class'];
-
+            'args' => function(Options $options) use ($doctrine) {
                 return array(
-                    'class' => $class,
-                    'args' => array($doctrine)
+                    $doctrine,
+                    $options['flush_every']
                 );
             } 
         ));
