@@ -21,8 +21,16 @@ class ExtractorType extends ETLType
             $extractor->setLogger($execution->getLogger());
         }
 
+        $max = $execution->getGlobalOption('max');
+
         if (null === $execution->getGlobalOption('total')) {
-            $execution->setGlobalOption('total', $extractor->count());
+            $total = $extractor->count();
+
+            if (null !== $max && $max < $total) {
+                $total = $max;
+            }
+
+            $execution->setGlobalOption('total', $total);
         }
 
         $offset = $execution->getGlobalOption('offset');
@@ -43,6 +51,10 @@ class ExtractorType extends ETLType
         }
 
         for ($i = 0; $i < $limit && $extractor->valid(); $i++) {
+            if ($extractor->key() > $max) {
+                break;
+            }
+
             $output->write($extractor->current());
             $extractor->next();
         }

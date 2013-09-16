@@ -180,7 +180,8 @@ class JobContext implements JobContextInterface
         $resolver->setDefaults(array(
             'offset' => 0,
             'limit' => 50,
-            'total' => null
+            'total' => null,
+            'max' => null
         ));
     }
 
