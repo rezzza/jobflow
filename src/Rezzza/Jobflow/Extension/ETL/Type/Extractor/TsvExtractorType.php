@@ -12,7 +12,7 @@ class TsvExtractorType extends AbstractJobType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'args' => function(Options $options) use ($type) {
+            'args' => function(Options $options) {
                 $io = $options['io'];
 
                 return array(
