@@ -134,8 +134,8 @@ class ExecutionContext
         return $this->globalContext->getOption($name);
     }
 
-    public function getJobOption($name)
+    public function getJobOption($name, $default = null)
     {
-        return $this->job->getOption($name);
+        return $this->job->getOption($name, $default);
     }
 }

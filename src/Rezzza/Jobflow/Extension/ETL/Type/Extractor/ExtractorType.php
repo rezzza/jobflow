@@ -28,21 +28,18 @@ class ExtractorType extends ETLType
         $offset = $execution->getGlobalOption('offset');
         $limit = $execution->getGlobalOption('limit');
 
+        // Move offset if needed
+        if ($execution->getJobOption('offset', 0) > $offset) {
+            $offset = $execution->getJobOption('offset');
+            $execution->setGlobalOption('offset', $offset);
+        }
+
         try {
             $extractor->seek($offset);
         } catch (\OutOfBoundsException $e) {
             if ($execution->getLogger()) {
                 $execution->getLogger()->debug('No data');
             }
-        }
-
-        $etl = new ETL\Context\Context();
-
-        // Skip Header if needed
-        if ($offset === 0 && $execution->getJobOption('skip_headers')) {
-            // We need to get the current to do the next. Va comprendre charles
-            $extractor->current();
-            $extractor->next();
         }
 
         for ($i = 0; $i < $limit && $extractor->valid(); $i++) {
@@ -58,7 +55,7 @@ class ExtractorType extends ETLType
         parent::setDefaultOptions($resolver);
 
         $resolver->setDefaults(array(
-            'skip_headers' => false,
+            'offset' => 0,
             'args' => function(Options $options) {
                 $io = $options['io'];
 
