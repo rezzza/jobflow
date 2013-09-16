@@ -22,6 +22,9 @@ class LoaderType extends ETLType
             $output->write($d);
         }
 
+        // Should not use Events ? Will be more flexible
+        $output->finish();
+
         return $output; // End chain should return empty array
     }
 
