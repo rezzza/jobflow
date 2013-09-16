@@ -18,7 +18,8 @@
         "knplabs/etl": "dev-master"
     },
     "suggest": {
-        "doctrine/orm": "To use ORM loader"
+        "doctrine/orm": "To use ORM loader",
+        "videlalvaro/thumper": "To use RabbitMq Extension"
     },
     "require-dev": {
         "atoum/atoum": "*@dev",
