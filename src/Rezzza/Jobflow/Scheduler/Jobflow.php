@@ -133,6 +133,9 @@ class Jobflow
         return $this->transport->getMessage();
     }
 
+    /**
+     * Need to work on this method to make it more simple and readable
+     */
     public function handleMessage(JobMessage $msg)
     {
         $msg = clone $msg;
@@ -163,6 +166,8 @@ class Jobflow
                     $msg = null;
                 }
             }
+        } elseif (!$this->jobGraph->hasNextJob() && $msg->context->isFinished()) {
+            $msg = null;
         } else {
             $msg->context->updateToNextJob($this->jobGraph);
         }
