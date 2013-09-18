@@ -51,7 +51,7 @@ class ExtractorType extends ETLType
         }
 
         for ($i = 0; $i < $limit && $extractor->valid(); $i++) {
-            if ($extractor->key() > $max) {
+            if ($extractor->key() > $total) {
                 break;
             }
 
