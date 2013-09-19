@@ -13,7 +13,7 @@ class Pipe
         $this->mapping = $mapping;
     }
 
-    public function addParam($param)
+    public function addParam(array $param)
     {
         $key = key($param);
 
