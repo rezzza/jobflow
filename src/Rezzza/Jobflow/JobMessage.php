@@ -12,6 +12,8 @@ class JobMessage
 
     public $pipe;
 
+    public $jobOptions = array();
+
     public function __construct($context)
     {
         $this->context = $context;

@@ -40,7 +40,7 @@ class JobRpcClient extends RpcClient
 
         echo sprintf('Just executed : %s', $jobMsg->context->getCurrent()).PHP_EOL;
         
-        $job = $this->jobFactory->create($jobMsg->context->getJobId());
+        $job = $this->jobFactory->create($jobMsg->context->getJobId(), $jobMsg->jobOptions);
 
         $scheduler = $this->jobFactory
             ->createJobflow('rabbitmq')

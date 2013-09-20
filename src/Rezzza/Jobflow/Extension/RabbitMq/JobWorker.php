@@ -15,7 +15,7 @@ class JobWorker
     {
         $jobMsg = unserialize($msg);
 
-        $job = $this->jobFactory->create($jobMsg->context->getJobId());
+        $job = $this->jobFactory->create($jobMsg->context->getJobId(), $jobMsg->jobOptions);
 
         $jobflow = $this->jobFactory->createJobflow('rabbitmq');
         $jobflow->setLogger(new \Monolog\Logger('jobflow'));
