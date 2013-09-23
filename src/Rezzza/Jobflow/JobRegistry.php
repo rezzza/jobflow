@@ -52,7 +52,7 @@ class JobRegistry
                 throw new \InvalidArgumentException(sprintf('Could not load type "%s"', $name));
             }
 
-            $this->types[$type->getName()] = $type;
+            $this->resolveAndAddType($type);
         }
 
         return $this->types[$name];
@@ -85,5 +85,39 @@ class JobRegistry
         }
 
         return $this->transports[$name];
+    }
+
+    /**
+     * Wraps a type into a ResolvedFormTypeInterface implementation and connects
+     * it with its parent type.
+     *
+     * @param JobTypeInterface $type The type to resolve.
+     *
+     * @return ResolvedJob The resolved type.
+     */
+    private function resolveAndAddType(JobTypeInterface $type)
+    {
+        $parentType = $type->getParent();
+
+        if ($parentType instanceof JobTypeInterface) {
+            $this->resolveAndAddType($parentType);
+            $parentType = $parentType->getName();
+        }
+
+        $typeExtensions = array();
+
+        foreach ($this->extensions as $extension) {
+            /* @var FormExtensionInterface $extension */
+            $typeExtensions = array_merge(
+                $typeExtensions,
+                $extension->getTypeExtensions($type->getName())
+            );
+        }
+
+        $this->types[$type->getName()] = new ResolvedJob(
+            $type, 
+            $typeExtensions,
+            $parentType ? $this->getType($parentType) : null
+        );
     }
 }

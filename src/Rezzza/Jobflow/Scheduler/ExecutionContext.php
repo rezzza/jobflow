@@ -2,7 +2,6 @@
 
 namespace Rezzza\Jobflow\Scheduler;
 
-use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -16,8 +15,6 @@ use Rezzza\Jobflow\JobMessage;
  */
 class ExecutionContext
 {
-    use LoggerAwareTrait;
-
     /**
      * Current msg
      *
@@ -72,10 +69,6 @@ class ExecutionContext
         }
         
         $this->job = $parent->get($this->getCurrentJob());
-
-        if ($this->logger) {
-            $this->logger->debug('Try to execute '.$this->job->getName());
-        }
         
         return $this->job->execute($this);
     }
@@ -118,12 +111,6 @@ class ExecutionContext
         return $this->globalContext->jobId;
     }
 
-
-    public function getLogger()
-    {
-        return $this->logger;
-    }
-
     public function setGlobalOption($key, $value)
     {
         $this->globalContext->setOption($key, $value);
@@ -137,5 +124,10 @@ class ExecutionContext
     public function getJobOption($name, $default = null)
     {
         return $this->job->getOption($name, $default);
+    }
+
+    public function getLogger()
+    {
+        return $this->job->getLogger();
     }
 }

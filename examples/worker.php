@@ -11,6 +11,7 @@ $rmqClient->initClient();
 
 // Add rabbitmq Extension
 $builder->addExtension(new Extension\RabbitMq\RabbitMqExtension($rmqClient));
+$builder->addExtension(new Extension\Monolog\MonologExtension(new \Monolog\Logger('jobflow')));
 
 // Creates job factory
 $jobFactory = $builder->getJobFactory();

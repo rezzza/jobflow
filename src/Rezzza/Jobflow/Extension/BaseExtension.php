@@ -3,6 +3,7 @@
 namespace Rezzza\Jobflow\Extension;
 
 use Rezzza\Jobflow\JobTypeInterface;
+use Rezzza\Jobflow\JobTypeExtensionInterface;
 use Rezzza\Jobflow\Scheduler\TransportInterface;
 
 class BaseExtension implements JobExtensionInterface
@@ -16,6 +17,11 @@ class BaseExtension implements JobExtensionInterface
      * @var TransportInterface[]
      */
     protected $transports;
+
+    /**
+     * @var JobTypeExtensionInterface[] 
+     */
+    protected $typeExtensions;
 
     public function addType(JobTypeInterface $type)
     {
@@ -84,6 +90,32 @@ class BaseExtension implements JobExtensionInterface
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function getTypeExtensions($name)
+    {
+        if (null === $this->typeExtensions) {
+            $this->initTypeExtensions();
+        }
+
+        return isset($this->typeExtensions[$name])
+            ? $this->typeExtensions[$name]
+            : array();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function hasTypeExtensions($name)
+    {
+        if (null === $this->typeExtensions) {
+            $this->initTypeExtensions();
+        }
+
+        return isset($this->typeExtensions[$name]) && count($this->typeExtensions[$name]) > 0;
+    }
+
+    /**
      * Registers the types.
      *
      * @return JobTypeInterface[]
@@ -94,11 +126,16 @@ class BaseExtension implements JobExtensionInterface
     }
 
     /**
-     * Registers the wrappers.
+     * Registers the transports.
      *
      * @return TransportInterface[]
      */
     protected function loadTransports()
+    {
+        return array();
+    }
+
+    protected function loadTypeExtensions()
     {
         return array();
     }
@@ -132,6 +169,24 @@ class BaseExtension implements JobExtensionInterface
             }
 
             $this->transports[$transport->getName()] = $transport;
+        }
+    }
+
+    /**
+     * Initializes the type extensions.
+     */
+    private function initTypeExtensions()
+    {
+        $this->typeExtensions = array();
+
+        foreach ($this->loadTypeExtensions() as $extension) {
+            if (!$extension instanceof JobTypeExtensionInterface) {
+                throw new \InvalidArgumentException(sprintf('Extension %s should implements JobTypeExtensionInterface', get_class($extension)));
+            }
+
+            $type = $extension->getExtendedType();
+
+            $this->typeExtensions[$type][] = $extension;
         }
     }
 }

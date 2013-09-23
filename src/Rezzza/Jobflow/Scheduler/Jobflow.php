@@ -198,10 +198,6 @@ class Jobflow
             $this->jobGraph
         );
 
-        if (null !== $this->logger) {
-            $context->setLogger($this->logger);
-        }
-
         $output = $context->executeJob($this->job);
 
         // Event ? To handle createEndMsg in a more readable way ?

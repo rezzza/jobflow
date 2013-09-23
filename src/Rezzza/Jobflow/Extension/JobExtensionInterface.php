@@ -3,7 +3,7 @@
 namespace Rezzza\Jobflow\Extension;
 
 /**
- * Extensions let add functionality to all type
+ * Extends JobFlow easy by adding type, transport or typeExtension
  *
  * @author Timothée Barray <tim@amicalement-web.net>
  */
@@ -16,4 +16,8 @@ interface JobExtensionInterface
     public function getTransport($name);
 
     public function hasTransport($name);
+
+    public function getTypeExtensions($name);
+
+    public function hasTypeExtensions($name);
 }

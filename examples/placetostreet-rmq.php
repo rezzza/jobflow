@@ -12,15 +12,15 @@ $rmqClient->initClient();
 // Add RabbitMqExtension
 $builder->addExtension(new Extension\RabbitMq\RabbitMqExtension($rmqClient));
 
+// Add Monolog extension
+$builder->addExtension(new Extension\Monolog\MonologExtension(new \Monolog\Logger('jobflow')));
+
 // Create JobFactory
 $jobFactory = $builder->getJobFactory();
 $rmqClient->setJobFactory($jobFactory);
 
 // Create the scheduler responsible for the job execution
 $jobflow = $jobFactory->createJobflow('rabbitmq');
-
-// We can inject Logger... or not
-$jobflow->setLogger(new \Monolog\Logger('jobflow'));
 
 // Warning io is set in PlaceToStreetJob as we need also the same in worker.php
 // Moreover : Don't forget to insert your google api key

@@ -26,9 +26,15 @@ class ResolvedJob
      */
     private $optionsResolver;
 
-    public function __construct(JobTypeInterface $innerType, ResolvedJob $parent = null)
+    /**
+     * @var JobTypeExtensionInterface[]
+     */
+    private $typeExtensions;
+
+    public function __construct(JobTypeInterface $innerType, array $typeExtensions = array(), ResolvedJob $parent = null)
     {
         $this->innerType = $innerType;
+        $this->typeExtensions = $typeExtensions;
         $this->parent = $parent;
     }
 
@@ -136,5 +142,9 @@ class ResolvedJob
         }
 
         $this->innerType->buildJob($builder, $options);
+
+        foreach ($this->typeExtensions as $extension) {
+            $extension->buildJob($builder, $options);
+        }
     }
 }

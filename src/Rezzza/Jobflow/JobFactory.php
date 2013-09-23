@@ -119,7 +119,6 @@ class JobFactory
             $parentType = $this->resolveType($parentType);
         } elseif (null !== $parentType) {
             $parentType = $this->registry->getType($parentType);
-            $parentType = $this->resolveType($parentType);
         }
 
         return $this->createResolvedType($type, $parentType);
@@ -127,6 +126,6 @@ class JobFactory
 
     public function createResolvedType($type, $parentType)
     {
-        return new ResolvedJob($type, $parentType);
+        return new ResolvedJob($type, array(), $parentType);
     }
 }

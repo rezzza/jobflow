@@ -19,11 +19,11 @@
     },
     "suggest": {
         "doctrine/orm": "To use ORM loader",
-        "videlalvaro/thumper": "To use RabbitMq Extension"
+        "videlalvaro/thumper": "To use RabbitMq Extension",
+        "monolog/monolog": "To use monolog Extension"
     },
     "require-dev": {
         "atoum/atoum": "*@dev",
-        "monolog/monolog": "*"
     },
     "minimum-stability": "dev",
     "autoload":     {

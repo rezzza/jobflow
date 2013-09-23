@@ -16,9 +16,6 @@ $jobFactory = Jobs::createJobFactory();
 // Create the scheduler responsible for the job execution
 $jobflow = $jobFactory->createJobflow('php');
 
-// We can inject Logger
-$jobflow->setLogger(new \Monolog\Logger('jobflow'));
-
 // We will inject IO to our job to indicate where Extractor needs to read and where Loader needs to write
 $io = new Io\IoDescriptor(
     new Io\Input('file://'.__DIR__.'/fixtures.csv'),

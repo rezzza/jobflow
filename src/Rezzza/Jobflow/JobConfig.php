@@ -42,6 +42,8 @@ class JobConfig
      */
     private $options;
 
+    private $logger;
+
     /**
      * @param string $name
      * @param array $options
@@ -174,6 +176,18 @@ class JobConfig
         $this->jobFactory = $jobFactory;
 
         return $this;
+    }
+
+    public function setLogger($logger)
+    {
+        $this->logger = $logger;
+
+        return $this;
+    }
+
+    public function getLogger()
+    {
+        return $this->logger;
     }
 
     /**

@@ -79,7 +79,6 @@ class JobFactory extends Units\Test
         $type = new \mock\Rezzza\Jobflow\Extension\Core\Type\JobType();
         $parentType = new \mock\Rezzza\Jobflow\Extension\Core\Type\JobType();
         $resolved = $this->getMockResolvedJob();
-        $parentResolved = $this->getMockResolvedJob();
 
         $type->getMockController()->getParent = 'flex';
         $this->registry->getMockController()->getType = $parentType;
@@ -96,7 +95,7 @@ class JobFactory extends Units\Test
 
                 ->mock($factory)
                     ->call('createResolvedType')
-                        ->withArguments($type, $parentResolved)
+                        ->withArguments($type, $parentType)
                         ->once()
 
                 ->mock($resolved)
