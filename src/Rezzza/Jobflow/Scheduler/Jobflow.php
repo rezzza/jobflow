@@ -39,6 +39,11 @@ class Jobflow
     protected $logger;
 
     /**
+     * @var JobGraph
+     */
+    protected $jobGraph;
+
+    /**
      * @param TransportInterface $transport
      */
     public function __construct(TransportInterface $transport, JobFactory $jobFactory, LoggerInterface $logger = null)
@@ -62,6 +67,11 @@ class Jobflow
     public function getJob()
     {
         return $this->job;
+    }
+
+    public function getJobGraph()
+    {
+        return $this->jobGraph;
     }
 
     /**
