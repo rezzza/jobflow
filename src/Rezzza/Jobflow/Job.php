@@ -25,6 +25,8 @@ class Job implements \IteratorAggregate, JobInterface
      */
     protected $children = array();
 
+    protected $locked;
+
     /**
      * @var JobConfig $config
      */
@@ -149,7 +151,7 @@ class Job implements \IteratorAggregate, JobInterface
      */
     public function isLocked()
     {
-        return false;
+        return $this->locked;
     }
 
     /**
