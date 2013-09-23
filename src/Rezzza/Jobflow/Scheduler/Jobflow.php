@@ -2,10 +2,11 @@
 
 namespace Rezzza\Jobflow\Scheduler;
 
-use Psr\Log\LoggerAwareTrait;
+use Psr\Log\LoggerInterface;
 
 use Rezzza\Jobflow\JobContext;
 use Rezzza\Jobflow\JobInterface;
+use Rezzza\Jobflow\JobFactory;
 use Rezzza\Jobflow\JobMessage;
 use Rezzza\Jobflow\JobOutput;
 use Rezzza\Jobflow\Scheduler\ExecutionContext;
@@ -17,8 +18,6 @@ use Rezzza\Jobflow\Scheduler\ExecutionContext;
  */
 class Jobflow
 {
-    use LoggerAwareTrait;
-
     /**
      * @var JobInterface
      */
@@ -30,11 +29,23 @@ class Jobflow
     protected $transport;
 
     /**
+     * @var JobFactory
+     */
+    protected $jobFactory;
+
+    /**
+     * @var LoggerInterface
+     */
+    protected $logger;
+
+    /**
      * @param TransportInterface $transport
      */
-    public function __construct(TransportInterface $transport)
+    public function __construct(TransportInterface $transport, JobFactory $jobFactory, LoggerInterface $logger = null)
     {
         $this->transport = $transport;
+        $this->jobFactory = $jobFactory;
+        $this->logger = $logger;
     }
 
     /**
@@ -54,13 +65,39 @@ class Jobflow
     }
 
     /**
+     * Creates init message to start execution.
+     *
+     * @return Jobflow
+     */
+    public function init(array $jobOptions = array())
+    {
+        if (null === $this->getJob()) {
+            throw new \RuntimeException('You need to set a job');
+        }
+
+        $init = $this->getInitMessage();
+        $init->jobOptions = $jobOptions;
+
+        $this->addMessage($init);
+
+        return $this;
+    }
+
+    /**
      * @param JobInterface $job
      *
      * @return Jobflow
      */
-    public function setJob(JobInterface $job)
+    public function setJob($job, array $jobOptions = array())
     {
-        $this->job = $job;
+        if (is_string($job)) {
+            $this->job = $this->createJob($job, $jobOptions);
+        } elseif ($job instanceof JobInterface) {
+            $this->job = $job;
+        } else {
+            throw new \InvalidArgumentException('Job should be a string or a JobInterface');
+        }
+
         $this->buildGraph();
         $this->job->setLocked(true);
 
@@ -76,26 +113,77 @@ class Jobflow
      */
     public function addMessage(JobMessage $msg)
     {
+        if ($this->logger) {
+            $this->logger->info(sprintf(
+                'Add new message for job [%s] : step %s', 
+                $msg->context->getJobId(),
+                $msg->context->getCurrent()
+            ));
+        }
+        
         $this->transport->addMessage($msg);
 
         return $this;
     }
 
     /**
-     * Creates init message to start execution.
-     *
-     * @return Jobflow
+     * Need to work on this method to make it more simple and readable
      */
-    public function init(array $jobOptions = array())
+    public function handleMessage($msg)
     {
-        if (null === $this->getJob()) {
-            throw new \RuntimeException('You need to set a job');
+        if (!$msg instanceof JobMessage) {
+            if ($this->logger) {
+                $this->logger->info('No more message');
+            }
+
+            return false;
         }
 
-        $init = $this->getInitMessage();
-        $init->jobOptions = $jobOptions;
+        if (null === $this->job) {
+            $this->setJobFromMessage($msg);
+        }
 
-        $this->addMessage($init);
+        if ($this->logger) {
+            $this->logger->info('Read msg : '.$msg->context->getMessageName());
+        }
+
+        $msg = clone $msg;
+        $msg->context->moveToCurrent($this->jobGraph);
+        $msg->input = $msg->output;
+        $msg->output = null;
+
+        $index = $this->jobGraph->search($msg->context->getCurrent());
+
+        if ($this->jobGraph->isLoader($index)) {
+            if ($msg->pipe) {
+                foreach ($msg->pipe->params as $pipe) {
+                    $forward = clone $msg;
+                    $forward->context->initOptions();
+                    $forward->pipe = $pipe;
+                    $graph = clone $this->jobGraph;
+                    $forward->context->updateToNextJob($graph);
+                    $this->addMessage($forward);
+                }
+            } else {
+                $msg->context->tick();
+
+                if (!$msg->context->isFinished()) {
+                    $msg->context->addStep($msg->context->getCurrent());
+                    $next = $this->jobGraph->getExtractor($index);
+                    $msg->context->setCurrent($next);
+                } else {
+                    $msg = null;
+                }
+            }
+        } elseif (!$this->jobGraph->hasNextJob() && $msg->context->isFinished()) {
+            $msg = null;
+        } else {
+            $msg->context->updateToNextJob($this->jobGraph);
+        }
+
+        if (null !== $msg) {
+            $this->addMessage($msg);
+        }
 
         return $this;
     }
@@ -137,59 +225,17 @@ class Jobflow
     }
 
     /**
-     * Need to work on this method to make it more simple and readable
-     */
-    public function handleMessage(JobMessage $msg)
-    {
-        $msg = clone $msg;
-        $msg->context->moveToCurrent($this->jobGraph);
-        $msg->input = $msg->output;
-        $msg->output = null;
-
-        $index = $this->jobGraph->search($msg->context->getCurrent());
-
-        if ($this->jobGraph->isLoader($index)) {
-            if ($msg->pipe) {
-                foreach ($msg->pipe->params as $pipe) {
-                    $forward = clone $msg;
-                    $forward->context->initOptions();
-                    $forward->pipe = $pipe;
-                    $graph = clone $this->jobGraph;
-                    $forward->context->updateToNextJob($graph);
-                    $this->addMessage($forward);
-                }
-            } else {
-                $msg->context->tick();
-
-                if (!$msg->context->isFinished()) {
-                    $msg->context->addStep($msg->context->getCurrent());
-                    $next = $this->jobGraph->getExtractor($index);
-                    $msg->context->setCurrent($next);
-                } else {
-                    $msg = null;
-                }
-            }
-        } elseif (!$this->jobGraph->hasNextJob() && $msg->context->isFinished()) {
-            $msg = null;
-        } else {
-            $msg->context->updateToNextJob($this->jobGraph);
-        }
-
-        if (null !== $msg) {
-            $this->addMessage($msg);
-        }
-
-        return $this;
-    } 
-
-    /**
      * Executes current job.
      * Injects ExecutionContext as Visitor
      *
      * @param JobMessage $msg
      */
-    protected function runJob(JobMessage $msg)
+    public function runJob(JobMessage $msg)
     {
+        if (null === $this->job) {
+            $this->setJobFromMessage($msg);
+        }
+
         // Store input message
         $this->startMsg = $msg;
 
@@ -208,6 +254,31 @@ class Jobflow
         $end = $this->createEndMsg($output);
 
         return $end;
+    }
+
+    /**
+     * Init job from the message
+     *
+     * @param JobMessage $msg
+     */
+    public function setJobFromMessage(JobMessage $msg)
+    {
+        $job = $this->createJob($msg->context->getJobId(), $msg->jobOptions);
+
+        return $this->setJob($job);
+    }
+
+    /**
+     * Create job thanks to jobFactory
+     *
+     * @param string $job
+     * @param array $jobOptions
+     *
+     * @return JobInterface
+     */
+    private function createJob($job, array $jobOptions = array())
+    {
+        return $this->jobFactory->create($job, $jobOptions);
     }
 
     /**

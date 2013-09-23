@@ -18,7 +18,12 @@ final class Jobs
      */
     public static function createJobFactory()
     {
-        return self::createJobFactoryBuilder()->getJobFactory();
+        return self::createJobsBuilder()->getJobFactory();
+    }
+
+    public static function createJobflowFactory()
+    {
+        return self::createJobsBuilder()->getJobflowFactory();
     }
 
     /**
@@ -26,9 +31,9 @@ final class Jobs
      *
      * @return JobFactoryBuilder The job factory builder.
      */
-    public static function createJobFactoryBuilder()
+    public static function createJobsBuilder()
     {
-        $builder = new JobFactoryBuilder();
+        $builder = new JobsBuilder();
         $builder->addExtension(new Extension\Core\CoreExtension());
         $builder->addExtension(new Extension\ETL\ETLExtension());
 

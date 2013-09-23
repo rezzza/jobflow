@@ -31,6 +31,8 @@ class ExtractorType extends ETLType
             }
 
             $execution->setGlobalOption('total', $total);
+        } else {
+            $total = $execution->getGlobalOption('total');
         }
 
         $offset = $execution->getGlobalOption('offset');

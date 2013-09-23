@@ -4,8 +4,10 @@ namespace Rezzza\Jobflow;
 
 use Rezzza\Jobflow\Extension\BaseExtension;
 use Rezzza\Jobflow\Extension\JobExtensionInterface;
+use Rezzza\Jobflow\Scheduler\JobflowFactory;
+use Rezzza\Jobflow\Scheduler\TransportInterface;
 
-class JobFactoryBuilder
+class JobsBuilder
 {
     /**
      * @var array
@@ -20,7 +22,7 @@ class JobFactoryBuilder
     /**
      * @var array
      */
-    private $wrappers = array();
+    private $transports = array();
 
     public function addExtension(JobExtensionInterface $extension)
     {
@@ -46,48 +48,56 @@ class JobFactoryBuilder
     public function addTypes(array $types)
     {
         foreach ($types as $type) {
-            $this->types[$type->getName()] = $type;
+            $this->addType($type);
         }
 
         return $this;
     }
 
-    public function addWrapper(IoWrapperInterface $wrapper)
+    public function addTransport(TransportInterface $transport)
     {
-        $this->wrappers[$wrapper->getName()] = $wrapper;
+        $this->transport[$transport->getName()] = $transport;
 
         return $this;
     }
 
-    public function addWrappers(array $wrappers)
+    public function addTransports(array $transports)
     {
-        foreach ($wrappers as $wrapper) {
-            $this->wrappers[$wrapper->getName()] = $wrappers;
+        foreach ($transports as $transport) {
+            $this->addTransport($transport);
         }
 
         return $this;
     }
 
-    public function getJobFactory()
+    public function getJobRegistry()
     {
         $extensions = $this->extensions;
 
-        if (count($this->types) > 0 || count($this->wrappers) > 0) {
+        if (count($this->types) > 0 || count($this->transports) > 0) {
             $base = new BaseExtension();
 
             foreach ($this->types as $type) {
                 $base->addType($type);
             }
 
-            foreach ($this->wrappers as $wrapper) {
-                $base->addWrapper($wrapper);
+            foreach ($this->transports as $transport) {
+                $base->addTransport($transport);
             }
 
             $extensions[] = $base;
         }
 
-        $registry = new JobRegistry($extensions);
+        return new JobRegistry($extensions);
+    }
 
-        return new JobFactory($registry);
+    public function getJobFactory()
+    {
+        return new JobFactory($this->getJobRegistry());
+    }
+
+    public function getJobflowFactory()
+    {
+        return new JobflowFactory($this->getJobRegistry());
     }
 }

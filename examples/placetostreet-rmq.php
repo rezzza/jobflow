@@ -16,25 +16,18 @@ $builder->addExtension(new Extension\RabbitMq\RabbitMqExtension($rmqClient));
 $builder->addExtension(new Extension\Monolog\MonologExtension(new \Monolog\Logger('jobflow')));
 
 // Create JobFactory
-$jobFactory = $builder->getJobFactory();
-$rmqClient->setJobFactory($jobFactory);
+$jobflowFactory = $builder->getJobflowFactory();
+$rmqClient->setJobflowFactory($jobflowFactory);
 
 // Create the scheduler responsible for the job execution
-$jobflow = $jobFactory->createJobflow('rabbitmq');
+$jobflow = $jobflowFactory->create('rabbitmq');
 
-// Warning io is set in PlaceToStreetJob as we need also the same in worker.php
 // Moreover : Don't forget to insert your google api key
-
-// Here we go, gets the job
-$job = $jobFactory
-    ->createBuilder('place_to_street') 
-    ->getJob()
-;
 
 echo 'Started...'.PHP_EOL;
 // Now we can execute our job
 $jobflow
-    ->setJob($job)
+    ->setJob('place_to_street')
     ->init() // Will create the first message to run the process
     ->run()
 ;

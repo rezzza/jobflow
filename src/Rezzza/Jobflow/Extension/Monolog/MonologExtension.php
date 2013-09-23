@@ -13,6 +13,11 @@ class MonologExtension extends BaseExtension
         $this->logger = $logger;
     }
 
+    public function getLogger()
+    {
+        return $this->logger;
+    }
+
     public function loadTypeExtensions()
     {
         return array(

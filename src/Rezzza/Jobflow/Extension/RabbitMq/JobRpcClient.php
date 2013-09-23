@@ -4,21 +4,23 @@ namespace Rezzza\Jobflow\Extension\RabbitMq;
 
 use Thumper\RpcClient;
 
+use Rezzza\Jobflow\JobFactory;
 use Rezzza\Jobflow\JobMessage;
+use Rezzza\Jobflow\Scheduler\JobflowFactory;
 
 class JobRpcClient extends RpcClient
 {
-    private $jobFactory;
+    private $jobflowFactory;
 
-    public function setJobFactory($jobFactory)
+    public function setJobflowFactory(JobflowFactory $jobflowFactory)
     {
-        $this->jobFactory = $jobFactory;
+        $this->jobflowFactory = $jobflowFactory;
+
+        return $this;
     }
 
     public function processMessage($msg)
     {
-        echo PHP_EOL.'Get response'.PHP_EOL;
-
         parent::processMessage($msg);
 
         // We add @ because php throws a notice if cannot unserialize.
@@ -26,25 +28,11 @@ class JobRpcClient extends RpcClient
 
         if (false === $jobMsg) {
             // Display error and stop
-            echo $msg->body.PHP_EOL;
-
-            return false;
+            throw new \RuntimeException($msg->body);
         }
-
-        if (!$jobMsg instanceof JobMessage) {
-            // End
-            echo 'no more response'.PHP_EOL;
-
-            return false;
-        }
-
-        echo sprintf('Just executed : %s', $jobMsg->context->getCurrent()).PHP_EOL;
         
-        $job = $this->jobFactory->create($jobMsg->context->getJobId(), $jobMsg->jobOptions);
-
-        $scheduler = $this->jobFactory
-            ->createJobflow('rabbitmq')
-            ->setJob($job)
+        return $this->jobflowFactory
+            ->create('rabbitmq')
             ->handleMessage($jobMsg)
         ;
     }

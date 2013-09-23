@@ -266,28 +266,6 @@ class JobFactory extends Units\Test
         ;
     }
 
-    public function test_it_creates_jobflow()
-    {
-        $this
-            ->if($this->registry->getMockController()->getTransport = new \Rezzza\Jobflow\Extension\Core\Transport\PhpTransport)
-            ->then($jobflow = $this->factory->createJobflow('php'))
-
-                ->object($jobflow)->isInstanceOf('Rezzza\Jobflow\Scheduler\Jobflow')
-        ;
-    }
-
-    public function test_creates_jobflow_accepts_string_or_transport()
-    {
-        $factory = $this->factory;
-
-        $this
-            ->exception(function() use ($factory) {
-                $this->factory->createJobflow(123);
-            })
-                ->hasMessage('$transport should a string or a TransportInterface')
-        ;
-    }
-
     private function getMockResolvedJob()
     {
         $this->mockGenerator->orphanize('__construct');

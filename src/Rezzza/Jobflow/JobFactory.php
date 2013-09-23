@@ -86,24 +86,6 @@ class JobFactory
     }
 
     /**
-     * Creates a Jobflow
-     *
-     * @param string|TransportInterface $transport
-     *
-     * @return Jobflow
-     */
-    public function createJobflow($transport)
-    {
-        if (is_string($transport)) {
-            $transport = $this->registry->getTransport($transport);
-        } elseif (!$transport instanceof TransportInterface) {
-            throw new \InvalidArgumentException('$transport should a string or a TransportInterface');
-        }
-
-        return new Jobflow($transport);
-    }
-
-    /**
      * Creates wrapper for combination of JobType and JobConnector
      *
      * @param JobTypeInterface $type

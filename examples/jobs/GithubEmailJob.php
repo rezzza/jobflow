@@ -24,7 +24,7 @@ class GithubEmailJob extends AbstractJobType
                 'callback_transformer',
                 array(
                     'callback' => function($data, $target) {
-                        $target['url'] = $data.'?access_token=YOURAPIKEY';
+                        $target['url'] = $data.'?access_token=236b93940ce523226035931f67d2de6bcc1aeab9';
 
                         return $target;
                     }
@@ -67,7 +67,7 @@ class GithubEmailJob extends AbstractJobType
     {
         $resolver->setDefaults(array(
             'io' => new Io\IoDescriptor(
-                new Io\Input('https://api.github.com/repos/symfony/symfony/contributors?access_token=YOURAPIKEY'),
+                new Io\Input('https://api.github.com/repos/symfony/symfony/contributors?access_token=236b93940ce523226035931f67d2de6bcc1aeab9'),
                 new Io\Output('file:///'.__DIR__."/../temp/email.csv")
             ),
             'context' => array(

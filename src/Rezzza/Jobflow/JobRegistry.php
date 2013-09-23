@@ -30,6 +30,24 @@ class JobRegistry
     }
 
     /**
+     * Look for an extension registred
+     *
+     * @parameter string $class
+     *
+     * @return boolean
+     */
+    public function getExtension($class)
+    {
+        foreach ($this->extensions as $extension) {
+            if (get_class($extension) === $class) {
+                return $extension;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Try to find a JobTypeInterface registered with $name as alias
      *
      * @param string $id

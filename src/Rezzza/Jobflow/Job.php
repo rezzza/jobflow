@@ -56,10 +56,14 @@ class Job implements \IteratorAggregate, JobInterface
         $output = $this->getOutput($context);
 
         if ($this->getLogger()) {
-            $this->getLogger()->info(sprintf('Start to execute Job %s', $this->getName()));
+            $this->getLogger()->info(sprintf('Start to execute Job : %s', $this->getName()));
         }
 
         $this->getResolved()->execute($input, $output, $context);
+
+        if ($this->getLogger()) {
+            $this->getLogger()->info(sprintf('End to execute Job : %s', $this->getName()));
+        }
 
         return $output;
     }

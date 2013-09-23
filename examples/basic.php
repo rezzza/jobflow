@@ -12,9 +12,10 @@ use Rezzza\Jobflow\Extension\ETL\Type;
 // $builder = $Jobs::createJobFactoryBuilder();
 // $builder->addExtension(nex MyExtension());
 $jobFactory = Jobs::createJobFactory();
+$jobflowFactory = Jobs::createJobflowFactory();
 
 // Create the scheduler responsible for the job execution
-$jobflow = $jobFactory->createJobflow('php');
+$jobflow = $jobflowFactory->create('php');
 
 // We will inject IO to our job to indicate where Extractor needs to read and where Loader needs to write
 $io = new Io\IoDescriptor(

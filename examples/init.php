@@ -8,9 +8,7 @@ use Rezzza\Jobflow\Jobs;
 use Rezzza\Jobflow\Extension;
 
 // Create the JobFactory.
-$builder = Jobs::createJobFactoryBuilder();
-$builder->addExtension(new Extension\Core\CoreExtension());
-$builder->addExtension(new Extension\ETL\ETLExtension());
+$builder = Jobs::createJobsBuilder();
 
 // Add our custom JobType. With RabbitMq calling job type with alias system is required.
 // So we add it rather than  : $jobFactory->createBuilder(new ExampleJob()) 

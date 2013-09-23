@@ -2,26 +2,23 @@
 
 namespace Rezzza\Jobflow\Extension\RabbitMq;
 
+use Rezzza\Jobflow\Scheduler\JobflowFactory;
+
 class JobWorker
 {
-    protected $jobFactory;
+    protected $jobflowFactory;
 
-    public function __construct($jobFactory)
+    public function __construct(JobflowFactory $jobflowFactory)
     {
-        $this->jobFactory = $jobFactory;
+        $this->jobflowFactory = $jobflowFactory;
     }
 
     public function execute($msg)
     {
         $jobMsg = unserialize($msg);
 
-        $job = $this->jobFactory->create($jobMsg->context->getJobId(), $jobMsg->jobOptions);
-
-        $jobflow = $this->jobFactory->createJobflow('rabbitmq');
-        $jobflow->setLogger(new \Monolog\Logger('jobflow'));
-
-        $result = $jobflow
-            ->setJob($job)
+        $result = $this->jobflowFactory
+            ->create('rabbitmq')
             ->run($jobMsg)
         ;
 
