@@ -23,7 +23,7 @@
         "monolog/monolog": "To use monolog Extension"
     },
     "require-dev": {
-        "atoum/atoum": "*@dev",
+        "atoum/atoum": "dev-master"
     },
     "minimum-stability": "dev",
     "autoload":     {
