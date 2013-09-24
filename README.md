@@ -38,3 +38,6 @@ Credits
 -------
 
 Builder Architecture heavily inspired by Symfony Form Component : https://github.com/symfony/Form
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/rezzza/jobflow/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
