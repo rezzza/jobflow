@@ -32,13 +32,13 @@ class DependencyInjectionExtension extends BaseExtension
     public function getType($name)
     {
         if (!isset($this->typeServiceIds[$name])) {
-            throw new InvalidArgumentException(sprintf('The field type "%s" is not registered with the service container.', $name));
+            throw new \InvalidArgumentException(sprintf('The field type "%s" is not registered with the service container.', $name));
         }
 
         $type = $this->container->get($this->typeServiceIds[$name]);
 
         if ($type->getName() !== $name) {
-            throw new InvalidArgumentException(
+            throw new \InvalidArgumentException(
                 sprintf('The type name specified for the service "%s" does not match the actual name. Expected "%s", given "%s"',
                     $this->typeServiceIds[$name],
                     $name,
@@ -75,13 +75,13 @@ class DependencyInjectionExtension extends BaseExtension
     public function getTransport($name)
     {
         if (!isset($this->transportServiceIds[$name])) {
-            throw new InvalidArgumentException(sprintf('The transport "%s" is not registered with the service container.', $name));
+            throw new \InvalidArgumentException(sprintf('The transport "%s" is not registered with the service container.', $name));
         }
 
         $transport = $this->container->get($this->transportServiceIds[$name]);
 
         if ($transport->getName() !== $name) {
-            throw new InvalidArgumentException(
+            throw new \InvalidArgumentException(
                 sprintf('The transport specified for the service "%s" does not match the actual name. Expected "%s", given "%s"',
                     $this->transportServiceIds[$name],
                     $name,
