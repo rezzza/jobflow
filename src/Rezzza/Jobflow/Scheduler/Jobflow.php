@@ -79,14 +79,13 @@ class Jobflow
      *
      * @return Jobflow
      */
-    public function init(array $jobOptions = array())
+    public function init()
     {
         if (null === $this->getJob()) {
             throw new \RuntimeException('You need to set a job');
         }
 
         $init = $this->getInitMessage();
-        $init->jobOptions = $jobOptions;
 
         $this->addMessage($init);
 
@@ -296,12 +295,16 @@ class Jobflow
      */
     private function getInitMessage()
     {
-        return new JobMessage(
+        $msg = new JobMessage(
             new JobContext(
                 $this->getJob()->getName(),
                 $this->getJob()->getOption('context')
             )
         );
+
+        $msg->jobOptions = $this->getJob()->getOptions();
+
+        return $msg;
     }
 
     /**
