@@ -123,10 +123,16 @@ class Jobflow
     public function addMessage(JobMessage $msg)
     {
         if ($this->logger) {
+            if (null === $msg->context->getCurrent()) {
+                $step = 'starting';
+            } else {
+                $step = 'step '.$msg->context->getCurrent();
+            }
+
             $this->logger->info(sprintf(
-                'Add new message for job [%s] : step %s', 
+                'Add new message for job [%s] : %s', 
                 $msg->context->getJobId(),
-                $msg->context->getCurrent()
+                $step
             ));
         }
         

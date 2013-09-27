@@ -98,6 +98,6 @@ class JobsBuilder
 
     public function getJobflowFactory()
     {
-        return new JobflowFactory($this->getJobRegistry());
+        return new JobflowFactory($this->getJobRegistry(), $this->getJobFactory());
     }
 }

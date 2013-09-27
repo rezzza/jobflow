@@ -2,6 +2,8 @@
 
 namespace Rezzza\Jobflow\Scheduler;
 
+use Psr\Log\LoggerInterface;
+
 use Rezzza\Jobflow\JobFactory;
 use Rezzza\Jobflow\JobRegistry;
 
@@ -13,11 +15,23 @@ class JobflowFactory
     protected $registry;
 
     /**
+     * @var JobFactory
+     */
+    protected $jobFactory;
+
+    /**
+     * @var LoggerInterface
+     */
+    protected $logger;
+
+    /**
      * @param JobRegistry $registry
      */
-    public function __construct(JobRegistry $registry)
+    public function __construct(JobRegistry $registry, JobFactory $jobFactory, LoggerInterface $logger = null)
     {
         $this->registry = $registry;
+        $this->jobFactory = $jobFactory;
+        $this->logger = $logger;
     }
 
     /**
@@ -35,13 +49,11 @@ class JobflowFactory
             throw new \InvalidArgumentException('transport should a string or a TransportInterface');
         }
 
-        $logger = null;
-
         // If MonologExtension loaded, we inject its logger in Jobflow
         if (null !== ($extension = $this->registry->getExtension('Rezzza\Jobflow\Extension\Monolog\MonologExtension'))) {
-            $logger = $extension->getLogger();
+            $this->logger = $extension->getLogger();
         }
 
-        return new Jobflow($transport, new JobFactory($this->registry), $logger);
+        return new Jobflow($transport, $this->jobFactory, $this->logger);
     }
 }
