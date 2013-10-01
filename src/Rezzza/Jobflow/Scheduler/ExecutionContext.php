@@ -30,13 +30,6 @@ class ExecutionContext
     public $globalContext;
 
     /**
-     * Representation of the navigation through the jobs
-     *
-     * @var RecursiveArrayIterator
-     */
-    public $graph;
-
-    /**
      * Current job in execution
      *
      * @var JobInterface
@@ -47,12 +40,10 @@ class ExecutionContext
      * @param JobMessage $msg
      * @param JobGraph $graph
      */
-    public function __construct(JobMessage $msg, JobGraph $graph)
+    public function __construct(JobMessage $msg)
     {
-        $this->graph = $graph;
         $this->msg = $msg;
         $this->globalContext = $this->msg->context;
-        $this->globalContext->moveToCurrent($this->graph);
     }
 
     /**
@@ -71,26 +62,6 @@ class ExecutionContext
         $this->job = $parent->get($this->getCurrentJob());
         
         return $this->job->execute($this);
-    }
-
-    /**
-     * Checks if we starts the graph
-     *
-     * @return boolean
-     */
-    public function isFirstStep()
-    {
-        return $this->graph->key() === 0;
-    }
-
-    /**
-     * Checks if we ends the graph
-     *
-     * @return boolean
-     */
-    public function isLastStep()
-    {
-        return $this->graph->key() === (count($this->graph) - 1);
     }
 
     /**

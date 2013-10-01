@@ -154,6 +154,7 @@ class Jobflow
             return false;
         }
 
+        // We can get back the job from the msg. So job does not have to be set before. 
         if (null === $this->job) {
             $this->setJobFromMessage($msg);
         }
@@ -162,12 +163,14 @@ class Jobflow
             $this->logger->info('Read msg : '.$msg->context->getMessageName());
         }
 
-        $msg = clone $msg;
-        $msg->context->moveToCurrent($this->jobGraph);
-        $msg->input = $msg->output;
-        $msg->output = null;
+        $msg = $msg->reset();
+        $current = $msg->context->getCurrent();
 
-        $child = $this->job->get($msg->context->getCurrent());
+        // Move graph to the current value
+        $this->jobGraph->move($current);
+
+        // Gets the current job
+        $child = $this->job->get($current);
 
         if ($msg->pipe) {
             foreach ($msg->pipe->params as $pipe) {
@@ -251,12 +254,8 @@ class Jobflow
 
         // Store input message
         $this->startMsg = $msg;
-
-        $context = new ExecutionContext(
-            $this->startMsg,
-            $this->jobGraph
-        );
-
+        $this->jobGraph->move($msg->context->getCurrent());
+        $context = new ExecutionContext($this->startMsg);
         $output = $context->executeJob($this->job);
 
         // Event ? To handle createEndMsg in a more readable way ?
@@ -302,7 +301,8 @@ class Jobflow
         $msg = new JobMessage(
             new JobContext(
                 $this->getJob()->getName(),
-                $this->getJob()->getOption('context')
+                $this->getJob()->getOption('context'),
+                $this->jobGraph->current()
             )
         );
 

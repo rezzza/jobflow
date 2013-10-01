@@ -47,21 +47,33 @@ class JobGraph implements \IteratorAggregate, \Countable
     }
 
     /**
+     * Moves cursor to the given value.
+     * Useful when using asynchronous transport
+     */
+    public function move($value)
+    {
+        // No need to update if $value is already current one
+        if ($value === $this->current()) {
+            return;
+        }
+
+        $index = $this->search($value);
+
+        if (false === $index) {
+            throw new \InvalidArgumentException(sprintf('"%s" value not found in JobGraph', $value));
+        }
+
+        return $this->seek($index);
+    }
+
+    /**
+     * Ensure we have one more job next
+     *
      * @return boolean
      */
     public function hasNextJob()
     {
         return $this->getIterator()->offsetExists($this->graph->key() + 1);
-    }
-
-    /**
-     * Get name of the next child job
-     *
-     * @return string
-     */
-    public function getNextJob()
-    {
-        return $this->getJob($this->graph->key() + 1);
     }
 
     /**
@@ -74,6 +86,16 @@ class JobGraph implements \IteratorAggregate, \Countable
     public function getJob($index)
     {
         return $this->getIterator()->offsetGet($index);
+    }
+
+    /**
+     * Get name of the next child job
+     *
+     * @return string
+     */
+    public function getNextJob()
+    {
+        return $this->getJob($this->graph->key() + 1);
     }
 
     /**

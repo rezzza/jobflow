@@ -40,26 +40,11 @@ class JobContext implements JobContextInterface
      */
     private $options = array();
     
-    public function __construct($jobId, array $options = array())
+    public function __construct($jobId, array $options = array(), $current = null)
     {
         $this->jobId = $jobId;
-
+        $this->current = $current;
         $this->initOptions($options);
-    }
-
-    /**
-     * At the begining get the first item of the graph
-     */
-    public function moveToCurrent($graph)
-    {
-        if ($this->isStarting()) {
-            $this->setCurrent($graph->current());
-
-            return;
-        }
-
-        $index = $graph->search($this->getCurrent());
-        $graph->seek($index);
     }
 
     /**
