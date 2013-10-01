@@ -9,7 +9,7 @@ use ArrayIterator;
  */
 class JobGraph implements \IteratorAggregate, \Countable
 {
-    public $graph;
+    private $graph;
 
     public function __construct(ArrayIterator $graph)
     {
@@ -18,22 +18,27 @@ class JobGraph implements \IteratorAggregate, \Countable
 
     public function current()
     {
-        return $this->graph->current();
+        return $this->getIterator()->current();
     }
 
     public function getArrayCopy()
     {
-        return $this->graph->getArrayCopy();
+        return $this->getIterator()->getArrayCopy();
     }
 
     public function seek($index)
     {
-        return $this->graph->seek($index);
+        return $this->getIterator()->seek($index);
     }
 
     public function key()
     {
-        return $this->graph->key();
+        return $this->getIterator()->key();
+    }
+
+    public function next()
+    {
+        return $this->getIterator()->next();
     }
 
     public function search($value)
@@ -46,7 +51,7 @@ class JobGraph implements \IteratorAggregate, \Countable
      */
     public function hasNextJob()
     {
-        return $this->graph->offsetExists($this->graph->key() + 1);
+        return $this->getIterator()->offsetExists($this->graph->key() + 1);
     }
 
     /**
@@ -68,75 +73,7 @@ class JobGraph implements \IteratorAggregate, \Countable
      */
     public function getJob($index)
     {
-        return $this->graph->offsetGet($index);
-    }
-
-    /**
-     * Get the extractor linked to the index
-     */
-    public function getExtractor($index)
-    {
-        if ($this->isLoader($index)) {
-            $result = $index - 2;
-        } elseif ($this->isTransformer($index)) {
-            $result = $index - 1;
-        } else {
-            $result = $index;
-        }
-
-        return $this->getJob($result);
-    }
-
-    /**
-     * Get the transformer linked to the index
-     */
-    public function getTransformer($index)
-    {
-        if ($this->isLoader($index)) {
-            return $index - 1;
-        } elseif ($this->isExtractor($index)) {
-            return $index + 1;
-        } else {
-            return $index;
-        }
-    }
-
-    /**
-     * Get the loader linked to the index
-     */
-    public function getLoader($index)
-    {
-        if ($this->isExtractor($index)) {
-            return $index + 2;
-        } elseif ($this->isTransformer($index)) {
-            return $index + 1;
-        } else {
-            return $index;
-        }
-    }
-
-    /**
-     * Checks index is the extractor
-     */
-    public function isExtractor($index)
-    {
-        return $index % 3 === 0;
-    }
-
-    /**
-     * Checks index is the transformer
-     */
-    public function isTransformer($index)
-    {
-        return $index % 3 === 1;
-    }
-
-    /**
-     * Checks index is the loader
-     */
-    public function isLoader($index)
-    {
-        return $index % 3 === 2;
+        return $this->getIterator()->offsetGet($index);
     }
 
     /**

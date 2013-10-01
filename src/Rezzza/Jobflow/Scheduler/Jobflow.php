@@ -167,28 +167,26 @@ class Jobflow
         $msg->input = $msg->output;
         $msg->output = null;
 
-        $index = $this->jobGraph->search($msg->context->getCurrent());
+        $child = $this->job->get($msg->context->getCurrent());
 
-        if ($this->jobGraph->isLoader($index)) {
-            if ($msg->pipe) {
-                foreach ($msg->pipe->params as $pipe) {
-                    $forward = clone $msg;
-                    $forward->context->initOptions();
-                    $forward->pipe = $pipe;
-                    $graph = clone $this->jobGraph;
-                    $forward->context->updateToNextJob($graph);
-                    $this->addMessage($forward);
-                }
+        if ($msg->pipe) {
+            foreach ($msg->pipe->params as $pipe) {
+                $forward = clone $msg;
+                $forward->context->initOptions();
+                $forward->pipe = $pipe;
+                $graph = clone $this->jobGraph;
+                $forward->context->updateToNextJob($graph);
+                $this->addMessage($forward);
+            }
+        } elseif ($child->isLoader()) {
+            $msg->context->tick();
+
+            if (!$msg->context->isFinished()) {
+                $msg->context->addStep($msg->context->getCurrent());
+                $this->jobGraph->next();
+                $msg->context->setCurrent($this->jobGraph->current());
             } else {
-                $msg->context->tick();
-
-                if (!$msg->context->isFinished()) {
-                    $msg->context->addStep($msg->context->getCurrent());
-                    $next = $this->jobGraph->getExtractor($index);
-                    $msg->context->setCurrent($next);
-                } else {
-                    $msg = null;
-                }
+                $msg = null;
             }
         } elseif (!$this->jobGraph->hasNextJob() && $msg->context->isFinished()) {
             $msg = null;
