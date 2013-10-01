@@ -15,6 +15,8 @@ class JobOutput
 
     private $pipe;
 
+    private $end = false;
+
     public function setDestination($destination)
     {
         $this->destination = $destination;
@@ -62,5 +64,15 @@ class JobOutput
     public function getData()
     {
         return $this->data;
+    }
+
+    public function end()
+    {
+        $this->end = true;
+    }
+
+    public function isEnded()
+    {
+        return $this->end;
     }
 }

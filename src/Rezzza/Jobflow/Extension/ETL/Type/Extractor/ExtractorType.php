@@ -47,6 +47,9 @@ class ExtractorType extends ETLType
         try {
             $extractor->seek($offset);
         } catch (\OutOfBoundsException $e) {
+            // Message has no more data and should not be spread
+            $output->end();
+            
             if ($execution->getLogger()) {
                 $execution->getLogger()->debug('No data');
             }

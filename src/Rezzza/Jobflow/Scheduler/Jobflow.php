@@ -263,6 +263,11 @@ class Jobflow
             return $output;
         }
 
+        // If $output is ended (no data for example)
+        if ($output->isEnded()) {
+            return null;
+        }
+
         $end = $this->createEndMsg($output);
 
         return $end;
