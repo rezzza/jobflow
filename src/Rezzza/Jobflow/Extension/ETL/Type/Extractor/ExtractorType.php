@@ -21,9 +21,13 @@ class ExtractorType extends ETLType
             $extractor->setLogger($execution->getLogger());
         }
 
+        $offset = $execution->getGlobalOption('offset');
+        $limit = $execution->getGlobalOption('limit');
         $max = $execution->getGlobalOption('max');
+        $total = $execution->getGlobalOption('total');
 
-        if (null === $execution->getGlobalOption('total')) {
+        // Limit total to the max if lesser
+        if (null === $total) {
             $total = $extractor->count();
 
             if (null !== $max && $max < $total) {
@@ -31,19 +35,14 @@ class ExtractorType extends ETLType
             }
 
             $execution->setGlobalOption('total', $total);
-        } else {
-            $total = $execution->getGlobalOption('total');
         }
 
-        $offset = $execution->getGlobalOption('offset');
-        $limit = $execution->getGlobalOption('limit');
-
-        // Move offset if needed
         if ($execution->getJobOption('offset', 0) > $offset) {
             $offset = $execution->getJobOption('offset');
             $execution->setGlobalOption('offset', $offset);
         }
 
+        // Move offset to the specified position
         try {
             $extractor->seek($offset);
         } catch (\OutOfBoundsException $e) {
@@ -55,6 +54,7 @@ class ExtractorType extends ETLType
             }
         }
 
+        // Store data read
         for ($i = 0; $i < $limit && $extractor->valid(); $i++) {
             if ($extractor->key() > $total) {
                 break;
