@@ -99,6 +99,16 @@ class JobGraph implements \IteratorAggregate, \Countable
     }
 
     /**
+     * Get name of the previous child job
+     *
+     * @return string
+     */
+    public function getPreviousJob()
+    {
+        return $this->getJob($this->graph->key() - 1);
+    }
+
+    /**
      * @return Iterator
      */
     public function getIterator()

@@ -181,6 +181,24 @@ class Jobflow
                 $forward->context->updateToNextJob($graph);
                 $this->addMessage($forward);
             }
+
+            // When pipe we add msg to the previous extractor and tick it
+            $extractor = false;
+            while (false === $extractor) {
+                $previous = $this->jobGraph->getPreviousJob();
+                $jobPrevious = $this->job->get($previous);
+
+                if ($jobPrevious->isExtractor()) {
+                    $extractor = $previous;
+                    $msg->context->setCurrent($extractor);
+                }
+
+                $this->jobGraph->move($previous);
+            }
+
+            $msg->context->tick();
+            $msg->context->addStep($current);
+            $msg->context->setCurrent($extractor);
         } elseif ($child->isLoader()) {
             $msg->context->tick();
 
