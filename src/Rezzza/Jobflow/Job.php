@@ -2,6 +2,9 @@
 
 namespace Rezzza\Jobflow;
 
+use ProxyManager\Configuration;
+use ProxyManager\Factory\LazyLoadingValueHolderFactory;
+
 use Rezzza\Jobflow\Extension\ETL\Type\ETLType;
 use Rezzza\Jobflow\Scheduler\ExecutionContext;
 
@@ -25,6 +28,9 @@ class Job implements \IteratorAggregate, JobInterface
      */
     protected $children = array();
 
+    /**
+     * @var boolean
+     */
     protected $locked;
 
     /**
@@ -35,9 +41,6 @@ class Job implements \IteratorAggregate, JobInterface
         $this->config = $config;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function setParent(JobInterface $parent = null)
     {
         if (null !== $parent && '' === $this->config->getName()) {
@@ -54,6 +57,8 @@ class Job implements \IteratorAggregate, JobInterface
      */
     public function execute(ExecutionContext $context)
     {
+        $this->getResolved()->configJob($this->getConfig(), $this->getOptions());
+
         $input = $this->getInput($context);
         $output = $this->getOutput($context);
 
@@ -99,6 +104,14 @@ class Job implements \IteratorAggregate, JobInterface
     }
 
     /**
+     * @return JobConfig
+     */
+    public function getConfig()
+    {
+        return $this->config;
+    }
+
+    /**
      * @return array
      */
     public function getOptions()
@@ -114,44 +127,25 @@ class Job implements \IteratorAggregate, JobInterface
         return $this->config->getOption($name, $default);
     }
 
-    /**
-     * @return ResolvedJob
-     */
-    public function getResolved()
+    public function getETLWrapper($etlConfig)
     {
-        return $this->config->getResolved();
-    }
+        $config    = new Configuration();
+        $factory   = new LazyLoadingValueHolderFactory($config);
 
-    /**
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->config->getName();
-    }
+        $proxy = $factory->createProxy(
+            $etlConfig['class'],
+            function (&$wrappedObject, $proxy, $method, $parameters, &$initializer) use ($etlConfig) {
+                $initializer = null;
+                $wrappedObject = call_user_func_array(
+                    array(new \ReflectionClass($etlConfig['class']), 'newInstance'),
+                    $etlConfig['args']
+                );
 
-    /**
-     * @return JobInterface[]
-     */
-    public function getChildren()
-    {
-        return $this->children;
-    }
+                return true;
+            }
+        );
 
-    /**
-     * @param boolean $locked
-     */
-    public function setLocked($locked)
-    {
-        $this->locked = $locked;
-    }
-
-    /**
-     * @return boolean
-     */
-    public function isLocked()
-    {
-        return $this->locked;
+        return $proxy;
     }
 
     /**
@@ -210,6 +204,38 @@ class Job implements \IteratorAggregate, JobInterface
     }
 
     /**
+     * @return ResolvedJob
+     */
+    public function getResolved()
+    {
+        return $this->config->getResolved();
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->config->getName();
+    }
+
+    /**
+     * @return JobInterface[]
+     */
+    public function getChildren()
+    {
+        return $this->children;
+    }
+
+    /**
+     * @param boolean $locked
+     */
+    public function setLocked($locked)
+    {
+        $this->locked = $locked;
+    }
+
+    /**
      * @return JobInterface
      */
     public function getParent()
@@ -225,6 +251,9 @@ class Job implements \IteratorAggregate, JobInterface
         return $this->config->getIo();
     }
 
+    /**
+     * @return LoggerInterface
+     */
     public function getLogger()
     {
         return $this->config->getLogger();
@@ -236,6 +265,11 @@ class Job implements \IteratorAggregate, JobInterface
     public function getEtlConfig()
     {
         return $this->config->getEtlConfig();
+    }
+
+    public function getContextOptions()
+    {
+        return $this->config->getContextOptions();
     }
 
     /**
@@ -256,46 +290,36 @@ class Job implements \IteratorAggregate, JobInterface
         return $this->getParent()->getName().'.'.$this->getName();
     }
 
+    /**
+     * @return boolean
+     */
+    public function isLocked()
+    {
+        return $this->locked;
+    }
+
+    /**
+     * @return boolean
+     */
     public function isExtractor()
     {
         return $this->config->getEtlType() === ETLType::TYPE_EXTRACTOR;
     }
 
+    /**
+     * @return boolean
+     */
     public function isTransformer()
     {
         return $this->config->getEtlType() === ETLType::TYPE_TRANSFORMER;
     }
 
+    /**
+     * @return boolean
+     */
     public function isLoader()
     {
         return $this->config->getEtlType() === ETLType::TYPE_LOADER;
-    }
-
-    public function getETLWrapper($etlConfig)
-    {
-        if (!is_array($etlConfig)) {
-            throw new \RuntimeException('etlConfig in JobConfig should be an array to built ETL Wrapper');
-        }
-
-        if (!array_key_exists('class', $etlConfig) || !array_key_exists('args', $etlConfig)) {
-            throw new \RuntimeException('etlConfig should have "class" and "args" keys');
-        }
-
-        $args = array();
-
-        // We execute all DelayedArg
-        foreach ($etlConfig['args'] as $arg) {
-            if ($arg instanceof DelayedArg) {
-                $arg = $arg();
-            }
-
-            $args[] = $arg;
-        }
-
-        return call_user_func_array(
-            array(new \ReflectionClass($etlConfig['class']), 'newInstance'),
-            $args
-        );
     }
 
     public function __toString()

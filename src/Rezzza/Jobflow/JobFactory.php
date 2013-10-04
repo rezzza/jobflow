@@ -72,9 +72,9 @@ class JobFactory
         }
 
         // We need to avoid this. Io should be injected in the job which required it
-        if (null !== $io && !array_key_exists('io', $options)) {
-            $options['io'] = $io;
-        }
+        // if (null !== $io && !array_key_exists('io', $options)) {
+        //     $options['io'] = $io;
+        // }
 
         if ($type instanceof JobTypeInterface) {
             $type = $this->resolveType($type);

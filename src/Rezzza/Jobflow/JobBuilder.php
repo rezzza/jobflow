@@ -115,17 +115,17 @@ class JobBuilder extends JobConfig
     {
         $childrenKeys = array_keys($this->unresolvedChildren);
 
-        $bounds = array(
+        /*$bounds = array(
             'first' => reset($childrenKeys),
             'last' => end($childrenKeys)
-        );
+        );*/
 
         foreach ($this->unresolvedChildren as $name => $info) {
             // Waiting for better idea, we inject IO to the first and last step
             // In order to make easier ETL usage
-            if (in_array($name, $bounds)) {
+            /*if (in_array($name, $bounds)) {
                 $info['options']['io'] = $this->getOption('io');
-            }
+            }*/
 
             $this->children[$name] = $this->create($name, $info['type'], $info['options']);
         }

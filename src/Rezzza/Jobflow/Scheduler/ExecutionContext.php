@@ -58,7 +58,9 @@ class ExecutionContext
             // No more Job to run. debug
             return 0;
         }
-        
+
+        //$options = $parent->getResolved()->configJob($parent->getConfig(), $parent->getOptions());
+
         $this->job = $parent->get($this->getCurrentJob());
         
         return $this->job->execute($this);

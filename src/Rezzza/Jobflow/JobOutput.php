@@ -53,25 +53,13 @@ class JobOutput
             return;
         }
 
-        if ($this->getDestination() instanceof Pipe) {
-            if (null === $this->pipe) {
-                $this->pipe = $this->getDestination();
-            }
-
-            $this->pipe->addParam($result);
-
-            return;
-        }
-
         $this->getDestination()->load($result, new \Knp\ETL\Context\Context);
     }
 
     public function finish()
     {
-        if ($this->getDestination() instanceof \Knp\ETL\Loader\Doctrine\ORMLoader) {
-            $this->getDestination()->flush(new \Knp\ETL\Context\Context);
-            $this->getDestination()->clear(new \Knp\ETL\Context\Context);
-        }
+        $this->pipe = $this->getDestination()->flush(new \Knp\ETL\Context\Context);
+        $this->getDestination()->clear(new \Knp\ETL\Context\Context);
     }
 
     public function getPipe()

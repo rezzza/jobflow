@@ -54,6 +54,15 @@ class ResolvedJob
         return $this->innerType;
     }
 
+    public function configJob($config, $options)
+    {
+        $options = $this->getOptionsResolver()->resolve($options);
+
+        $this->buildConfig($config, $options);
+
+        return $options;
+    }
+
     /**
      * Execute innerType
      *
@@ -106,8 +115,6 @@ class ResolvedJob
      */
     public function createBuilder($name, JobFactory $factory, array $options = array())
     {
-        $options = $this->getOptionsResolver()->resolve($options);
-
         $builder = $this->newBuilder($name, $factory, $options);
 
         $builder->setResolved($this);
@@ -146,5 +153,14 @@ class ResolvedJob
         foreach ($this->typeExtensions as $extension) {
             $extension->buildJob($builder, $options);
         }
+    }
+
+    protected function buildConfig($config, $options)
+    {
+        if (null !== $this->parent) {
+            $this->parent->buildConfig($config, $options);
+        }
+
+        $this->innerType->buildConfig($config, $options);
     }
 }

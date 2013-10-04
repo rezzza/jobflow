@@ -20,7 +20,7 @@ $jobflowFactory = $builder->getJobflowFactory();
 $rmqClient->setJobflowFactory($jobflowFactory);
 
 // Create the scheduler responsible for the job execution
-$jobflow = $jobflowFactory->create('rabbitmq');
+$jobflow = $jobflowFactory->create('php');
 
 // Moreover : Don't forget to insert your google api key
 

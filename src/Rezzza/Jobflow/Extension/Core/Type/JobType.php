@@ -19,9 +19,9 @@ use Rezzza\Jobflow\Metadata\MetadataManager;
  */
 class JobType extends AbstractJobType
 {
-    public function buildJob(JobBuilder $builder, array $options)
-    {
-        $builder
+    public function buildConfig($config, $options)
+    {   
+        $config
             ->setIo($options['io'])
             ->setMetadataManager(new MetadataManager($options['metadata_manager']))
         ;
@@ -31,8 +31,7 @@ class JobType extends AbstractJobType
     {
         $resolver->setDefaults(array(
             'io' => null,
-            'metadata_manager' => array(),
-            'context' => array()
+            'metadata_manager' => array()
         ));
     }
 

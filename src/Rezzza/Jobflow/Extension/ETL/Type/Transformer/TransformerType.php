@@ -20,9 +20,9 @@ class TransformerType extends ETLType
 
     protected $transformClass;
 
-    public function buildJob(JobBuilder $builder, array $options)
+    public function buildConfig($config, $options)
     {
-        parent::buildJob($builder, $options);
+        parent::buildConfig($config, $options);
 
         $this->etlContext = new ETL\Context\Context();
         $this->updateMethod = $options['update_method'];

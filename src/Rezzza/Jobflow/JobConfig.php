@@ -46,6 +46,8 @@ class JobConfig
 
     private $metadataManager;
 
+    private $contextOptions;
+
     /**
      * @param string $name
      * @param array $options
@@ -200,6 +202,16 @@ class JobConfig
     public function getMetadataManager()
     {
         return $this->metadataManager;
+    }
+
+    public function setContextOptions($options)
+    {
+        $this->contextOptions = $options;
+    }
+
+    public function getContextOptions()
+    {
+        return $this->contextOptions;
     }
 
     /**

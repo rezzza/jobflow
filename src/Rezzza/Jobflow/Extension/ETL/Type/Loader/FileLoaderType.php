@@ -6,7 +6,6 @@ use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 use Rezzza\Jobflow\AbstractJobType;
-use Rezzza\Jobflow\DelayedArg;
 
 class FileLoaderType extends AbstractJobType
 {
@@ -17,12 +16,8 @@ class FileLoaderType extends AbstractJobType
             'args' => function(Options $options) {
                 $io = $options['io'];
 
-                $file = function() use ($io) {
-                    return new \SplFileObject($io->stdout->getDsn(), 'a+');
-                };
-
                 return array(
-                    'file' => new DelayedArg($file)
+                    'file' =>  new \SplFileObject($io->stdout->getDsn(), 'a+')
                 );
             }
         ));

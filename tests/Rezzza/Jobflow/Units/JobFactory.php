@@ -160,7 +160,6 @@ class JobFactory extends Units\Test
     {
         $givenOptions = array('a' => '1', 'b' => '2');
         $io = $this->getMockIo();
-        $expectedOptions = array_merge($givenOptions, array('io' => $io));
         $resolved = $this->getMockResolvedJob();
 
         $resolved->getMockController()->createBuilder = 'jean-marc';
@@ -170,7 +169,7 @@ class JobFactory extends Units\Test
             ->if($builder = $this->factory->createNamedBuilder('name', 'type', $io, $givenOptions))
                 ->mock($resolved)
                     ->call('createBuilder')
-                        ->withArguments('name', $this->factory, $expectedOptions)
+                        ->withArguments('name', $this->factory, $givenOptions)
                         ->once()
 
                 ->mock($this->registry)

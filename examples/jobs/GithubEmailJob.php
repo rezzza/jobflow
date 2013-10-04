@@ -16,7 +16,8 @@ class GithubEmailJob extends AbstractJobType
                 'extract_user_url',
                 'json_extractor',
                 array(
-                    'path' => '*.url'
+                    'path' => '*.url',
+                    'io' => $this->getIo()
                 )
             )
             ->add(
@@ -58,22 +59,27 @@ class GithubEmailJob extends AbstractJobType
             )
             ->add(
                 'email_loader',
-                'file_loader'
+                'file_loader',
+                array(
+                    'io' => $this->getIo()
+                )
             )
         ;
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function getIo()
     {
-        $resolver->setDefaults(array(
-            'io' => new Io\IoDescriptor(
-                new Io\Input('https://api.github.com/repos/symfony/symfony/contributors?access_token=236b93940ce523226035931f67d2de6bcc1aeab9'),
-                new Io\Output('file:///'.__DIR__."/../temp/email.csv")
-            ),
-            'context' => array(
-                'limit' => 10
-            )
-        ));
+        return new Io\IoDescriptor(
+            new Io\Input('https://api.github.com/repos/symfony/symfony/contributors?access_token=236b93940ce523226035931f67d2de6bcc1aeab9'),
+            new Io\Output('file:///'.__DIR__."/../temp/email.csv")
+        );
+    }
+
+    public function getContextOptions()
+    {
+        return array(
+            'limit' => 10
+        );
     }
 
     public function getName()

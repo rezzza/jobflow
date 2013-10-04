@@ -17,7 +17,10 @@ class PlaceToStreetJob extends AbstractJobType
                 'example_extractor', // name
                 'json_extractor',
                 array(
-                    'path' => 'results.*.geometry'
+                    'path' => 'results.*.geometry',
+                    'io' => new Io\IoDescriptor(
+                       new Io\Input('https://maps.googleapis.com/maps/api/place/textsearch/json?query=pub+in+marseille+france&sensor=false&key=AIzaSyCuR9yU9lRmzdnyU7YWVKZZRUIsymWkQdU')
+                    )
                 )
             )
             ->add(
@@ -25,6 +28,7 @@ class PlaceToStreetJob extends AbstractJobType
                 'callback_transformer',
                 array(
                     'callback' => function($data, $target) {
+                        var_dump($data->location); exit;
                         $img = sprintf(
                             'http://maps.googleapis.com/maps/api/streetview?size=800x600&location=%F,%F&fov=90&heading=235&pitch=10&sensor=false', 
                             $data->location->lat,
@@ -39,32 +43,19 @@ class PlaceToStreetJob extends AbstractJobType
                 'example_loader',
                 'file_loader',
                 array(
-                    'etl_config' => function(Options $options) {
-                        $class = $options['class'];
-                        $file = function() {
-                            return new \SplFileObject(__DIR__."/../temp/job-".uniqid().".jpeg", 'w+');
-                        };
-
-                        return array(
-                            'class' => $class,
-                            'args' => array(new DelayedArg($file))
-                        );
-                    } 
+                    'args' => function(Options $options) {
+                        return array(new \SplFileObject(__DIR__."/../temp/job-".uniqid().".jpeg", 'w+'));
+                    }
                 )
             )
         ;
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function getContextOptions()
     {
-        $resolver->setDefaults(array(
-            'io' => new Io\IoDescriptor(
-                new Io\Input('https://maps.googleapis.com/maps/api/place/textsearch/json?query=pub+in+marseille+france&sensor=false&key=AIzaSyCgYbLbVd7g2dfjDLJCBGjcZJvpqT-4Dsc')
-            ),
-            'context' => array(
-                'limit' => 1
-            )
-        ));
+        return array(
+            'limit' => 1
+        );
     }
 
     public function getName()

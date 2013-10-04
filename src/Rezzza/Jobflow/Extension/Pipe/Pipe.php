@@ -1,6 +1,6 @@
 <?php
 
-namespace Rezzza\Jobflow;
+namespace Rezzza\Jobflow\Extension\Pipe;
 
 class Pipe
 {
