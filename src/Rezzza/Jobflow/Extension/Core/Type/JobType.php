@@ -6,6 +6,7 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 use Rezzza\Jobflow\AbstractJobType;
 use Rezzza\Jobflow\JobBuilder;
+use Rezzza\Jobflow\Metadata\MetadataManager;
 
 /**
  * Doit configurer le Job via son FormConfig setté par le Builder. 
@@ -22,6 +23,7 @@ class JobType extends AbstractJobType
     {
         $builder
             ->setIo($options['io'])
+            ->setMetadataManager(new MetadataManager($options['metadata_manager']))
         ;
     }
 
@@ -29,6 +31,7 @@ class JobType extends AbstractJobType
     {
         $resolver->setDefaults(array(
             'io' => null,
+            'metadata_manager' => array(),
             'context' => array()
         ));
     }

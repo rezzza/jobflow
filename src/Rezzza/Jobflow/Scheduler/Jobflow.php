@@ -327,6 +327,7 @@ class Jobflow
         
         $msg->output = $output->getData();
         $msg->pipe = $output->getPipe();
+        $msg->metadata = $output->getMetadata();
 
         return $msg;
     }

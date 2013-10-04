@@ -44,6 +44,8 @@ class JobConfig
 
     private $logger;
 
+    private $metadataManager;
+
     /**
      * @param string $name
      * @param array $options
@@ -188,6 +190,16 @@ class JobConfig
     public function getLogger()
     {
         return $this->logger;
+    }
+
+    public function setMetadataManager($manager)
+    {
+        $this->metadataManager = $manager;
+    }
+
+    public function getMetadataManager()
+    {
+        return $this->metadataManager;
     }
 
     /**

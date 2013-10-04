@@ -48,7 +48,7 @@ class TransformerType extends ETLType
                 call_user_func($this->updateMethod, $transformedData);
             }
             
-            $output->write($transformedData);
+            $output->write($transformedData, $k);
         }
 
         return $output;

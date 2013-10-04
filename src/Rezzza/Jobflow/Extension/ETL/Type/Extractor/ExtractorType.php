@@ -60,7 +60,7 @@ class ExtractorType extends ETLType
                 break;
             }
 
-            $output->write($extractor->current());
+            $output->write($extractor->current(), $offset + $i);
             $extractor->next();
         }
 

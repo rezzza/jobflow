@@ -17,6 +17,10 @@ class JobOutput
 
     private $end = false;
 
+    private $metadataManager;
+
+    private $metadata;
+
     public function setDestination($destination)
     {
         $this->destination = $destination;
@@ -27,10 +31,24 @@ class JobOutput
         return $this->destination;
     }
 
-    public function write($result)
+    public function setMetadataManager($manager)
     {
+        $this->metadataManager = $manager;
+    }
+
+    public function getMetadataManager()
+    {
+        return $this->metadataManager;
+    }
+
+    public function write($result, $offset)
+    {
+        if (null !== $this->metadataManager) {
+            $this->metadata[$offset] = $this->metadataManager->generate($result);
+        }
+
         if (null === $this->getDestination()) {
-            $this->data[] = $result;
+            $this->data[$offset] = $result;
 
             return;
         }
@@ -64,6 +82,11 @@ class JobOutput
     public function getData()
     {
         return $this->data;
+    }
+
+    public function getMetadata()
+    {
+        return $this->metadata;
     }
 
     public function end()

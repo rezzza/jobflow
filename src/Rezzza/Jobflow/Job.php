@@ -176,7 +176,10 @@ class Job implements \IteratorAggregate, JobInterface
 
         if ($execution->msg->input) {
             $input->setData($execution->msg->input);
-        } 
+        }
+
+        $input->setMetadata($execution->msg->metadata);
+        $input->setMetadataManager($this->config->getMetadataManager());
 
         if ($this->isTransformer()) {
             $etl = $this->getEtlConfig();
@@ -201,6 +204,7 @@ class Job implements \IteratorAggregate, JobInterface
         }
 
         $output->setDestination($destination);
+        $output->setMetadataManager($this->config->getMetadataManager());
 
         return $output;
     }

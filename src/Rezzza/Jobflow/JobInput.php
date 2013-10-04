@@ -15,6 +15,10 @@ class JobInput
 
     private $data = array();
 
+    private $metadata;
+
+    private $metadataManager;
+
     public function getExtractor()
     {
         return $this->extractor;
@@ -43,5 +47,25 @@ class JobInput
     public function setTransformer($transformer)
     {
         $this->transformer = $transformer;
+    }
+
+    public function setMetadata($metadata)
+    {
+        $this->metadata = $metadata;
+    }
+
+    public function getMetadata()
+    {
+        return $this->metadata;
+    }
+
+    public function setMetadataManager($manager)
+    {
+        $this->metadataManager = $manager;
+    }
+
+    public function getMetadataManager()
+    {
+        return $this->metadataManager;
     }
 }

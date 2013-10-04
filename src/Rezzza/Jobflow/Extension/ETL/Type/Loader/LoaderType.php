@@ -18,8 +18,8 @@ class LoaderType extends ETLType
             $output->getDestination()->setLogger($execution->getLogger());
         }
 
-        foreach ($input->getData() as $d) {
-            $output->write($d);
+        foreach ($input->getData() as $k => $d) {
+            $output->write($d, $k);
         }
 
         // Should not use Events ? Will be more flexible
