@@ -25,7 +25,7 @@ class JobConfig
     /**
      * @var array
      */
-    private $etlConfig;
+    private $configProcessor;
 
     /**
      * @var string
@@ -44,9 +44,11 @@ class JobConfig
 
     private $logger;
 
-    private $metadataManager;
+    private $metadataGenerator;
 
     private $contextOptions;
+
+    private $messageContainer;
 
     /**
      * @param string $name
@@ -77,15 +79,15 @@ class JobConfig
     /**
      * @return array
      */
-    public function getEtlConfig()
+    public function getConfigProcessor()
     {
-        return $this->etlConfig;
+        return $this->configProcessor;
     }
 
     /**
      * @return string
      */
-    public function getEtlType()
+    public function getETLType()
     {
         return $this->etlType;
     }
@@ -139,9 +141,9 @@ class JobConfig
      *
      * @return JobConfig
      */
-    public function setEtlConfig(array $etlConfig)
+    public function setConfigProcessor($config)
     {
-        $this->etlConfig = $etlConfig;
+        $this->configProcessor = $config;
 
         return $this;
     }
@@ -151,7 +153,7 @@ class JobConfig
      *
      * @return JobConfig
      */
-    public function setEtlType($etlType)
+    public function setETLType($etlType)
     {
         $this->etlType = $etlType;
 
@@ -194,19 +196,35 @@ class JobConfig
         return $this->logger;
     }
 
-    public function setMetadataManager($manager)
+    public function setMetadataGenerator($generator)
     {
-        $this->metadataManager = $manager;
+        $this->metadataGenerator = $generator;
+
+        return $this;
     }
 
-    public function getMetadataManager()
+    public function getMetadataGenerator()
     {
-        return $this->metadataManager;
+        return $this->metadataGenerator;
+    }
+
+    public function setMessageContainer($container)
+    {
+        $this->messageContainer = $container;
+
+        return $this;
+    }
+
+    public function getMessageContainer()
+    {
+        return $this->messageContainer;
     }
 
     public function setContextOptions($options)
     {
         $this->contextOptions = $options;
+
+        return $this;
     }
 
     public function getContextOptions()

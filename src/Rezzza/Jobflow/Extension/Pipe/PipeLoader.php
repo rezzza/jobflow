@@ -5,8 +5,12 @@ namespace Rezzza\Jobflow\Extension\Pipe;
 use Knp\ETL\LoaderInterface;
 use Knp\ETL\ContextInterface;
 
+use Psr\Log\LoggerAwareTrait;
+
 class PipeLoader implements LoaderInterface
 {
+    use LoggerAwareTrait;
+
     private $pipe;
 
     public function __construct(array $mapping)

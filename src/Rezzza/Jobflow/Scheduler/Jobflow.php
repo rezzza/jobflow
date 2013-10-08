@@ -4,6 +4,7 @@ namespace Rezzza\Jobflow\Scheduler;
 
 use Psr\Log\LoggerInterface;
 
+use Rezzza\Jobflow\Extension\Pipe\Pipe;
 use Rezzza\Jobflow\JobContext;
 use Rezzza\Jobflow\JobInterface;
 use Rezzza\Jobflow\JobFactory;
@@ -132,7 +133,7 @@ class Jobflow
             $this->logger->info(sprintf(
                 'Add new message for job [%s] : %s', 
                 $msg->context->getJobId(),
-                $step
+                $step            
             ));
         }
         
@@ -160,10 +161,14 @@ class Jobflow
         }
 
         if ($this->logger) {
-            $this->logger->info('Read msg : '.$msg->context->getMessageName());
+            $this->logger->info(sprintf(
+                'Read message for job [%s] : %s => %s',
+                $msg->context->getJobId(),
+                $msg->context->getCurrent(),
+                json_encode($msg->context->getOptions())
+            ));
         }
 
-        $msg = $msg->reset();
         $current = $msg->context->getCurrent();
 
         // Move graph to the current value
@@ -172,7 +177,7 @@ class Jobflow
         // Gets the current job
         $child = $this->job->get($current);
 
-        if ($msg->pipe) {
+        if ($msg->pipe instanceof Pipe) {
             foreach ($msg->pipe->params as $pipe) {
                 $forward = clone $msg;
                 $forward->context->initOptions();
@@ -187,9 +192,9 @@ class Jobflow
             $msg->context->tick();
 
             if (!$msg->context->isFinished()) {
-                // When loader we add msg to the previous extractor and tick it
+                // When loader we add msg to the requeue to the previous extractor
                 $extractor = false;
-                
+
                 while (false === $extractor) {
                     $previous = $this->jobGraph->getPreviousJob();
                     $jobPrevious = $this->job->get($previous);
@@ -269,8 +274,11 @@ class Jobflow
 
         // Store input message
         $this->startMsg = $msg;
+        $endMsg = clone $msg;
+        $endMsg->data = array();
+        $endMsg->pipe = null;
         $this->jobGraph->move($msg->context->getCurrent());
-        $context = new ExecutionContext($this->startMsg);
+        $context = new ExecutionContext($this->startMsg, $endMsg);
         $output = $context->executeJob($this->job);
 
         // Event ? To handle createEndMsg in a more readable way ?
@@ -283,9 +291,7 @@ class Jobflow
             return null;
         }
 
-        $end = $this->createEndMsg($output);
-
-        return $end;
+        return $output->getMessage();
     }
 
     /**
@@ -327,22 +333,6 @@ class Jobflow
         );
 
         $msg->jobOptions = $this->getJob()->getOptions();
-
-        return $msg;
-    }
-
-    /**
-     * @param JobOutput $output
-     *
-     * @return JobMessage
-     */
-    private function createEndMsg(JobOutput $output)
-    {
-        $msg = clone $this->startMsg;
-        
-        $msg->output = $output->getData();
-        $msg->pipe = $output->getPipe();
-        $msg->metadata = $output->getMetadata();
 
         return $msg;
     }

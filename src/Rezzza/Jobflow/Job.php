@@ -2,9 +2,6 @@
 
 namespace Rezzza\Jobflow;
 
-use ProxyManager\Configuration;
-use ProxyManager\Factory\LazyLoadingValueHolderFactory;
-
 use Rezzza\Jobflow\Extension\ETL\Type\ETLType;
 use Rezzza\Jobflow\Scheduler\ExecutionContext;
 
@@ -57,19 +54,35 @@ class Job implements \IteratorAggregate, JobInterface
      */
     public function execute(ExecutionContext $context)
     {
-        $this->getResolved()->configJob($this->getConfig(), $this->getOptions());
+        // We inject msg as it could be used during job runtime configuration
+        $options = $this->getOptions();
+        $options['message'] = $context->input;
 
-        $input = $this->getInput($context);
-        $output = $this->getOutput($context);
+        // Runtime configuration (!= buildJob which is executed when we build job)
+        $this->getResolved()->configJob($this->getConfig(), $options);
+
+        $input = $this->getInput($context->input);
+        $output = $this->getOutput($context->output);
 
         if ($this->getLogger()) {
-            $this->getLogger()->info(sprintf('Start to execute Job : %s', $this->getName()));
+            $this->getLogger()->info(sprintf(
+                'Start to execute Job [%s] : %s',
+                $this->getParent()->getName(),
+                $this->getName()
+            ));
         }
 
         $this->getResolved()->execute($input, $output, $context);
 
+        // Update context
+        $output->setContextFromInput($input);
+
         if ($this->getLogger()) {
-            $this->getLogger()->info(sprintf('End to execute Job : %s', $this->getName()));
+            $this->getLogger()->info(sprintf(
+                'End to execute Job [%s] : %s',
+                $this->getParent()->getName(),
+                $this->getName()
+            ));
         }
 
         return $output;
@@ -127,78 +140,22 @@ class Job implements \IteratorAggregate, JobInterface
         return $this->config->getOption($name, $default);
     }
 
-    public function getETLWrapper($etlConfig)
-    {
-        $config    = new Configuration();
-        $factory   = new LazyLoadingValueHolderFactory($config);
-
-        $proxy = $factory->createProxy(
-            $etlConfig['class'],
-            function (&$wrappedObject, $proxy, $method, $parameters, &$initializer) use ($etlConfig) {
-                $initializer = null;
-                $wrappedObject = call_user_func_array(
-                    array(new \ReflectionClass($etlConfig['class']), 'newInstance'),
-                    $etlConfig['args']
-                );
-
-                return true;
-            }
-        );
-
-        return $proxy;
-    }
-
     /**
      * @return JobInput
      */
-    public function getInput(ExecutionContext $execution)
+    public function getInput(JobMessage $message)
     {
-        $input = new JobInput();
-
-        if ($this->isExtractor()) {
-            $etl = $this->getEtlConfig();
-
-            // Mapping du Pipe
-            if ($execution->msg->pipe) {
-                foreach($execution->msg->pipe as $key => $value) {
-                    $etl['args'][$key] = $value;
-                }
-            }
-
-            $input->setExtractor($this->getETLWrapper($etl));
-        } 
-
-        if ($execution->msg->input) {
-            $input->setData($execution->msg->input);
-        }
-
-        $input->setMetadata($execution->msg->metadata);
-        $input->setMetadataManager($this->config->getMetadataManager());
-
-        if ($this->isTransformer()) {
-            $etl = $this->getEtlConfig();
-
-            $input->setTransformer($this->getETLWrapper($etl));
-        }
-
-        return $input;
+        return new JobInput($message, $this->getConfigProcessor());
     }
 
     /**
      * @return JobOutput
      */
-    public function getOutput(ExecutionContext $context)
+    public function getOutput(JobMessage $message)
     {
-        $output = new JobOutput();
-        $destination = null;
+        $output = new JobOutput($message, $this->getConfigProcessor());
 
-        if ($this->isLoader()) {
-            $etl = $this->getEtlConfig();
-            $destination = $this->getETLWrapper($etl);
-        }
-
-        $output->setDestination($destination);
-        $output->setMetadataManager($this->config->getMetadataManager());
+        $output->setMetadataGenerator($this->config->getMetadataGenerator());
 
         return $output;
     }
@@ -262,9 +219,9 @@ class Job implements \IteratorAggregate, JobInterface
     /**
      * @return array
      */
-    public function getEtlConfig()
+    public function getConfigProcessor()
     {
-        return $this->config->getEtlConfig();
+        return $this->config->getConfigProcessor();
     }
 
     public function getContextOptions()
@@ -303,7 +260,7 @@ class Job implements \IteratorAggregate, JobInterface
      */
     public function isExtractor()
     {
-        return $this->config->getEtlType() === ETLType::TYPE_EXTRACTOR;
+        return $this->config->getETLType() === ETLType::TYPE_EXTRACTOR;
     }
 
     /**
@@ -311,7 +268,7 @@ class Job implements \IteratorAggregate, JobInterface
      */
     public function isTransformer()
     {
-        return $this->config->getEtlType() === ETLType::TYPE_TRANSFORMER;
+        return $this->config->getETLType() === ETLType::TYPE_TRANSFORMER;
     }
 
     /**
@@ -319,7 +276,7 @@ class Job implements \IteratorAggregate, JobInterface
      */
     public function isLoader()
     {
-        return $this->config->getEtlType() === ETLType::TYPE_LOADER;
+        return $this->config->getETLType() === ETLType::TYPE_LOADER;
     }
 
     public function __toString()

@@ -20,7 +20,14 @@ class ExecutionContext
      *
      * @var JobMessage
      */
-    public $msg;
+    public $input;
+
+    /**
+     * Next msg
+     *
+     * @var JobMessage
+     */
+    public $output;
 
     /**
      * Global Context moved from message to message
@@ -40,10 +47,11 @@ class ExecutionContext
      * @param JobMessage $msg
      * @param JobGraph $graph
      */
-    public function __construct(JobMessage $msg)
+    public function __construct(JobMessage $input, JobMessage $output)
     {
-        $this->msg = $msg;
-        $this->globalContext = $this->msg->context;
+        $this->input = $input;
+        $this->output = $output;
+        $this->globalContext = $this->input->context;
     }
 
     /**
@@ -58,8 +66,6 @@ class ExecutionContext
             // No more Job to run. debug
             return 0;
         }
-
-        //$options = $parent->getResolved()->configJob($parent->getConfig(), $parent->getOptions());
 
         $this->job = $parent->get($this->getCurrentJob());
         

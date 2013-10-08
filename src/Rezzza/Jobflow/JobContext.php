@@ -58,9 +58,6 @@ class JobContext implements JobContextInterface
         $this->addStep($this->current);
         $nextJob = null;
 
-        // We need to separate ETL processes. 
-        // A loader should always refer to the extractor of its process !
-        // And add to the message, the pipe info. (input data, next job)
         if ($graph->hasNextJob()) {
             $nextJob = $graph->getNextJob();
         }

@@ -31,12 +31,10 @@ class TransformerType extends ETLType
 
     public function execute(JobInput $input, JobOutput $output, ExecutionContext $execution)
     {       
-        $transformer = $input->getTransformer();
+        $transformer = $input->getProcessor();
 
         foreach ($input->getData() as $k => $result) {
-            if ($execution->getLogger()) {
-                $execution->getLogger()->debug('transformation '.$k);
-            }
+            $output->writeMetadata($result, $k);
 
             if ($this->transformClass) {
                 $this->etlContext->setTransformedData(new $this->transformClass);
@@ -46,6 +44,10 @@ class TransformerType extends ETLType
 
             if ($this->updateMethod) {
                 call_user_func($this->updateMethod, $transformedData);
+            }
+
+            if ($execution->getLogger()) {
+                $execution->getLogger()->debug('transformation '.$k.' : '.json_encode($transformedData));
             }
             
             $output->write($transformedData, $k);

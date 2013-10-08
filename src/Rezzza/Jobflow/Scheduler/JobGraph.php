@@ -41,6 +41,11 @@ class JobGraph implements \IteratorAggregate, \Countable
         return $this->getIterator()->next();
     }
 
+    public function rewind()
+    {
+        return $this->getIterator()->rewind();
+    }
+
     public function search($value)
     {
        return array_search($value, $this->getArrayCopy());

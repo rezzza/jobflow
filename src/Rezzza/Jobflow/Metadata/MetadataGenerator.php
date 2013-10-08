@@ -4,7 +4,7 @@ namespace Rezzza\Jobflow\Metadata;
 
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
-class MetadataManager
+class MetadataGenerator
 {
     private $mapping;
 

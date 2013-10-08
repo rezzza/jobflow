@@ -2,17 +2,15 @@
 
 namespace Rezzza\Jobflow\Extension\Core\Type;
 
+use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 use Rezzza\Jobflow\AbstractJobType;
 use Rezzza\Jobflow\JobBuilder;
-use Rezzza\Jobflow\Metadata\MetadataManager;
+use Rezzza\Jobflow\Metadata\MessageContainer;
+use Rezzza\Jobflow\Metadata\MetadataGenerator;
 
 /**
- * Doit configurer le Job via son FormConfig setté par le Builder. 
- * On définit des options par défaut ou non et dans le buildJob, 
- * il faut setter au Job ces options
- *
  * Generic Parent Class for all job type. Generic logic should go here
  *
  * @author Timothée Barray <tim@amicalement-web.net>
@@ -23,7 +21,8 @@ class JobType extends AbstractJobType
     {   
         $config
             ->setIo($options['io'])
-            ->setMetadataManager(new MetadataManager($options['metadata_manager']))
+            ->setMetadataGenerator(new MetadataGenerator($options['metadata']))
+            ->setMessageContainer($options['message_container'])
         ;
     }
 
@@ -31,7 +30,11 @@ class JobType extends AbstractJobType
     {
         $resolver->setDefaults(array(
             'io' => null,
-            'metadata_manager' => array()
+            'metadata' => array(),
+            'message' => null,
+            'message_container' => function (Options $options) {
+                return new MessageContainer($options['message']);
+            }
         ));
     }
 

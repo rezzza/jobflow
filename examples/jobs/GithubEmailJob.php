@@ -70,7 +70,7 @@ class GithubEmailJob extends AbstractJobType
     public function getIo()
     {
         return new Io\IoDescriptor(
-            new Io\Input('https://api.github.com/repos/symfony/symfony/contributors?access_token=236b93940ce523226035931f67d2de6bcc1aeab9'),
+            new Io\Input('https://api.github.com/repos/symfony/console/stargazers?access_token=236b93940ce523226035931f67d2de6bcc1aeab9'),
             new Io\Output('file:///'.__DIR__."/../temp/email.csv")
         );
     }

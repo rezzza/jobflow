@@ -7,83 +7,54 @@ namespace Rezzza\Jobflow;
  *
  * @author Timothée Barray <tim@amicalement-web.net>
  */
-class JobOutput
+class JobOutput extends JobStream
 {
-    private $destination;
+    private $metadataGenerator;
 
-    private $data = array();
-
-    private $pipe;
-
-    private $end = false;
-
-    private $metadataManager;
-
-    private $metadata;
-
-    public function setDestination($destination)
+    public function setMetadataGenerator($generator)
     {
-        $this->destination = $destination;
-    }
-
-    public function getDestination()
-    {
-        return $this->destination;
-    }
-
-    public function setMetadataManager($manager)
-    {
-        $this->metadataManager = $manager;
-    }
-
-    public function getMetadataManager()
-    {
-        return $this->metadataManager;
+        $this->metadataGenerator = $generator;
     }
 
     public function write($result, $offset)
     {
-        if (null !== $this->metadataManager) {
-            $this->metadata[$offset] = $this->metadataManager->generate($result);
-        }
-
-        if (null === $this->getDestination()) {
-            $this->data[$offset] = $result;
+        // Should find a way to remove this condition
+        if ($this->processor instanceof \Knp\ETL\LoaderInterface) {
+            $this->processor->load($result, new \Knp\ETL\Context\Context);
 
             return;
         }
 
-        $this->getDestination()->load($result, new \Knp\ETL\Context\Context);
+        $this->message->data[$offset] = $result;
     }
 
-    public function finish()
+    public function writeMetadata($result, $offset)
     {
-        $this->pipe = $this->getDestination()->flush(new \Knp\ETL\Context\Context);
-        $this->getDestination()->clear(new \Knp\ETL\Context\Context);
+        if (null !== $this->metadataGenerator) {
+            $this->message->metadata[$offset] = $this->metadataGenerator->generate($result);
+        }
     }
 
-    public function getPipe()
+    public function setContextFromInput($input)
     {
-        return $this->pipe;
-    }
+        $options = $input->getMessage()->context->getOptions();
 
-    public function getData()
-    {
-        return $this->data;
-    }
-
-    public function getMetadata()
-    {
-        return $this->metadata;
+        $this->message->context->setOptions($options);
     }
 
     public function end()
     {
-        $this->end = true;
+        $this->message->ended = true;
     }
 
     public function isEnded()
     {
-        return $this->end;
+        return $this->message->ended;
+    }
+
+    public function finish()
+    {
+        $this->message->pipe = $this->processor->flush(new \Knp\ETL\Context\Context);
+        $this->processor->clear(new \Knp\ETL\Context\Context);
     }
 }

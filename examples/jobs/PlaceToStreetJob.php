@@ -17,7 +17,7 @@ class PlaceToStreetJob extends AbstractJobType
                 'example_extractor', // name
                 'json_extractor',
                 array(
-                    'path' => 'results.*.geometry',
+                    'path' => 'results',
                     'io' => new Io\IoDescriptor(
                        new Io\Input('https://maps.googleapis.com/maps/api/place/textsearch/json?query=pub+in+marseille+france&sensor=false&key=AIzaSyCuR9yU9lRmzdnyU7YWVKZZRUIsymWkQdU')
                     )
@@ -28,15 +28,17 @@ class PlaceToStreetJob extends AbstractJobType
                 'callback_transformer',
                 array(
                     'callback' => function($data, $target) {
-                        var_dump($data->location); exit;
                         $img = sprintf(
                             'http://maps.googleapis.com/maps/api/streetview?size=800x600&location=%F,%F&fov=90&heading=235&pitch=10&sensor=false', 
-                            $data->location->lat,
-                            $data->location->lng
+                            $data->geometry->location->lat,
+                            $data->geometry->location->lng
                         );
 
                         return file_get_contents($img);
-                    }
+                    },
+                    'metadata' => array(
+                        'id' => 'place_id' // Store $data->id in metadata in order to reuse it in loader
+                    )
                 )
             )
             ->add(
@@ -44,7 +46,9 @@ class PlaceToStreetJob extends AbstractJobType
                 'file_loader',
                 array(
                     'args' => function(Options $options) {
-                        return array(new \SplFileObject(__DIR__."/../temp/job-".uniqid().".jpeg", 'w+'));
+                        $id = $options['message_container']->getMetadata('place_id');
+
+                        return array(new \SplFileObject(__DIR__."/../temp/job-".$id.".jpeg", 'w+'));
                     }
                 )
             )

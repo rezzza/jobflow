@@ -15,7 +15,7 @@ class ExtractorType extends ETLType
 {
     public function execute(JobInput $input, JobOutput $output, ExecutionContext $execution)
     {
-        $extractor = $input->getExtractor();
+        $extractor = $input->getProcessor();
 
         if ($this->isLoggable($extractor) && $execution->getLogger()) {
             $extractor->setLogger($execution->getLogger());

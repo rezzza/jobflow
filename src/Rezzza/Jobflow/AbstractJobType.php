@@ -14,13 +14,6 @@ abstract class AbstractJobType implements JobTypeInterface
     /**
      * {@inheritdoc}
      */
-    public function buildConfig($config, $options)
-    {
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function execute(JobInput $input, JobOutput $output, ExecutionContext $execution)
     {
     }
@@ -29,6 +22,13 @@ abstract class AbstractJobType implements JobTypeInterface
      * {@inheritdoc}
      */
     public function buildJob(JobBuilder $builder, array $options)
+    {
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function buildConfig($config, $options)
     {
     }
     
