@@ -97,7 +97,7 @@ class JobBuilder extends Units\Test
             ->then($this->builder->create('flex', null))
                 ->mock($this->factory)
                     ->call('createNamedBuilder')
-                        ->withArguments('flex', 'job', null, array())
+                        ->withArguments('flex', 'job', array())
                         ->once()
         ;
     }

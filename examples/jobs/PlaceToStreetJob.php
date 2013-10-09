@@ -1,10 +1,8 @@
 <?php
 
 use Symfony\Component\OptionsResolver\Options;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 use Rezzza\Jobflow\AbstractJobType;
-use Rezzza\Jobflow\DelayedArg;
 use Rezzza\Jobflow\Io;
 use Rezzza\Jobflow\JobBuilder;
 

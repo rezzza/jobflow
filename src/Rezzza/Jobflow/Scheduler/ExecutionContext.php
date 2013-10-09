@@ -2,9 +2,6 @@
 
 namespace Rezzza\Jobflow\Scheduler;
 
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
-
 use Rezzza\Jobflow\JobInterface;
 use Rezzza\Jobflow\JobMessage;
 

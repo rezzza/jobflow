@@ -3,7 +3,6 @@
 require_once __DIR__.'/init.php';
 
 use Rezzza\Jobflow\Extension;
-use Rezzza\Jobflow\Io;
 
 // Create RabbitMq Client
 $rmqClient = new Extension\RabbitMq\JobRpcClient('localhost', 5672, 'guest', 'guest', '/');

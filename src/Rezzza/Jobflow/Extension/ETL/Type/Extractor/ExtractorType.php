@@ -2,7 +2,6 @@
 
 namespace Rezzza\Jobflow\Extension\ETL\Type\Extractor;
 
-use Knp\ETL;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 

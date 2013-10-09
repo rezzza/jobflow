@@ -4,8 +4,6 @@ namespace Rezzza\Jobflow\Extension\RabbitMq;
 
 use Thumper\RpcClient;
 
-use Rezzza\Jobflow\JobFactory;
-use Rezzza\Jobflow\JobMessage;
 use Rezzza\Jobflow\Scheduler\JobflowFactory;
 
 class JobRpcClient extends RpcClient

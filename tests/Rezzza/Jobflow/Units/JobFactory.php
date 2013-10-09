@@ -28,7 +28,7 @@ class JobFactory extends Units\Test
         $this->registry->getMockController()->getType = $resolved; 
 
         $this
-            ->if($builder = $this->factory->createNamedBuilder('name', 'type', null, $options))
+            ->if($builder = $this->factory->createNamedBuilder('name', 'type', $options))
                 ->mock($this->registry)
                     ->call('getType')
                         ->withArguments('type')
@@ -50,13 +50,12 @@ class JobFactory extends Units\Test
         $resolved = $this->getMockResolvedJob();
         $type = new \mock\Rezzza\Jobflow\Extension\Core\Type\JobType();
         $factory = $this->getMockFactory();
-        $io = $this->getMockIo();
 
         $resolved->getMockController()->createBuilder = 'jean-marc';
         $factory->getMockController()->createResolvedType = $resolved; 
 
         $this
-            ->if($builder = $factory->createNamedBuilder('name', $type, $io, $options))
+            ->if($builder = $factory->createNamedBuilder('name', $type, $options))
                 ->mock($factory)
                     ->call('createResolvedType')
                         ->withArguments($type)
@@ -86,7 +85,7 @@ class JobFactory extends Units\Test
         $resolved->getMockController()->createBuilder = 'jean-marc'; 
 
         $this
-            ->if($builder = $factory->createNamedBuilder('name', $type, null, $options))
+            ->if($builder = $factory->createNamedBuilder('name', $type, $options))
 
                 ->mock($this->registry)
                     ->call('getType')
@@ -113,19 +112,18 @@ class JobFactory extends Units\Test
         $parentType = new \mock\Rezzza\Jobflow\Extension\Core\Type\JobType();
         $resolved = $this->getMockResolvedJob();
         $parentResolved = $this->getMockResolvedJob();
-        $io = $this->getMockIo();
 
         $resolved->getMockController()->createBuilder = 'jean-marc';
         $type->getMockController()->getParent = $parentType;
         $factory->getMockController()->createResolvedType = $resolved;
 
         $this
-            ->if($builder = $factory->createNamedBuilder('name', $type, $io, $options))
+            ->if($builder = $factory->createNamedBuilder('name', $type, $options))
 
                 ->mock($factory)
                     ->call('createResolvedType')
-                        ->withArguments($parentType, $io, null)
-                        ->withArguments($type, $io, $parentType)
+                        ->withArguments($parentType, null)
+                        ->withArguments($type, $parentType)
 
                 ->mock($resolved)
                     ->call('createBuilder')
@@ -145,7 +143,7 @@ class JobFactory extends Units\Test
         $resolved->getMockController()->createBuilder = 'jean-marc';
 
         $this
-            ->if($builder = $this->factory->createNamedBuilder('name', $resolved, null, $options))
+            ->if($builder = $this->factory->createNamedBuilder('name', $resolved, $options))
                 ->mock($resolved)
                     ->call('createBuilder')
                         ->withArguments('name', $this->factory, $options)
@@ -159,14 +157,13 @@ class JobFactory extends Units\Test
     public function test_it_creates_builder_and_fills_io()
     {
         $givenOptions = array('a' => '1', 'b' => '2');
-        $io = $this->getMockIo();
         $resolved = $this->getMockResolvedJob();
 
         $resolved->getMockController()->createBuilder = 'jean-marc';
         $this->registry->getMockController()->getType = $resolved; 
 
         $this
-            ->if($builder = $this->factory->createNamedBuilder('name', 'type', $io, $givenOptions))
+            ->if($builder = $this->factory->createNamedBuilder('name', 'type', $givenOptions))
                 ->mock($resolved)
                     ->call('createBuilder')
                         ->withArguments('name', $this->factory, $givenOptions)
@@ -184,15 +181,14 @@ class JobFactory extends Units\Test
 
     public function test_it_creates_builder_and_keeps_io()
     {
-        $io = $this->getMockIo();
-        $options = array('a' => '1', 'b' => '2', 'io' => $io);
+        $options = array('a' => '1', 'b' => '2');
         $resolved = $this->getMockResolvedJob();
 
         $resolved->getMockController()->createBuilder = 'jean-marc';
         $this->registry->getMockController()->getType = $resolved; 
 
         $this
-            ->if($builder = $this->factory->createNamedBuilder('name', 'type', null, $options))
+            ->if($builder = $this->factory->createNamedBuilder('name', 'type', $options))
                 ->mock($resolved)
                     ->call('createBuilder')
                         ->withArguments('name', $this->factory, $options)
@@ -275,11 +271,6 @@ class JobFactory extends Units\Test
     private function getMockFactory()
     {
         return new \mock\Rezzza\Jobflow\JobFactory($this->registry);
-    }
-
-    private function getMockIo()
-    {
-        return new \mock\Rezzza\Jobflow\Io\IoDescriptor(null);
     }
 
     private function getMockBuilder()

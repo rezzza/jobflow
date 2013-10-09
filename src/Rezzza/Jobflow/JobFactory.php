@@ -2,10 +2,6 @@
 
 namespace Rezzza\Jobflow;
 
-use Rezzza\Jobflow\Io\IoDescriptor;
-use Rezzza\Jobflow\Scheduler\Jobflow;
-use Rezzza\Jobflow\Scheduler\TransportInterface;
-
 /**
  * To create Job or JobBuilder.
  * The started point for the Job component execution.
@@ -37,7 +33,7 @@ class JobFactory
      */
     public function create($type, array $options = array())
     {
-        return $this->createBuilder($type, null, $options)->getJob();
+        return $this->createBuilder($type, $options)->getJob();
     }
 
     /**
@@ -48,33 +44,27 @@ class JobFactory
      *
      * @return JobBuilder
      */
-    public function createBuilder($type = 'job', IoDescriptor $io = null, array $options = array())
+    public function createBuilder($type = 'job', array $options = array())
     {
         $name = $type instanceof JobTypeInterface || $type instanceof ResolvedJob
             ? $type->getName()
             : $type;
 
-        return $this->createNamedBuilder($name, $type, $io, $options);
+        return $this->createNamedBuilder($name, $type, $options);
     }
 
     /**
      * @param string $name
      * @param mixed $type The JobTypeInterface or the alias of the job type registered as a service
-     * @param IoDescriptor $io To connect jobs together
      * @param array $options
      *
      * @return JobBuilder
      */
-    public function createNamedBuilder($name, $type = 'job', IoDescriptor $io = null, array $options = array())
+    public function createNamedBuilder($name, $type = 'job', array $options = array())
     {
         if (is_string($type)) {
             $type = $this->registry->getType($type);
         }
-
-        // We need to avoid this. Io should be injected in the job which required it
-        // if (null !== $io && !array_key_exists('io', $options)) {
-        //     $options['io'] = $io;
-        // }
 
         if ($type instanceof JobTypeInterface) {
             $type = $this->resolveType($type);
@@ -89,7 +79,6 @@ class JobFactory
      * Creates wrapper for combination of JobType and JobConnector
      *
      * @param JobTypeInterface $type
-     * @param IoDescriptor $io
      *
      * @return ResolvedJob
      */
