@@ -16,14 +16,16 @@ class MetadataGenerator
         $this->accessor = PropertyAccess::createPropertyAccessor();
     }
 
-    public function generate($result)
+    public function generate(&$metadatas, $result, $offset)
     {
-        $metadata = new Metadata();
-
-        foreach ($this->mapping as $k => $v) {
-            $metadata->fields[$v] = $this->accessor->getValue($result, $k);
+        if (null === $metadatas) {
+            $metadatas = new Metadata('root');
         }
 
-        return $metadata;
+        foreach ($this->mapping as $k => $v) {
+            $metadata = isset($metadatas[$v]) ? $metadatas[$v] : new Metadata($v);
+            $metadata[$offset] = $this->accessor->getValue($result, $k);
+            $metadatas[$v] = $metadata;
+        }
     }
 }

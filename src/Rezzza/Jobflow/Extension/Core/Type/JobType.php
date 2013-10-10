@@ -29,7 +29,7 @@ class JobType extends AbstractJobType
     {
         $resolver->setDefaults(array(
             'io' => null,
-            'metadata' => array(),
+            'metadata' => null,
             'message' => null,
             'message_container' => function (Options $options) {
                 return new MessageContainer($options['message']);

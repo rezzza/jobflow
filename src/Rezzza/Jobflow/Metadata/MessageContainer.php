@@ -25,6 +25,6 @@ class MessageContainer
     {
         $offset = $offset + $this->message->context->getOption('offset');
         
-        return $this->message->metadata[$offset]->fields[$name];
+        return $this->message->metadata[$name][$offset];
     }
 }

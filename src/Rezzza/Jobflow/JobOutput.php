@@ -31,7 +31,7 @@ class JobOutput extends JobStream
     public function writeMetadata($result, $offset)
     {
         if (null !== $this->metadataGenerator) {
-            $this->message->metadata[$offset] = $this->metadataGenerator->generate($result);
+            $this->metadataGenerator->generate($this->message->metadata, $result, $offset);
         }
     }
 
