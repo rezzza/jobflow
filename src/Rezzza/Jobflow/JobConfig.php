@@ -44,11 +44,9 @@ class JobConfig
 
     private $logger;
 
-    private $metadataGenerator;
+    private $metadataAccessor;
 
     private $contextOptions;
-
-    private $messageContainer;
 
     /**
      * @param string $name
@@ -196,28 +194,16 @@ class JobConfig
         return $this->logger;
     }
 
-    public function setMetadataGenerator($generator)
+    public function setMetadataAccessor($accessor)
     {
-        $this->metadataGenerator = $generator;
+        $this->metadataAccessor = $accessor;
 
         return $this;
     }
 
-    public function getMetadataGenerator()
+    public function getMetadataAccessor()
     {
-        return $this->metadataGenerator;
-    }
-
-    public function setMessageContainer($container)
-    {
-        $this->messageContainer = $container;
-
-        return $this;
-    }
-
-    public function getMessageContainer()
-    {
-        return $this->messageContainer;
+        return $this->metadataAccessor;
     }
 
     public function setContextOptions($options)

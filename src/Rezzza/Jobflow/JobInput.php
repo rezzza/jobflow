@@ -9,7 +9,7 @@ namespace Rezzza\Jobflow;
  */
 class JobInput extends JobStream
 {
-    public function getData()
+    public function read()
     {
         return $this->message->data;
     }

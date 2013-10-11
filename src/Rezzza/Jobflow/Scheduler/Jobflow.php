@@ -188,7 +188,7 @@ class Jobflow
             }
         } 
 
-        if ($child->isLoader()) {
+        if ($child->isLoader() || $this->jobGraph->isLast($current)) {
             $msg->context->tick();
 
             if (!$msg->context->isFinished()) {

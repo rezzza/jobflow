@@ -12,22 +12,6 @@ use Rezzza\Jobflow\Scheduler\ExecutionContext;
 
 class LoaderType extends ETLType
 {
-    public function execute(JobInput $input, JobOutput $output, ExecutionContext $execution)
-    {
-        if ($this->isLoggable($output->getProcessor()) && $execution->getLogger()) {
-            $output->getProcessor()->setLogger($execution->getLogger());
-        }
-
-        foreach ($input->getData() as $k => $d) {
-            $output->write($d, $k);
-        }
-
-        // Should not use Events ? Will be more flexible
-        $output->finish();
-
-        return $output; // End chain should return empty array
-    }
-
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         parent::setDefaultOptions($resolver);
@@ -51,5 +35,10 @@ class LoaderType extends ETLType
     public function getETLType()
     {
         return self::TYPE_LOADER;
+    }
+
+    public function getProxyClass()
+    {
+        return 'Rezzza\Jobflow\Extension\ETL\Processor\LoaderProxy';
     }
 }

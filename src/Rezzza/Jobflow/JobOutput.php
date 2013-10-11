@@ -9,29 +9,24 @@ namespace Rezzza\Jobflow;
  */
 class JobOutput extends JobStream
 {
-    private $metadataGenerator;
-
-    public function setMetadataGenerator($generator)
+    public function write($result, $offset = null)
     {
-        $this->metadataGenerator = $generator;
-    }
-
-    public function write($result, $offset)
-    {
-        // Should find a way to remove this condition
-        if ($this->processor instanceof \Knp\ETL\LoaderInterface) {
-            $this->processor->load($result, new \Knp\ETL\Context\Context);
-
-            return;
+        if (null === $offset) {
+            $this->message->data[] = $result;
+        } else {
+            $this->message->data[$offset] = $result;            
         }
-
-        $this->message->data[$offset] = $result;
     }
 
-    public function writeMetadata($result, $offset)
+    public function writeMetadata($result, $offset, $accessor)
     {
-        if (null !== $this->metadataGenerator) {
-            $this->metadataGenerator->generate($this->message->metadata, $result, $offset);
+        $accessor->write($this->message->metadata, $result, $offset);
+    }
+
+    public function writePipe($value)
+    {
+        if (null !== $value) {
+            $this->message->pipe = $value;
         }
     }
 
@@ -50,11 +45,5 @@ class JobOutput extends JobStream
     public function isEnded()
     {
         return $this->message->ended;
-    }
-
-    public function finish()
-    {
-        $this->message->pipe = $this->processor->flush(new \Knp\ETL\Context\Context);
-        $this->processor->clear(new \Knp\ETL\Context\Context);
     }
 }

@@ -8,10 +8,13 @@ class ConfigProcessor
 
     protected $args;
 
-    public function __construct($class, $args)
+    protected $calls;
+
+    public function __construct($class, $args, array $calls = array())
     {
         $this->class = $class;
         $this->args = $args;
+        $this->calls = $calls;
     }
 
     public function getClass()
@@ -29,8 +32,13 @@ class ConfigProcessor
         $this->args = $args;
     }
 
+    public function getCalls()
+    {
+        return $this->calls;
+    }
+
     public function getProxyClass()
     {
-        return $this->getClass();
+        return false;
     }
 }

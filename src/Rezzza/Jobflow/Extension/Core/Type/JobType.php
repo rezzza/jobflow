@@ -7,7 +7,7 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 use Rezzza\Jobflow\AbstractJobType;
 use Rezzza\Jobflow\Metadata\MessageContainer;
-use Rezzza\Jobflow\Metadata\MetadataGenerator;
+use Rezzza\Jobflow\Metadata\MetadataAccessor;
 
 /**
  * Generic Parent Class for all job type. Generic logic should go here
@@ -19,20 +19,31 @@ class JobType extends AbstractJobType
     public function buildConfig($config, $options)
     {   
         $config
-            ->setIo($options['io'])
-            ->setMetadataGenerator(new MetadataGenerator($options['metadata']))
-            ->setMessageContainer($options['message_container'])
+            ->setMetadataAccessor(
+                new MetadataAccessor(
+                    $options['metadata_read'], 
+                    $options['metadata_write']
+                )
+            )
+            ->setConfigProcessor($options['processor'])
         ;
     }
 
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'io' => null,
-            'metadata' => null,
+            'class' => null,
+            'args' => array(),
+            'calls' => array(),
+            'metadata_read' => array(),
+            'metadata_write' => array(),
             'message' => null,
-            'message_container' => function (Options $options) {
-                return new MessageContainer($options['message']);
+            'processor' => function(Options $options) {
+                return new ConfigProcessor(
+                    $options['class'],
+                    $options['args'],
+                    $options['calls']
+                );
             }
         ));
     }

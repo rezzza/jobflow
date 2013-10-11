@@ -30,25 +30,24 @@ abstract class ETLType extends AbstractJobType
     public function buildConfig($config, $options)
     {
         $config
-            ->setConfigProcessor($options['config_processor'])
+            ->setIo($options['io'])
         ;
     }
 
     abstract function getETLType();
 
+    abstract function getProxyClass();
+
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
-        $resolver->setRequired(array(
-            'class'
-        ));
-
         $resolver->setDefaults(array(
-            'args' => array(),
-            'config_processor' => function(Options $options) {
+            'io' => null,
+            'processor' => function(Options $options) {
                 return new ETLConfigProcessor(
                     $options['class'],
                     $options['args'],
-                    $this->getETLType()
+                    $options['calls'],
+                    $this->getProxyClass()
                 );
             } 
         ));

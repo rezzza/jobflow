@@ -113,6 +113,11 @@ class JobGraph implements \IteratorAggregate, \Countable
         return $this->getJob($this->graph->key() - 1);
     }
 
+    public function isLast($value)
+    {
+        return ($this->count() -1) === $this->search($value);
+    }
+
     /**
      * @return Iterator
      */

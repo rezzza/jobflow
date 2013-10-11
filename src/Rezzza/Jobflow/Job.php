@@ -4,6 +4,7 @@ namespace Rezzza\Jobflow;
 
 use Rezzza\Jobflow\Extension\ETL\Type\ETLType;
 use Rezzza\Jobflow\Scheduler\ExecutionContext;
+use Rezzza\Jobflow\Processor\ConfigProcessor;
 
 /**
  * @author Timothée Barray <tim@amicalement-web.net>
@@ -61,9 +62,6 @@ class Job implements \IteratorAggregate, JobInterface
         // Runtime configuration (!= buildJob which is executed when we build job)
         $this->getResolved()->configJob($this->getConfig(), $options);
 
-        $input = $this->getInput($context->input);
-        $output = $this->getOutput($context->output);
-
         if ($this->getLogger()) {
             $this->getLogger()->info(sprintf(
                 'Start to execute Job [%s] : %s',
@@ -72,7 +70,28 @@ class Job implements \IteratorAggregate, JobInterface
             ));
         }
 
-        $this->getResolved()->execute($input, $output, $context);
+        $input = $this->getInput($context->input);
+        $output = $this->getOutput($context->output);
+        $config = $this->getConfigProcessor();
+
+        if ($config instanceof ConfigProcessor) {
+            $factory = new \Rezzza\Jobflow\Processor\ProcessorFactory;
+            $factory
+                ->create($context->input, $this->getConfigProcessor(), $this->config->getMetadataAccessor())
+                ->execute($input, $output, $context)
+            ;
+        } elseif (is_callable($config)) {
+            call_user_func_array(
+                $config, 
+                array(
+                    $input,
+                    $output,
+                    $context
+                )
+            );
+        } else {
+            throw new \InvalidArgumentException('processor should be a ConfigProcessor or a callable');
+        }
 
         // Update context
         $output->setContextFromInput($input);
@@ -145,7 +164,7 @@ class Job implements \IteratorAggregate, JobInterface
      */
     public function getInput(JobMessage $message)
     {
-        return new JobInput($message, $this->getConfigProcessor());
+        return new JobInput($message);
     }
 
     /**
@@ -153,9 +172,7 @@ class Job implements \IteratorAggregate, JobInterface
      */
     public function getOutput(JobMessage $message)
     {
-        $output = new JobOutput($message, $this->getConfigProcessor());
-
-        $output->setMetadataGenerator($this->config->getMetadataGenerator());
+        $output = new JobOutput($message);
 
         return $output;
     }

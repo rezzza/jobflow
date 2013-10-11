@@ -5,6 +5,7 @@ use Symfony\Component\OptionsResolver\Options;
 use Rezzza\Jobflow\AbstractJobType;
 use Rezzza\Jobflow\Io;
 use Rezzza\Jobflow\JobBuilder;
+use Rezzza\Jobflow\Processor\Call\MetadataCall;
 
 class PlaceToStreetJob extends AbstractJobType
 {
@@ -34,7 +35,7 @@ class PlaceToStreetJob extends AbstractJobType
 
                         return file_get_contents($img);
                     },
-                    'metadata' => array(
+                    'metadata_write' => array(
                         'id' => 'place_id' // Store $data->id in metadata in order to reuse it in loader
                     )
                 )
@@ -44,7 +45,7 @@ class PlaceToStreetJob extends AbstractJobType
                 'file_loader',
                 array(
                     'args' => function(Options $options) {
-                        $id = $options['message_container']->getMetadata('place_id');
+                        $id = $options['message']->getMetadata('place_id');
 
                         return array(new \SplFileObject(__DIR__."/../temp/job-".$id.".jpeg", 'w+'));
                     }

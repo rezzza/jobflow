@@ -64,29 +64,6 @@ class ResolvedJob
     }
 
     /**
-     * Execute innerType
-     *
-     * @param JobContext $context
-     *
-     * @return boolean
-     */
-    public function execute($input, $output, $execution)
-    {
-        $res = $this->innerType->execute($input, $output, $execution);
-
-        // Try to execute parent if no result
-        if (null === $res && null !== $this->getParent()) {
-            $res = $this->getParent()->execute($input, $output, $execution);
-        }
-
-        if (null === $res) {
-            throw new \RuntimeException('Job execution should return result');
-        }
-
-        return $res;
-    }
-
-    /**
      * Init options with innerType requirements
      *
      * @return OptionsResolver

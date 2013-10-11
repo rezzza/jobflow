@@ -6,25 +6,17 @@ use Rezzza\Jobflow\Processor\ConfigProcessor;
 
 class ETLConfigProcessor extends ConfigProcessor
 {
-    protected $etlType;
+    protected $proxy;
 
-    public function __construct($class, $args, $etlType)
+    public function __construct($class, $args, $calls, $proxy)
     {
-        parent::__construct($class, $args);
+        parent::__construct($class, $args, $calls);
 
-        $this->etlType = $etlType;
+        $this->proxy = $proxy;
     }
 
     public function getProxyClass()
     {
-        if ($this->etlType === 'extractor') {
-            return 'Rezzza\Jobflow\Extension\ETL\Processor\ExtractorProxy';
-        } elseif ($this->etlType == 'transformer') {
-            return 'Rezzza\Jobflow\Extension\ETL\Processor\TransformerProxy';            
-        } elseif ($this->etlType == 'loader') {
-            return 'Rezzza\Jobflow\Extension\ETL\Processor\LoaderProxy';
-        } else {
-            throw new \LogicException('ETL Type should be "extractor" or "transformer" or "loader"');
-        }
+        return $this->proxy;
     }
 }

@@ -25,4 +25,11 @@ class JobMessage
     {
         $this->context = clone $this->context;
     }
+
+    public function getMetadata($name, $offset = 0)
+    {
+        $offset = $offset + $this->context->getOption('offset');
+
+        return $this->metadata[$name][$offset];
+    }
 }

@@ -30,6 +30,5 @@ class PipeLoader implements LoaderInterface
 
     public function clear(ContextInterface $context)
     {
-
     }
 }
