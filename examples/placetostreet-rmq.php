@@ -26,7 +26,12 @@ $jobflow = $jobflowFactory->create('php');
 echo 'Started...'.PHP_EOL;
 // Now we can execute our job
 $jobflow
-    ->setJob('place_to_street')
+    ->setJob(
+        'place_to_street',
+        array(
+            'context' => array('limit' => 1)
+        )
+    )
     ->init() // Will create the first message to run the process
     ->run()
 ;

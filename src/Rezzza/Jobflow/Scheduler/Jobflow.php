@@ -326,7 +326,7 @@ class Jobflow
         $msg = new JobMessage(
             new JobContext(
                 $this->getJob()->getName(),
-                $this->getJob()->getResolved()->getInnerType()->getContextOptions(), // Should be inject in job
+                $this->getJob()->getConfig()->getOption('context'), // Should be inject in job
                 $this->jobGraph->current()
             )
         );

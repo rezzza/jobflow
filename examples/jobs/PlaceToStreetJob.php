@@ -54,13 +54,6 @@ class PlaceToStreetJob extends AbstractJobType
         ;
     }
 
-    public function getContextOptions()
-    {
-        return array(
-            'limit' => 1
-        );
-    }
-
     public function getName()
     {
         return 'place_to_street';

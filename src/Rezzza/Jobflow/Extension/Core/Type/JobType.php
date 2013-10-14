@@ -6,7 +6,6 @@ use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 use Rezzza\Jobflow\AbstractJobType;
-use Rezzza\Jobflow\Metadata\MessageContainer;
 use Rezzza\Jobflow\Metadata\MetadataAccessor;
 
 /**
@@ -39,6 +38,7 @@ class JobType extends AbstractJobType
             'metadata_read' => array(),
             'metadata_write' => array(),
             'message' => null,
+            'context' => array(),
             'processor' => function(Options $options) {
                 return new ConfigProcessor(
                     $options['class'],

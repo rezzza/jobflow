@@ -35,14 +35,6 @@ abstract class AbstractJobType implements JobTypeInterface
     /**
      * {@inheritdoc}
      */
-    public function getContextOptions()
-    {
-        return array();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getParent()
     {
         return 'job';

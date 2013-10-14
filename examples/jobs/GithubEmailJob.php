@@ -72,13 +72,6 @@ class GithubEmailJob extends AbstractJobType
         );
     }
 
-    public function getContextOptions()
-    {
-        return array(
-            'limit' => 10
-        );
-    }
-
     public function getName()
     {
         return 'github_email';
