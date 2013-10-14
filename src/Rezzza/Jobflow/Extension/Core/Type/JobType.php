@@ -19,8 +19,7 @@ class JobType extends AbstractJobType
     public function buildConfig(JobConfig $config, $options)
     {   
         $config
-            ->setAttribute(
-                'metadata_accessor',
+            ->setMetadataAccessor(
                 new MetadataAccessor(
                     $options['metadata_read'], 
                     $options['metadata_write']

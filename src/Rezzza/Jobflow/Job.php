@@ -68,12 +68,12 @@ class Job implements \IteratorAggregate, JobInterface
 
         $input = $this->getInput($context->input);
         $output = $this->getOutput($context->output);
-        $config = $this->getConfigProcessor();
+        $config = $this->getConfig()->getConfigProcessor();
 
         if ($config instanceof ConfigProcessor) {
             $factory = new \Rezzza\Jobflow\Processor\ProcessorFactory;
             $factory
-                ->create($context->input->pipe, $this->getConfigProcessor(), $this->config->getAttribute('metadata_accessor'))
+                ->create($context->input->pipe, $config, $this->getConfig()->getMetadataAccessor())
                 ->execute($input, $output, $context)
             ;
         } elseif (is_callable($config)) {
@@ -196,14 +196,6 @@ class Job implements \IteratorAggregate, JobInterface
     public function getParent()
     {
         return $this->parent;
-    }
-
-    /**
-     * @return array
-     */
-    public function getConfigProcessor()
-    {
-        return $this->config->getConfigProcessor();
     }
 
     /**

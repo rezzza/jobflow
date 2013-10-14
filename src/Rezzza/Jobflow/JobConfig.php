@@ -5,6 +5,10 @@ namespace Rezzza\Jobflow;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
+
+use Rezzza\Jobflow\Metadata\MetadataAccessor;
+use Rezzza\Jobflow\Processor\ConfigProcessor;
+
 /**
  * Config the job.
  *
@@ -28,9 +32,14 @@ class JobConfig
     private $resolved;
 
     /**
-     * @var array
+     * @var ConfigProcessor
      */
     private $configProcessor;
+
+    /**
+     * @var MetadataAccessor
+     */
+    private $metadataAccessor;
 
     /**
      * @var array
@@ -99,11 +108,19 @@ class JobConfig
     }
 
     /**
-     * @return array
+     * @return ConfigProcessor
      */
     public function getConfigProcessor()
     {
         return $this->configProcessor;
+    }
+
+    /**
+     * @return MetadataAccessor
+     */
+    public function getMetadataAccessor()
+    {
+        return $this->metadataAccessor;
     }
 
     /**
@@ -167,13 +184,25 @@ class JobConfig
     }
 
     /**
-     * @param array $etlConfig
+     * @param ConfigProcessor $config
      *
      * @return JobConfig
      */
-    public function setConfigProcessor($config)
+    public function setConfigProcessor(ConfigProcessor $config)
     {
         $this->configProcessor = $config;
+
+        return $this;
+    }
+
+    /**
+     * @param MetadataAccessor $accessor
+     *
+     * @return JobConfig
+     */
+    public function setMetadataAccessor(MetadataAccessor $accessor)
+    {
+        $this->metadataAccessor = $accessor;
 
         return $this;
     }
