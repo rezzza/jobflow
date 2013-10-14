@@ -16,8 +16,7 @@
         "symfony/options-resolver": "~2.3",
         "symfony/event-dispatcher": "~2.3",
 
-        "knplabs/etl": "dev-master",
-        "ocramius/proxy-manager": "~0.4@stable"
+        "knplabs/etl": "dev-master"
     },
     "suggest": {
         "doctrine/orm": "To use ORM loader",
