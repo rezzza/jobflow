@@ -6,6 +6,7 @@ use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 use Rezzza\Jobflow\AbstractJobType;
+use Rezzza\Jobflow\JobConfig;
 use Rezzza\Jobflow\Metadata\MetadataAccessor;
 
 /**
@@ -15,7 +16,7 @@ use Rezzza\Jobflow\Metadata\MetadataAccessor;
  */
 class JobType extends AbstractJobType
 {
-    public function buildConfig($config, $options)
+    public function buildConfig(JobConfig $config, $options)
     {   
         $config
             ->setAttribute(

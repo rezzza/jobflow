@@ -19,7 +19,7 @@ abstract class AbstractJobType implements JobTypeInterface
     /**
      * {@inheritdoc}
      */
-    public function buildConfig($config, $options)
+    public function buildConfig(JobConfig $config, $options)
     {
     }
     

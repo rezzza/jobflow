@@ -133,7 +133,7 @@ class ResolvedJob
         }
     }
 
-    protected function buildConfig($config, $options)
+    protected function buildConfig(JobConfig $config, $options)
     {
         if (null !== $this->parent) {
             $this->parent->buildConfig($config, $options);

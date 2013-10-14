@@ -2,9 +2,9 @@
 
 namespace Rezzza\Jobflow;
 
+use Rezzza\Jobflow\Metadata\MetadataAccessor;
+
 /**
- * Output for execute method in JobType
- *
  * @author Timothée Barray <tim@amicalement-web.net>
  */
 class JobOutput extends JobStream
@@ -18,7 +18,7 @@ class JobOutput extends JobStream
         }
     }
 
-    public function writeMetadata($result, $offset, $accessor)
+    public function writeMetadata($result, $offset, MetadataAccessor $accessor)
     {
         $accessor->write($this->message->metadata, $result, $offset);
     }
@@ -30,7 +30,7 @@ class JobOutput extends JobStream
         }
     }
 
-    public function setContextFromInput($input)
+    public function setContextFromInput(JobInput $input)
     {
         $options = $input->getMessage()->context->getOptions();
 

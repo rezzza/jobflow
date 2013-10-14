@@ -2,9 +2,13 @@
 
 namespace Rezzza\Jobflow\Processor;
 
+use Rezzza\Jobflow\JobMessage;
+use Rezzza\Jobflow\Metadata\MetadataAccessor;
+use Rezzza\Jobflow\Processor\ConfigProcessor;
+
 class ProcessorFactory
 {
-    public function create($message, $config, $metadataAccessor)
+    public function create(JobMessage $message, ConfigProcessor $config, MetadataAccessor $metadataAccessor)
     {
         $pipe = $message->pipe;
 
