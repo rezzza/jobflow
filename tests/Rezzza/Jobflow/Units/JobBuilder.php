@@ -17,7 +17,8 @@ class JobBuilder extends Units\Test
         $this->mockGenerator->orphanize('__construct');
         $registry = new \mock\Rezzza\Jobflow\JobRegistry;
         $this->factory = new \mock\Rezzza\Jobflow\JobFactory($registry);
-        $this->builder = new TestedClass('name', $this->factory);
+        $this->dispatcher = new \mock\Symfony\Component\EventDispatcher\EventDispatcherInterface;
+        $this->builder = new TestedClass('name', $this->factory, $this->dispatcher);
     }
 
     public function test_name_should_be_string_or_int()
@@ -106,7 +107,7 @@ class JobBuilder extends Units\Test
     {
         $this
             ->if($mockType = new \mock\Rezzza\Jobflow\Extension\Core\Type\JobType)
-            ->and($mockBuilder = new \mock\Rezzza\Jobflow\JobBuilder('name', $this->factory))
+            ->and($mockBuilder = new \mock\Rezzza\Jobflow\JobBuilder('name', $this->factory, $this->dispatcher))
             ->and($mockBuilder->add(123, $mockType))
 
                 ->boolean($mockBuilder->hasUnresolvedChildren())

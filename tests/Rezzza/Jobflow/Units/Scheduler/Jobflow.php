@@ -32,9 +32,6 @@ class Jobflow extends Units\Test
 
                 ->object($flow->getJob())
                     ->isIdenticalTo($job)
-
-                ->boolean($job->isLocked())
-                    ->isTrue()
         ;
     }
 
@@ -90,7 +87,8 @@ class Jobflow extends Units\Test
 
     private function getMockJob()
     {
-        $config = new \mock\Rezzza\Jobflow\JobConfig('jean-marc');
+        $dispatcher = new \mock\Symfony\Component\EventDispatcher\EventDispatcherInterface;
+        $config = new \mock\Rezzza\Jobflow\JobConfig('jean-marc', $dispatcher);
 
         return new \mock\Rezzza\Jobflow\Job($config);
     }
