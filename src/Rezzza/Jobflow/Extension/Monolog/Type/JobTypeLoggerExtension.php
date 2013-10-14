@@ -5,6 +5,7 @@ namespace Rezzza\Jobflow\Extension\Monolog\Type;
 use Psr\Log\LoggerInterface;
 
 use Rezzza\Jobflow\AbstractJobTypeExtension;
+use Rezzza\Jobflow\Extension\Monolog\EventListener\LoggerListener;
 use Rezzza\JobFlow\JobBuilder;
 
 class JobTypeLoggerExtension extends AbstractJobTypeExtension
@@ -22,7 +23,7 @@ class JobTypeLoggerExtension extends AbstractJobTypeExtension
     public function buildJob(JobBuilder $builder, array $options)
     {
         $builder
-            ->setAttribute('logger', $this->logger)
+            ->addEventSubscriber(new LoggerListener($this->logger));
         ;
     }
 

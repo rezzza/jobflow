@@ -2,6 +2,8 @@
 
 namespace Rezzza\Jobflow;
 
+use Rezzza\Jobflow\Event\JobEvent;
+use Rezzza\Jobflow\Event\JobEvents;
 use Rezzza\Jobflow\Extension\ETL\Type\ETLType;
 use Rezzza\Jobflow\Scheduler\ExecutionContext;
 use Rezzza\Jobflow\Processor\ConfigProcessor;
@@ -57,13 +59,12 @@ class Job implements \IteratorAggregate, JobInterface
         // Runtime configuration (!= buildJob which is executed when we build job)
         $this->getResolved()->configJob($this->getConfig(), $options);
 
-        /*if ($this->getLogger()) {
-            $this->getLogger()->info(sprintf(
-                'Start to execute Job [%s] : %s',
-                $this->getParent()->getName(),
-                $this->getName()
-            ));
-        }*/
+        $dispatcher = $this->config->getEventDispatcher();
+
+        if ($dispatcher->hasListeners(JobEvents::PRE_EXECUTE)) {
+            $event = new JobEvent($this);
+            $dispatcher->dispatch(JobEvents::PRE_EXECUTE, $event);
+        }
 
         $input = $this->getInput($context->input);
         $output = $this->getOutput($context->output);
@@ -91,13 +92,10 @@ class Job implements \IteratorAggregate, JobInterface
         // Update context
         $output->setContextFromInput($input);
 
-        /*if ($this->getLogger()) {
-            $this->getLogger()->info(sprintf(
-                'End to execute Job [%s] : %s',
-                $this->getParent()->getName(),
-                $this->getName()
-            ));
-        }*/
+        if ($dispatcher->hasListeners(JobEvents::POST_EXECUTE)) {
+            $event = new JobEvent($this);
+            $dispatcher->dispatch(JobEvents::POST_EXECUTE, $event);
+        }
 
         return $output;
     }

@@ -2,6 +2,7 @@
 
 namespace Rezzza\Jobflow;
 
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -112,7 +113,7 @@ class ResolvedJob
      */
     protected function newBuilder($name, JobFactory $factory, array $options)
     {
-        return new JobBuilder($name, $factory, $options);
+        return new JobBuilder($name, $factory, new EventDispatcher(), $options);
     }
 
     /**

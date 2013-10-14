@@ -2,7 +2,8 @@
 
 namespace Rezzza\Jobflow;
 
-use Rezzza\Jobflow\Io\IoDescriptor;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
  * Config the job.
@@ -15,6 +16,11 @@ class JobConfig
      * @var string
      */
     private $name;
+
+    /**
+     * @var EventDispatcher
+     */
+    private $dispatcher;
 
     /**
      * @var ResolvedJob
@@ -40,10 +46,21 @@ class JobConfig
      * @param string $name
      * @param array $options
      */
-    public function __construct($name, array $options = array())
+    public function __construct($name, EventDispatcherInterface $dispatcher, array $options = array())
     {
         $this->name = $name;
+        $this->dispatcher = $dispatcher;
         $this->options = $options;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function addEventSubscriber(EventSubscriberInterface $subscriber)
+    {
+        $this->dispatcher->addSubscriber($subscriber);
+
+        return $this;
     }
 
     /**
@@ -63,6 +80,14 @@ class JobConfig
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * @return EventDispatcherInterface
+     */
+    public function getEventDispatcher()
+    {
+        return $this->dispatcher;
     }
 
     /**

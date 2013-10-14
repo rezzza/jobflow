@@ -2,6 +2,8 @@
 
 namespace Rezzza\Jobflow;
 
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+
 /**
  * Make Job creation easier, better, stronger
  *
@@ -24,9 +26,9 @@ class JobBuilder extends JobConfig
      * @param JobFactory $jobFactory
      * @param array $options
      */
-    public function __construct($name, JobFactory $jobFactory, array $options = array())
+    public function __construct($name, JobFactory $jobFactory, EventDispatcherInterface $dispatcher, array $options = array())
     {
-        parent::__construct($name, $options);
+        parent::__construct($name, $dispatcher, $options);
         $this->setJobFactory($jobFactory);
     }
 
