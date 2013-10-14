@@ -185,6 +185,9 @@ class Jobflow
                 $forward->context->updateToNextJob($graph);
                 $this->addMessage($forward);
             }
+
+            // Reset pipe as we already ran through above
+            $msg->pipe = array();
         } 
 
         if ($child->isLoader() || $this->jobGraph->isLast($current)) {
@@ -274,8 +277,8 @@ class Jobflow
         // Store input message
         $this->startMsg = $msg;
         $endMsg = clone $msg;
-        $endMsg->data = array();
-        $endMsg->pipe = null;
+        $endMsg->reset();
+
         $this->jobGraph->move($msg->context->getCurrent());
         $context = new ExecutionContext($this->startMsg, $endMsg);
         $output = $context->executeJob($this->job);

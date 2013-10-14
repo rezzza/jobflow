@@ -6,9 +6,9 @@ class JobMessage
 {
     public $context;
 
-    public $data;
+    public $data = array();
 
-    public $pipe;
+    public $pipe = array();
 
     public $metadata;
 
@@ -24,6 +24,12 @@ class JobMessage
     public function __clone()
     {
         $this->context = clone $this->context;
+    }
+
+    public function reset()
+    {
+        $this->data = array();
+        $this->pipe = array();
     }
 
     public function getMetadata($name, $offset = 0)

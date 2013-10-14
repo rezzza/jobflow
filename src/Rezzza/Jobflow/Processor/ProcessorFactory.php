@@ -8,15 +8,15 @@ use Rezzza\Jobflow\Processor\ConfigProcessor;
 
 class ProcessorFactory
 {
-    public function create(JobMessage $message, ConfigProcessor $config, MetadataAccessor $metadataAccessor)
+    public function create(array $pipe, ConfigProcessor $config, MetadataAccessor $metadataAccessor)
     {
-        $pipe = $message->pipe;
-
-        if ($pipe && !$pipe instanceof Pipe) {
+        if (count($pipe) > 0) {
             $args = $config->getArgs();
+     
             foreach($pipe as $key => $value) {
                 $args[$key] = $value;
             }
+     
             $config->setArgs($args);
         }
 
