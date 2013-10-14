@@ -2,12 +2,6 @@
 
 namespace Rezzza\Jobflow;
 
-use ProxyManager\Configuration;
-use ProxyManager\Factory\LazyLoadingValueHolderFactory;
-use Symfony\Component\PropertyAccess\PropertyAccess;
-
-use Rezzza\Jobflow\Extension\Pipe\Pipe;
-
 abstract class JobStream
 {
     /**

@@ -4,8 +4,6 @@ namespace Rezzza\Jobflow;
 
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
-use Rezzza\Jobflow\Scheduler\ExecutionContext;
-
 /**
  * @author Timothée Barray <tim@amicalement-web.net>
  */

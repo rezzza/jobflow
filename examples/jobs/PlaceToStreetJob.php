@@ -5,7 +5,6 @@ use Symfony\Component\OptionsResolver\Options;
 use Rezzza\Jobflow\AbstractJobType;
 use Rezzza\Jobflow\Io;
 use Rezzza\Jobflow\JobBuilder;
-use Rezzza\Jobflow\Processor\Call\MetadataCall;
 
 class PlaceToStreetJob extends AbstractJobType
 {

@@ -2,14 +2,10 @@
 
 namespace Rezzza\Jobflow\Extension\ETL\Type\Transformer;
 
-use Knp\ETL;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 use Rezzza\Jobflow\Extension\ETL\Type\ETLType;
-use Rezzza\Jobflow\JobInput;
-use Rezzza\Jobflow\JobOutput;
-use Rezzza\Jobflow\Scheduler\ExecutionContext;
 
 class TransformerType extends ETLType
 {
