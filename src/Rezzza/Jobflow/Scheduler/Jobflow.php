@@ -9,6 +9,7 @@ use Rezzza\Jobflow\JobContext;
 use Rezzza\Jobflow\JobInterface;
 use Rezzza\Jobflow\JobFactory;
 use Rezzza\Jobflow\JobMessage;
+use Rezzza\Jobflow\JobInput;
 use Rezzza\Jobflow\JobOutput;
 use Rezzza\Jobflow\Scheduler\ExecutionContext;
 
@@ -280,7 +281,10 @@ class Jobflow
         $endMsg->reset();
 
         $this->jobGraph->move($msg->context->getCurrent());
-        $context = new ExecutionContext($this->startMsg, $endMsg);
+        $context = new ExecutionContext(
+            new JobInput($this->startMsg), 
+            new JobOutput($endMsg)
+        );
         $output = $context->executeJob($this->job);
 
         // Event ? To handle createEndMsg in a more readable way ?

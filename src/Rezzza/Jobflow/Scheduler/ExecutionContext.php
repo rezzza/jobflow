@@ -3,7 +3,9 @@
 namespace Rezzza\Jobflow\Scheduler;
 
 use Rezzza\Jobflow\JobInterface;
+use Rezzza\Jobflow\JobInput;
 use Rezzza\Jobflow\JobMessage;
+use Rezzza\Jobflow\JobOutput;
 
 /**
  * Wrap and contextualize execution of job
@@ -15,40 +17,40 @@ class ExecutionContext
     /**
      * Current msg
      *
-     * @var JobMessage
+     * @var JobInput
      */
-    public $input;
+    protected $input;
 
     /**
      * Next msg
      *
-     * @var JobMessage
+     * @var JobOutput
      */
-    public $output;
+    protected $output;
 
     /**
      * Global Context moved from message to message
      *
      * @var JobContext
      */
-    public $globalContext;
+    protected $globalContext;
 
     /**
      * Current job in execution
      *
      * @var JobInterface
      */
-    public $job;
+    protected $job;
 
     /**
      * @param JobMessage $msg
      * @param JobGraph $graph
      */
-    public function __construct(JobMessage $input, JobMessage $output)
+    public function __construct(JobInput $input, JobOutput $output)
     {
         $this->input = $input;
         $this->output = $output;
-        $this->globalContext = $this->input->context;
+        $this->globalContext = $input->getMessage()->context;
     }
 
     /**
@@ -67,6 +69,16 @@ class ExecutionContext
         $this->job = $parent->get($this->getCurrentJob());
         
         return $this->job->execute($this);
+    }
+
+    public function getInput()
+    {
+        return $this->input;
+    }
+
+    public function getOutput()
+    {
+        return $this->output;
     }
 
     /**

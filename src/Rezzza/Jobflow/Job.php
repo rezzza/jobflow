@@ -54,7 +54,7 @@ class Job implements \IteratorAggregate, JobInterface
     {
         // We inject msg as it could be used during job runtime configuration
         $options = $this->getOptions();
-        $options['message'] = $context->input;
+        $options['message'] = $context->getInput()->getMessage();
 
         // Runtime configuration (!= buildJob which is executed when we build job)
         $this->getResolved()->configJob($this->getConfig(), $options);
@@ -66,14 +66,14 @@ class Job implements \IteratorAggregate, JobInterface
             $dispatcher->dispatch(JobEvents::PRE_EXECUTE, $event);
         }
 
-        $input = $this->getInput($context->input);
-        $output = $this->getOutput($context->output);
+        $input = $context->getInput();
+        $output = $context->getOutput();
         $config = $this->getConfig()->getConfigProcessor();
 
         if ($config instanceof ConfigProcessor) {
             $factory = new \Rezzza\Jobflow\Processor\ProcessorFactory;
             $factory
-                ->create($context->input->pipe, $config, $this->getConfig()->getMetadataAccessor())
+                ->create($input->getMessage()->pipe, $config, $this->getConfig()->getMetadataAccessor())
                 ->execute($input, $output, $context)
             ;
         } elseif (is_callable($config)) {
@@ -146,24 +146,6 @@ class Job implements \IteratorAggregate, JobInterface
     public function getOption($name, $default = null)
     {
         return $this->config->getOption($name, $default);
-    }
-
-    /**
-     * @return JobInput
-     */
-    public function getInput(JobMessage $message)
-    {
-        return new JobInput($message);
-    }
-
-    /**
-     * @return JobOutput
-     */
-    public function getOutput(JobMessage $message)
-    {
-        $output = new JobOutput($message);
-
-        return $output;
     }
 
     /**
