@@ -23,7 +23,8 @@ class JobTypeLoggerExtension extends AbstractJobTypeExtension
     public function buildJob(JobBuilder $builder, array $options)
     {
         $builder
-            ->addEventSubscriber(new LoggerListener($this->logger));
+            ->addEventSubscriber(new LoggerListener($this->logger))
+            ->setAttribute('logger', $this->logger)
         ;
     }
 

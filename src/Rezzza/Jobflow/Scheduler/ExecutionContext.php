@@ -104,6 +104,6 @@ class ExecutionContext
 
     public function getLogger()
     {
-        //return $this->job->getLogger();
+        return $this->job->getConfig()->getAttribute('logger');
     }
 }

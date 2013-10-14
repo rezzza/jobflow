@@ -14,7 +14,7 @@ class ExtractorProxy extends ETLProcessor implements ExtractorInterface
     public function execute(JobInput $input, JobOutput &$output, ExecutionContext $execution)
     {
         if ($execution->getLogger()) {
-            $this->setLogger($execution->getLogger());
+            $this->getProcessor()->setLogger($execution->getLogger());
         }
 
         $offset = $execution->getGlobalOption('offset');

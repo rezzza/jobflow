@@ -19,7 +19,7 @@ class LoaderProxy extends ETLProcessor implements LoaderInterface
     public function execute(JobInput $input, JobOutput &$output, ExecutionContext $execution)
     {
         if ($execution->getLogger()) {
-            $this->setLogger($execution->getLogger());
+            $this->getProcessor()->setLogger($execution->getLogger());
         }
 
         $context = $this->createContext();
