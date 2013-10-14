@@ -7,10 +7,9 @@ use Knp\ETL\TransformerInterface;
 
 use Rezzza\Jobflow\JobInput;
 use Rezzza\Jobflow\JobOutput;
-use Rezzza\Jobflow\Processor\JobProcessor;
 use Rezzza\Jobflow\Scheduler\ExecutionContext;
 
-class TransformerProxy extends JobProcessor implements TransformerInterface
+class TransformerProxy extends ETLProcessor implements TransformerInterface
 {
     public function transform($data, ContextInterface $context)
     {
@@ -22,19 +21,13 @@ class TransformerProxy extends JobProcessor implements TransformerInterface
         foreach ($input->read() as $k => $result) {
             $output->writeMetadata($result, $k, $this->getMetadataAccessor());
 
-            /*if ($this->transformClass) {
-                $this->etlContext->setTransformedData(new $this->transformClass);
-            }*/
+            $context = $this->createContext();
 
-            $transformedData = $this->transform($result, new \Knp\ETL\Context\Context);
-
-            /*if ($this->updateMethod) {
-                call_user_func($this->updateMethod, $transformedData);
-            }*/
-
-            if ($execution->getLogger()) {
-                $execution->getLogger()->debug('transformation '.$k.' : '.json_encode($transformedData));
+            if (null !== ($transformClass = $execution->getJobOption('transform_class'))) {
+                $context->setTransformedData(new $transformClass);
             }
+
+            $transformedData = $this->transform($result, $context);
             
             $output->write($transformedData, $k);
         }

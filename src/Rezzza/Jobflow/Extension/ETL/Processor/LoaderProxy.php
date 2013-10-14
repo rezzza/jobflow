@@ -7,14 +7,13 @@ use Knp\ETL\LoaderInterface;
 
 use Rezzza\Jobflow\JobInput;
 use Rezzza\Jobflow\JobOutput;
-use Rezzza\Jobflow\Processor\JobProcessor;
 use Rezzza\Jobflow\Scheduler\ExecutionContext;
 
-class LoaderProxy extends JobProcessor implements LoaderInterface
+class LoaderProxy extends ETLProcessor implements LoaderInterface
 {
     public function load($data, ContextInterface $context)
     {
-        return $this->getProcessor()->load($data, new \Knp\ETL\Context\Context);
+        return $this->getProcessor()->load($data, $context);
     }
 
     public function execute(JobInput $input, JobOutput &$output, ExecutionContext $execution)
@@ -23,15 +22,17 @@ class LoaderProxy extends JobProcessor implements LoaderInterface
             $this->setLogger($execution->getLogger());
         }
 
+        $context = $this->createContext();
+
         foreach ($input->read() as $k => $d) {
             $this->getMetadataAccessor()->read($input->getMetadata(), $this->processor, $k);
 
-            $this->load($d, new \Knp\ETL\Context\Context);
+            $this->load($d, $context);
         }
 
         // Should not use Events ? Will be more flexible
-        $output->writePipe($this->processor->flush(new \Knp\ETL\Context\Context));
-        $this->processor->clear(new \Knp\ETL\Context\Context);
+        $output->writePipe($this->flush($context));
+        $this->clear($context);
 
         return $output; // End chain should return empty array
     }

@@ -7,10 +7,9 @@ use Knp\ETL\ExtractorInterface;
 
 use Rezzza\Jobflow\JobInput;
 use Rezzza\Jobflow\JobOutput;
-use Rezzza\Jobflow\Processor\JobProcessor;
 use Rezzza\Jobflow\Scheduler\ExecutionContext;
 
-class ExtractorProxy extends JobProcessor implements ExtractorInterface
+class ExtractorProxy extends ETLProcessor implements ExtractorInterface
 {
     public function execute(JobInput $input, JobOutput &$output, ExecutionContext $execution)
     {
