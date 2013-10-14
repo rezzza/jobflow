@@ -26,9 +26,6 @@ class TransformerProxy extends JobProcessor implements TransformerInterface
                 $this->etlContext->setTransformedData(new $this->transformClass);
             }*/
 
-            /*foreach ($this->metadatas as $method => $metadata) {
-                call_user_func(array($this->getProcessor(), $method), $metadata);
-            }*/
             $transformedData = $this->transform($result, new \Knp\ETL\Context\Context);
 
             /*if ($this->updateMethod) {

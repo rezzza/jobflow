@@ -27,11 +27,6 @@ class Job implements \IteratorAggregate, JobInterface
     protected $children = array();
 
     /**
-     * @var boolean
-     */
-    protected $locked;
-
-    /**
      * @var JobConfig $config
      */
     public function __construct(JobConfig $config)
@@ -62,13 +57,13 @@ class Job implements \IteratorAggregate, JobInterface
         // Runtime configuration (!= buildJob which is executed when we build job)
         $this->getResolved()->configJob($this->getConfig(), $options);
 
-        if ($this->getLogger()) {
+        /*if ($this->getLogger()) {
             $this->getLogger()->info(sprintf(
                 'Start to execute Job [%s] : %s',
                 $this->getParent()->getName(),
                 $this->getName()
             ));
-        }
+        }*/
 
         $input = $this->getInput($context->input);
         $output = $this->getOutput($context->output);
@@ -77,7 +72,7 @@ class Job implements \IteratorAggregate, JobInterface
         if ($config instanceof ConfigProcessor) {
             $factory = new \Rezzza\Jobflow\Processor\ProcessorFactory;
             $factory
-                ->create($context->input, $this->getConfigProcessor(), $this->config->getMetadataAccessor())
+                ->create($context->input, $this->getConfigProcessor(), $this->config->getAttribute('metadata_accessor'))
                 ->execute($input, $output, $context)
             ;
         } elseif (is_callable($config)) {
@@ -96,13 +91,13 @@ class Job implements \IteratorAggregate, JobInterface
         // Update context
         $output->setContextFromInput($input);
 
-        if ($this->getLogger()) {
+        /*if ($this->getLogger()) {
             $this->getLogger()->info(sprintf(
                 'End to execute Job [%s] : %s',
                 $this->getParent()->getName(),
                 $this->getName()
             ));
-        }
+        }*/
 
         return $output;
     }
@@ -112,10 +107,6 @@ class Job implements \IteratorAggregate, JobInterface
      */
     public function add(JobInterface $child)
     {
-        if ($this->isLocked()) {
-            throw new \RuntimeException('Cannot add child on job locked');
-        }
-
         $child->setParent($this);
 
         $this->children[$child->getName()] = $child;
@@ -202,14 +193,6 @@ class Job implements \IteratorAggregate, JobInterface
     }
 
     /**
-     * @param boolean $locked
-     */
-    public function setLocked($locked)
-    {
-        $this->locked = $locked;
-    }
-
-    /**
      * @return JobInterface
      */
     public function getParent()
@@ -218,32 +201,11 @@ class Job implements \IteratorAggregate, JobInterface
     }
 
     /**
-     * @return IoDescriptor
-     */
-    public function getIo()
-    {
-        return $this->config->getIo();
-    }
-
-    /**
-     * @return LoggerInterface
-     */
-    public function getLogger()
-    {
-        return $this->config->getLogger();
-    }
-
-    /**
      * @return array
      */
     public function getConfigProcessor()
     {
         return $this->config->getConfigProcessor();
-    }
-
-    public function getContextOptions()
-    {
-        return $this->config->getContextOptions();
     }
 
     /**
@@ -267,17 +229,9 @@ class Job implements \IteratorAggregate, JobInterface
     /**
      * @return boolean
      */
-    public function isLocked()
-    {
-        return $this->locked;
-    }
-
-    /**
-     * @return boolean
-     */
     public function isExtractor()
     {
-        return $this->config->getETLType() === ETLType::TYPE_EXTRACTOR;
+        return $this->config->getAttribute('etl_type') === ETLType::TYPE_EXTRACTOR;
     }
 
     /**
@@ -285,7 +239,7 @@ class Job implements \IteratorAggregate, JobInterface
      */
     public function isTransformer()
     {
-        return $this->config->getETLType() === ETLType::TYPE_TRANSFORMER;
+        return $this->config->getAttribute('etl_type') === ETLType::TYPE_TRANSFORMER;
     }
 
     /**
@@ -293,7 +247,7 @@ class Job implements \IteratorAggregate, JobInterface
      */
     public function isLoader()
     {
-        return $this->config->getETLType() === ETLType::TYPE_LOADER;
+        return $this->config->getAttribute('etl_type') === ETLType::TYPE_LOADER;
     }
 
     public function __toString()

@@ -5,8 +5,7 @@ namespace Rezzza\Jobflow;
 use Rezzza\Jobflow\Io\IoDescriptor;
 
 /**
- * Wraps all properties we want to pass from builder to job.
- * Mainly use by buildJob method in JobType
+ * Config the job.
  *
  * @author Timothée Barray <tim@amicalement-web.net>
  */
@@ -28,25 +27,14 @@ class JobConfig
     private $configProcessor;
 
     /**
-     * @var string
+     * @var array
      */
-    private $etlType;
-
-    /**
-     * @var IoDescriptor
-     */
-    private $io;
+    private $attributes;
 
     /**
      * @var array
      */
     private $options;
-
-    private $logger;
-
-    private $metadataAccessor;
-
-    private $contextOptions;
 
     /**
      * @param string $name
@@ -56,6 +44,17 @@ class JobConfig
     {
         $this->name = $name;
         $this->options = $options;
+    }
+
+    /**
+     * @return JobConfig
+     */
+    public function getJobConfig()
+    {
+        // This method should be idempotent, so clone the builder
+        $config = clone $this;
+
+        return $config;
     }
 
     /**
@@ -83,19 +82,27 @@ class JobConfig
     }
 
     /**
-     * @return string
+     * @return array
      */
-    public function getETLType()
+    public function getAttributes()
     {
-        return $this->etlType;
+        return $this->attributes;
     }
 
     /**
-     * @return IoDescriptor
+     * @return array
      */
-    public function getIo()
+    public function hasAttribute($name)
     {
-        return $this->io;
+        return array_key_exists($name, $this->attributes);
+    }
+
+    /**
+     * @return array
+     */
+    public function getAttribute($name, $default = null)
+    {
+        return array_key_exists($name, $this->attributes) ? $this->attributes[$name] : $default;
     }
 
     /**
@@ -147,30 +154,6 @@ class JobConfig
     }
 
     /**
-     * @param string $etlType
-     *
-     * @return JobConfig
-     */
-    public function setETLType($etlType)
-    {
-        $this->etlType = $etlType;
-
-        return $this;
-    }
-
-    /**
-     * @param IoDescriptor $io
-     *
-     * @return JobConfig
-     */
-    public function setIo(IoDescriptor $io = null)
-    {
-        $this->io = $io;
-
-        return $this;
-    }
-
-    /**
      * @param JobFactory $etlConfig
      *
      * @return JobConfig
@@ -182,50 +165,23 @@ class JobConfig
         return $this;
     }
 
-    public function setLogger($logger)
+    /**
+     * {@inheritdoc}
+     */
+    public function setAttribute($name, $value)
     {
-        $this->logger = $logger;
+        $this->attributes[$name] = $value;
 
         return $this;
-    }
-
-    public function getLogger()
-    {
-        return $this->logger;
-    }
-
-    public function setMetadataAccessor($accessor)
-    {
-        $this->metadataAccessor = $accessor;
-
-        return $this;
-    }
-
-    public function getMetadataAccessor()
-    {
-        return $this->metadataAccessor;
-    }
-
-    public function setContextOptions($options)
-    {
-        $this->contextOptions = $options;
-
-        return $this;
-    }
-
-    public function getContextOptions()
-    {
-        return $this->contextOptions;
     }
 
     /**
-     * @return JobConfig
+     * {@inheritdoc}
      */
-    public function getJobConfig()
+    public function setAttributes(array $attributes)
     {
-        // This method should be idempotent, so clone the builder
-        $config = clone $this;
+        $this->attributes = $attributes;
 
-        return $config;
+        return $this;
     }
 }

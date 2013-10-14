@@ -109,7 +109,6 @@ class Jobflow
         }
 
         $this->buildGraph();
-        $this->job->setLocked(true);
 
         return $this;
     }

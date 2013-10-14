@@ -23,14 +23,7 @@ abstract class ETLType extends AbstractJobType
     public function buildJob(JobBuilder $builder, array $options)
     {
         $builder
-            ->setETLType($this->getETLType())
-        ;
-    }
-
-    public function buildConfig($config, $options)
-    {
-        $config
-            ->setIo($options['io'])
+            ->setAttribute('etl_type', $this->getETLType())
         ;
     }
 

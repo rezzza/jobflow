@@ -21,7 +21,9 @@ class JobTypeLoggerExtension extends AbstractJobTypeExtension
      */
     public function buildJob(JobBuilder $builder, array $options)
     {
-        $builder->setLogger($this->logger);
+        $builder
+            ->setAttribute('logger', $this->logger)
+        ;
     }
 
     public function getExtendedType()
