@@ -38,12 +38,13 @@ class ExtractorProxy extends ETLProcessor implements ExtractorInterface
             $execution->setGlobalOption('offset', $offset);
         }
 
-        // Move offset to the specified position
+        // Read data
         try {
-            $this->seek($offset);
+            $data = $this->slice($offset, $limit);
         } catch (\OutOfBoundsException $e) {
             // Message has no more data and should not be spread
             $output->end();
+            $data = array();
 
             if ($execution->getLogger()) {
                 $execution->getLogger()->debug('No data');
@@ -51,16 +52,27 @@ class ExtractorProxy extends ETLProcessor implements ExtractorInterface
         }
 
         // Store data read
-        for ($i = 0; $i < $limit && $this->valid(); $i++) {
-            if ($this->key() > $total) {
-                break;
-            }
-
-            $output->write($this->current(), $offset + $i);
-            $this->next();
+        foreach ($data as $k => $v) {
+            $output->write($v, $offset + $k);
         }
 
         return $output;
+    }
+
+    public function slice($offset, $limit)
+    {
+        if (method_exists($this->getProcessor(), 'slice')) {
+            return $this->getProcessor()->slice($offset, $limit);
+        }
+
+        $this->seek($offset);
+        $data = array();
+
+        for ($i = 0; $i < $limit && $this->valid(); $i++) {
+            $data[] = $this->extract($this->createContext());
+        }
+
+        return $data;
     }
 
     public function count()
