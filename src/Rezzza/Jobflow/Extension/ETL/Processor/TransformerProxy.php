@@ -19,6 +19,10 @@ class TransformerProxy extends ETLProcessor implements TransformerInterface
     public function execute(JobInput $input, JobOutput &$output, ExecutionContext $execution)
     {       
         foreach ($input->read() as $k => $result) {
+            // Read metadata
+            $this->getMetadataAccessor()->read($input->getMetadata(), $this->processor, $k);
+
+            // Write metadata
             $output->writeMetadata($result, $k, $this->getMetadataAccessor());
 
             $context = $this->createContext();

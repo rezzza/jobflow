@@ -27,6 +27,8 @@ class LoaderProxy extends ETLProcessor implements LoaderInterface
         foreach ($input->read() as $k => $d) {
             $this->getMetadataAccessor()->read($input->getMetadata(), $this->processor, $k);
 
+            $output->writeMetadata($d, $k, $this->getMetadataAccessor());
+
             $this->load($d, $context);
         }
 

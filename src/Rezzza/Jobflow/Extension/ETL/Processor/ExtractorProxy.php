@@ -53,7 +53,10 @@ class ExtractorProxy extends ETLProcessor implements ExtractorInterface
 
         // Store data read
         foreach ($data as $k => $v) {
-            $output->write($v, $offset + $k);
+            $key = $offset + $k;
+            
+            $output->writeMetadata($v, $key, $this->getMetadataAccessor());
+            $output->write($v, $key);
         }
 
         return $output;
