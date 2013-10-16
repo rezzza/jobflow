@@ -238,4 +238,9 @@ class JobConfig
 
         return $this;
     }
+
+    public function setOptions(array $options)
+    {
+        $this->options = $options;
+    }
 }

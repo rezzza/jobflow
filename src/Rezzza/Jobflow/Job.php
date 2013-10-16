@@ -57,7 +57,9 @@ class Job implements \IteratorAggregate, JobInterface
         $options['message'] = $context->getInput()->getMessage();
 
         // Runtime configuration (!= buildJob which is executed when we build job)
-        $this->getResolved()->configJob($this->getConfig(), $options);
+        $options = $this->getResolved()->configJob($this->getConfig(), $options);
+        // Should avoid this kind of operations. ConfigJob Runtime need to be improve.
+        $this->getConfig()->setOptions($options);
 
         $dispatcher = $this->config->getEventDispatcher();
 
