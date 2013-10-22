@@ -84,7 +84,7 @@ class JobBuilder extends JobConfig
             $type = 'job';
         }
 
-        return $this->jobFactory->createNamedBuilder($name, $type, $options);
+        return $this->getJobFactory()->createNamedBuilder($name, $type, $options);
     }
 
     /**

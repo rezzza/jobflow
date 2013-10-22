@@ -42,6 +42,11 @@ class JobConfig
     private $metadataAccessor;
 
     /**
+     * @var JobFactory
+     */
+    private $jobFactory;
+
+    /**
      * @var array
      */
     private $attributes;
@@ -121,6 +126,14 @@ class JobConfig
     public function getMetadataAccessor()
     {
         return $this->metadataAccessor;
+    }
+
+    /**
+     * @return JobFactory
+     */
+    public function getJobFactory()
+    {
+        return $this->jobFactory;
     }
 
     /**
