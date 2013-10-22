@@ -13,5 +13,5 @@ $script
         )
 ;
 
-$script->noCodeCoverageForNamespaces(array('mageekguy', 'symfony'));
+$script->noCodeCoverageForNamespaces('mageekguy', 'Symfony');
 $script->bootstrapFile(__DIR__ . DIRECTORY_SEPARATOR . '.atoum.bootstrap.php');
