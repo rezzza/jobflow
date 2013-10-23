@@ -9,7 +9,7 @@ use Rezzza\Jobflow\AbstractJobType;
 
 class TsvExtractorType extends AbstractJobType
 {
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function setExecOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
             'args' => function(Options $options) {

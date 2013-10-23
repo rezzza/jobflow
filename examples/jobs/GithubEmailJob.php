@@ -1,5 +1,7 @@
 <?php
 
+use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+
 use Rezzza\Jobflow\AbstractJobType;
 use Rezzza\Jobflow\Io;
 use Rezzza\Jobflow\JobBuilder;
@@ -62,6 +64,15 @@ class GithubEmailJob extends AbstractJobType
                 )
             )
         ;
+    }
+
+    public function setInitOptions(OptionsResolverInterface $resolver)
+    {
+        $resolver->setDefaults(array(
+            'context' => array(
+                'limit' => 15
+            )
+        ));
     }
 
     public function getIo()

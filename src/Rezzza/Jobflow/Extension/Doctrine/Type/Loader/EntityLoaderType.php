@@ -17,7 +17,7 @@ class EntityLoaderType extends AbstractJobType
         $this->doctrine = $doctrine;
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function setExecOptions(OptionsResolverInterface $resolver)
     {
         $doctrine = $this->doctrine;
 

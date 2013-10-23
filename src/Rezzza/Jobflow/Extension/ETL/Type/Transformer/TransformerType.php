@@ -9,28 +9,28 @@ use Rezzza\Jobflow\Extension\ETL\Type\ETLType;
 
 class TransformerType extends ETLType
 {
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function setInitOptions(OptionsResolverInterface $resolver)
     {
-        parent::setDefaultOptions($resolver);
+        parent::setInitOptions($resolver);
 
         $resolver->setDefaults(array(
+            'etl_type' => self::TYPE_TRANSFORMER
+        ));
+    }
+
+    public function setExecOptions(OptionsResolverInterface $resolver)
+    {
+        parent::setExecOptions($resolver);
+
+        $resolver->setDefaults(array(
+            'proxy_class' => 'Rezzza\Jobflow\Extension\ETL\Processor\TransformerProxy',
             'transform_class' => null,
-            'update_method' => null
+            'update_method' => null,
         ));
     }
 
     public function getName()
     {
         return 'transformer';
-    }
-
-    public function getETLType()
-    {
-        return self::TYPE_TRANSFORMER;
-    }
-
-    public function getProxyClass()
-    {
-        return 'Rezzza\Jobflow\Extension\ETL\Processor\TransformerProxy';
     }
 }

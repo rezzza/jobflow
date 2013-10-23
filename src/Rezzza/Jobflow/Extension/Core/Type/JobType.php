@@ -16,7 +16,10 @@ use Rezzza\Jobflow\Metadata\MetadataAccessor;
  */
 class JobType extends AbstractJobType
 {
-    public function buildConfig(JobConfig $config, $options)
+    /**
+     * {@inheritdoc}
+     */
+    public function buildExec(JobConfig $config, array $options)
     {   
         $config
             ->setMetadataAccessor(
@@ -29,7 +32,10 @@ class JobType extends AbstractJobType
         ;
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    /**
+     * {@inheritdoc}
+     */
+    public function setExecOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
             'class' => null,
@@ -38,7 +44,6 @@ class JobType extends AbstractJobType
             'metadata_read' => array(),
             'metadata_write' => array(),
             'message' => null,
-            'context' => array(),
             'processor' => function(Options $options) {
                 return new ConfigProcessor(
                     $options['class'],
@@ -46,6 +51,16 @@ class JobType extends AbstractJobType
                     $options['calls']
                 );
             }
+        ));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setInitOptions(OptionsResolverInterface $resolver)
+    {
+        $resolver->setDefaults(array(
+            'context' => array()
         ));
     }
 

@@ -25,7 +25,12 @@ class ResolvedJob
     /**
      * @var OptionsResolverInterface
      */
-    private $optionsResolver;
+    private $initOptionsResolver;
+
+    /**
+     * @var OptionsResolverInterface
+     */
+    private $execOptionsResolver;
 
     /**
      * @var JobTypeExtensionInterface[]
@@ -55,33 +60,13 @@ class ResolvedJob
         return $this->innerType;
     }
 
-    public function configJob($config, $options)
+    public function execJob($config, $options)
     {
-        $options = $this->getOptionsResolver()->resolve($options);
+        $options = $this->getExecOptionsResolver()->resolve($options);
 
-        $this->buildConfig($config, $options);
+        $this->buildExec($config, $options);
 
         return $options;
-    }
-
-    /**
-     * Init options with innerType requirements
-     *
-     * @return OptionsResolver
-     */
-    public function getOptionsResolver()
-    {
-        if (null === $this->optionsResolver) {
-            if (null !== $this->parent) {
-                $this->optionsResolver = clone $this->parent->getOptionsResolver();
-            } else {
-                $this->optionsResolver = new OptionsResolver();
-            }
-
-            $this->innerType->setDefaultOptions($this->optionsResolver);
-        }
-
-        return $this->optionsResolver;
     }
 
     /**
@@ -91,15 +76,57 @@ class ResolvedJob
      *
      * @return JobBuilder
      */
-    public function createBuilder($name, JobFactory $factory, array $options = array())
+    public function createBuilder($name, JobFactory $factory, array $initOptions = array(), array $execOptions = array())
     {
-        $builder = $this->newBuilder($name, $factory, $options);
+        $initOptions = $this->getInitOptionsResolver()->resolve($initOptions);
+
+        $builder = $this->newBuilder($name, $factory, $initOptions, $execOptions);
 
         $builder->setResolved($this);
 
-        $this->buildJob($builder, $options);
+        $this->buildJob($builder, $initOptions);
 
         return $builder;
+    }
+
+    /**
+     * Init options with innerType requirements
+     *
+     * @return OptionsResolver
+     */
+    public function getInitOptionsResolver()
+    {
+        if (null === $this->initOptionsResolver) {
+            if (null !== $this->parent) {
+                $this->initOptionsResolver = clone $this->parent->getInitOptionsResolver();
+            } else {
+                $this->initOptionsResolver = new OptionsResolver();
+            }
+
+            $this->innerType->setInitOptions($this->initOptionsResolver);
+        }
+
+        return $this->initOptionsResolver;
+    }
+
+    /**
+     * Exec options with innerType requirements
+     *
+     * @return OptionsResolver
+     */
+    public function getExecOptionsResolver()
+    {
+        if (null === $this->execOptionsResolver) {
+            if (null !== $this->parent) {
+                $this->execOptionsResolver = clone $this->parent->getExecOptionsResolver();
+            } else {
+                $this->execOptionsResolver = new OptionsResolver();
+            }
+
+            $this->innerType->setExecOptions($this->execOptionsResolver);
+        }
+
+        return $this->execOptionsResolver;
     }
 
     /**
@@ -111,9 +138,9 @@ class ResolvedJob
      *
      * @return JobBuilder
      */
-    protected function newBuilder($name, JobFactory $factory, array $options)
+    protected function newBuilder($name, JobFactory $factory, array $initOptions, array $execOptions)
     {
-        return new JobBuilder($name, $factory, new EventDispatcher(), $options);
+        return new JobBuilder($name, $factory, new EventDispatcher(), $initOptions, $execOptions);
     }
 
     /**
@@ -133,12 +160,12 @@ class ResolvedJob
         }
     }
 
-    protected function buildConfig(JobConfig $config, $options)
+    protected function buildExec(JobConfig $config, $options)
     {
         if (null !== $this->parent) {
-            $this->parent->buildConfig($config, $options);
+            $this->parent->buildExec($config, $options);
         }
 
-        $this->innerType->buildConfig($config, $options);
+        $this->innerType->buildExec($config, $options);
     }
 }

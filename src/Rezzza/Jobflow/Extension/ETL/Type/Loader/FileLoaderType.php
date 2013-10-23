@@ -9,7 +9,7 @@ use Rezzza\Jobflow\AbstractJobType;
 
 class FileLoaderType extends AbstractJobType
 {
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function setExecOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
             'class' => 'Knp\ETL\Loader\FileLoader',

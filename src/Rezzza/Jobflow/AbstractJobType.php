@@ -19,14 +19,21 @@ abstract class AbstractJobType implements JobTypeInterface
     /**
      * {@inheritdoc}
      */
-    public function buildConfig(JobConfig $config, $options)
+    public function buildExec(JobConfig $config, array $options)
     {
     }
     
     /**
      * {@inheritdoc}
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function setInitOptions(OptionsResolverInterface $resolver)
+    {
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setExecOptions(OptionsResolverInterface $resolver)
     {
     }
 

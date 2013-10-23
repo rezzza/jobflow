@@ -9,11 +9,21 @@ use Rezzza\Jobflow\Extension\ETL\Type\ETLType;
 
 class LoaderType extends ETLType
 {
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function setInitOptions(OptionsResolverInterface $resolver)
     {
-        parent::setDefaultOptions($resolver);
+        parent::setInitOptions($resolver);
 
         $resolver->setDefaults(array(
+            'etl_type' => self::TYPE_LOADER
+        ));
+    }
+    
+    public function setExecOptions(OptionsResolverInterface $resolver)
+    {
+        parent::setExecOptions($resolver);
+
+        $resolver->setDefaults(array(
+            'proxy_class' => 'Rezzza\Jobflow\Extension\ETL\Processor\LoaderProxy',
             'args' => function(Options $options) {
                 $io = $options['io'];
 
@@ -32,10 +42,5 @@ class LoaderType extends ETLType
     public function getETLType()
     {
         return self::TYPE_LOADER;
-    }
-
-    public function getProxyClass()
-    {
-        return 'Rezzza\Jobflow\Extension\ETL\Processor\LoaderProxy';
     }
 }

@@ -9,7 +9,7 @@ use Rezzza\Jobflow\AbstractJobType;
 
 class CsvExtractorType extends AbstractJobType
 {
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function setExecOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
             'class' => 'Knp\ETL\Extractor\CsvExtractor'

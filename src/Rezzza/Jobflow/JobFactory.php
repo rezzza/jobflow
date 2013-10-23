@@ -31,9 +31,9 @@ class JobFactory
      *
      * @return Job
      */
-    public function create($type, array $options = array())
+    public function create($type, array $initOptions = array(), array $execOptions = array())
     {
-        return $this->createBuilder($type, $options)->getJob();
+        return $this->createBuilder($type, $initOptions, $execOptions)->getJob();
     }
 
     /**
@@ -44,13 +44,13 @@ class JobFactory
      *
      * @return JobBuilder
      */
-    public function createBuilder($type = 'job', array $options = array())
+    public function createBuilder($type = 'job', array $initOptions = array(), array $execOptions = array())
     {
         $name = $type instanceof JobTypeInterface || $type instanceof ResolvedJob
             ? $type->getName()
             : $type;
 
-        return $this->createNamedBuilder($name, $type, $options);
+        return $this->createNamedBuilder($name, $type, $initOptions, $execOptions);
     }
 
     /**
@@ -60,7 +60,7 @@ class JobFactory
      *
      * @return JobBuilder
      */
-    public function createNamedBuilder($name, $type = 'job', array $options = array())
+    public function createNamedBuilder($name, $type = 'job', array $initOptions = array(), array $execOptions = array())
     {
         if (is_string($type)) {
             $type = $this->registry->getType($type);
@@ -72,7 +72,7 @@ class JobFactory
             throw new \InvalidArgumentException(sprintf('Type "%s" should be a string, JobTypeInterface or ResolvedJob', (is_object($type) ? get_class($type) : $type)));
         }
 
-        return $type->createBuilder($name, $this, $options);
+        return $type->createBuilder($name, $this, $initOptions, $execOptions);
     }
 
     /**

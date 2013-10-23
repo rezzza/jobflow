@@ -25,12 +25,7 @@ $jobflow = $jobflowFactory->create('rabbitmq');
 echo 'Started...'.PHP_EOL;
 // Now we can execute our job
 $jobflow
-    ->setJob(
-        'github_email',
-        array(
-            'context' => array('limit' => 10)
-        )
-    )
+    ->setJob('github_email')
     ->init() // Will create the first message to run the process
     ->run()
 ;

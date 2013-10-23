@@ -26,9 +26,9 @@ class JobBuilder extends JobConfig
      * @param JobFactory $jobFactory
      * @param array $options
      */
-    public function __construct($name, JobFactory $jobFactory, EventDispatcherInterface $dispatcher, array $options = array())
+    public function __construct($name, JobFactory $jobFactory, EventDispatcherInterface $dispatcher, array $initOptions = array(), array $execOptions = array())
     {
-        parent::__construct($name, $dispatcher, $options);
+        parent::__construct($name, $dispatcher, $initOptions, $execOptions);
         $this->setJobFactory($jobFactory);
     }
 
@@ -37,11 +37,12 @@ class JobBuilder extends JobConfig
      *
      * @param string $child Name of the child
      * @param mixed $type The JobTypeInterface or the alias of the job type registered as a service
-     * @param array $options
+     * @param array $execOptions
+     * @param array $initOptions
      *
      * @return JobBuilder
      */
-    public function add($child, $type, array $options = array())
+    public function add($child, $type, array $execOptions = array(), array $initOptions = array())
     {
         if (!is_string($child) && !is_int($child)) {
             throw new \InvalidArgumentException(sprintf('child name should be string or, integer'));
@@ -54,7 +55,8 @@ class JobBuilder extends JobConfig
         $this->children[$child] = null; // to keep order
         $this->unresolvedChildren[$child] = array(
             'type' => $type,
-            'options' => $options
+            'init_options' => $initOptions,
+            'exec_options' => $execOptions
         );
 
         return $this;
@@ -78,13 +80,13 @@ class JobBuilder extends JobConfig
      *
      * @return JobBuilder
      */
-    public function create($name, $type = null, array $options = array())
+    public function create($name, $type = null, array $initOptions = array(), array $execOptions = array())
     {
         if (null === $type) {
             $type = 'job';
         }
 
-        return $this->getJobFactory()->createNamedBuilder($name, $type, $options);
+        return $this->getJobFactory()->createNamedBuilder($name, $type, $initOptions, $execOptions);
     }
 
     /**
@@ -116,7 +118,7 @@ class JobBuilder extends JobConfig
     protected function resolveChildren()
     {
         foreach ($this->unresolvedChildren as $name => $info) {
-            $this->children[$name] = $this->create($name, $info['type'], $info['options']);
+            $this->children[$name] = $this->create($name, $info['type'], $info['init_options'], $info['exec_options']);
         }
 
         $this->unresolvedChildren = array();

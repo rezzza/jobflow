@@ -22,7 +22,7 @@ class JobConfig
     private $name;
 
     /**
-     * @var EventDispatcher
+     * @var EventDispatche
      */
     private $dispatcher;
 
@@ -54,17 +54,23 @@ class JobConfig
     /**
      * @var array
      */
-    private $options;
+    private $initOptions;
+
+    /**
+     * @var array
+     */
+    private $execOptions;
 
     /**
      * @param string $name
      * @param array $options
      */
-    public function __construct($name, EventDispatcherInterface $dispatcher, array $options = array())
+    public function __construct($name, EventDispatcherInterface $dispatcher, array $initOptions = array(), array $execOptions = array())
     {
         $this->name = $name;
         $this->dispatcher = $dispatcher;
-        $this->options = $options;
+        $this->initOptions = $initOptions;
+        $this->execOptions = $execOptions;
     }
 
     /**
@@ -165,7 +171,23 @@ class JobConfig
      */
     public function getOptions()
     {
-        return $this->options;
+        return array_merge($this->initOptions, $this->execOptions);
+    }
+
+    /**
+     * @return array
+     */
+    public function getInitOptions()
+    {
+        return $this->initOptions;
+    }
+
+    /**
+     * @return array
+     */
+    public function getExecOptions()
+    {
+        return $this->execOptions;
     }
 
     /**
@@ -173,7 +195,7 @@ class JobConfig
      */
     public function hasOption($name)
     {
-        return array_key_exists($name, $this->options);
+        return array_key_exists($name, $this->getOptions());
     }
 
     /**
@@ -181,7 +203,9 @@ class JobConfig
      */
     public function getOption($name, $default = null)
     {
-        return array_key_exists($name, $this->options) ? $this->options[$name] : $default;
+        $options = $this->getOptions();
+
+        return array_key_exists($name, $options) ? $options[$name] : $default;
     }
 
     /**
@@ -252,8 +276,23 @@ class JobConfig
         return $this;
     }
 
-    public function setOptions(array $options)
+    /**
+     * @param array
+     */
+    public function setInitOptions(array $options)
     {
-        $this->options = $options;
+        $this->initOptions = $options;
+
+        return $this;
+    }
+
+    /**
+     * @param array
+     */
+    public function setExecOptions(array $options)
+    {
+        $this->execOptions = $options;
+
+        return $this;
     }
 }

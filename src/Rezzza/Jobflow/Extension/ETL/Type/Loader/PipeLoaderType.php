@@ -9,7 +9,7 @@ use Rezzza\Jobflow\AbstractJobType;
 
 class PipeLoaderType extends AbstractJobType
 {
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function setExecOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setRequired(array(
             'mapping'

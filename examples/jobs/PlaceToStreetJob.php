@@ -53,6 +53,15 @@ class PlaceToStreetJob extends AbstractJobType
         ;
     }
 
+    public function setInitOptions(OptionsResolverInterface $resolver)
+    {
+        $resolver->setDefaults(array(
+            'context' => array(
+                'limit' => 1
+            )
+        ));
+    }
+
     public function getName()
     {
         return 'place_to_street';

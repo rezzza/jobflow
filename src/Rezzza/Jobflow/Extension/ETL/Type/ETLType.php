@@ -23,16 +23,23 @@ abstract class ETLType extends AbstractJobType
     public function buildJob(JobBuilder $builder, array $options)
     {
         $builder
-            ->setAttribute('etl_type', $this->getETLType())
+            ->setAttribute('etl_type', $options['etl_type'])
         ;
     }
 
-    abstract function getETLType();
-
-    abstract function getProxyClass();
-
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function setInitOptions(OptionsResolverInterface $resolver)
     {
+        $resolver->setRequired(array(
+            'etl_type'
+        ));
+    }
+
+    public function setExecOptions(OptionsResolverInterface $resolver)
+    {
+        $resolver->setRequired(array(
+            'proxy_class'
+        ));
+
         $resolver->setDefaults(array(
             'io' => null,
             'processor' => function(Options $options) {
@@ -40,7 +47,7 @@ abstract class ETLType extends AbstractJobType
                     $options['class'],
                     $options['args'],
                     $options['calls'],
-                    $this->getProxyClass()
+                    $options['proxy_class']
                 );
             } 
         ));

@@ -53,13 +53,13 @@ class Job implements \IteratorAggregate, JobInterface
     public function execute(ExecutionContext $context)
     {
         // We inject msg as it could be used during job runtime configuration
-        $options = $this->getOptions();
+        $options = $this->getExecOptions();
         $options['message'] = $context->getInput()->getMessage();
 
         // Runtime configuration (!= buildJob which is executed when we build job)
-        $options = $this->getResolved()->configJob($this->getConfig(), $options);
+        $options = $this->getResolved()->execJob($this->getConfig(), $options);
         // Should avoid this kind of operations. ConfigJob Runtime need to be improve.
-        $this->getConfig()->setOptions($options);
+        $this->getConfig()->setExecOptions($options);
 
         $dispatcher = $this->config->getEventDispatcher();
 
@@ -132,6 +132,22 @@ class Job implements \IteratorAggregate, JobInterface
     public function getConfig()
     {
         return $this->config;
+    }
+
+    /**
+     * @return array
+     */
+    public function getInitOptions()
+    {
+        return $this->config->getInitOptions();
+    }
+
+    /**
+     * @return array
+     */
+    public function getExecOptions()
+    {
+        return $this->config->getExecOptions();
     }
 
     /**

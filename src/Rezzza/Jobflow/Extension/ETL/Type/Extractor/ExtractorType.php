@@ -9,11 +9,21 @@ use Rezzza\Jobflow\Extension\ETL\Type\ETLType;
 
 class ExtractorType extends ETLType
 {
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function setInitOptions(OptionsResolverInterface $resolver)
     {
-        parent::setDefaultOptions($resolver);
+        parent::setInitOptions($resolver);
 
         $resolver->setDefaults(array(
+            'etl_type' => self::TYPE_EXTRACTOR
+        ));
+    }
+
+    public function setExecOptions(OptionsResolverInterface $resolver)
+    {
+        parent::setExecOptions($resolver);
+
+        $resolver->setDefaults(array(
+            'proxy_class' => 'Rezzza\Jobflow\Extension\ETL\Processor\ExtractorProxy',
             'offset' => 0,
             'args' => function(Options $options) {
                 $io = $options['io'];
@@ -28,15 +38,5 @@ class ExtractorType extends ETLType
     public function getName()
     {
         return 'extractor';
-    }
-
-    public function getETLType()
-    {
-        return self::TYPE_EXTRACTOR;
-    }
-
-    public function getProxyClass()
-    {
-        return 'Rezzza\Jobflow\Extension\ETL\Processor\ExtractorProxy';
     }
 }
