@@ -24,6 +24,7 @@ class LoaderType extends ETLType
 
         $resolver->setDefaults(array(
             'proxy_class' => 'Rezzza\Jobflow\Extension\ETL\Processor\LoaderProxy',
+            'property' => null,
             'args' => function(Options $options) {
                 $io = $options['io'];
 

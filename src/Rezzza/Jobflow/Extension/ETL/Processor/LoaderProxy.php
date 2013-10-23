@@ -23,12 +23,21 @@ class LoaderProxy extends ETLProcessor implements LoaderInterface
         }
 
         $context = $this->createContext();
+        $property = $execution->getJobOption('property');
+
+        if (null !== $property) {
+            $accessor = PropertyAccess::createPropertyAccessor();
+        }
 
         foreach ($input->read() as $k => $d) {
             $this->getMetadataAccessor()->read($input->getMetadata(), $this->processor, $k);
 
             $output->writeMetadata($d, $k, $this->getMetadataAccessor());
 
+            if (null !== $property) {
+                $d = $accessor->getValue($d, $property);
+            }
+            
             $this->load($d, $context);
         }
 
