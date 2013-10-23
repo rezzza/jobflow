@@ -4,6 +4,7 @@ namespace Rezzza\Jobflow\Extension\ETL\Processor;
 
 use Knp\ETL\ContextInterface;
 use Knp\ETL\LoaderInterface;
+use Symfony\Component\PropertyAccess\PropertyAccess;
 
 use Rezzza\Jobflow\JobInput;
 use Rezzza\Jobflow\JobOutput;
