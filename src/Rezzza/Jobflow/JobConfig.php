@@ -47,6 +47,11 @@ class JobConfig
     private $jobFactory;
 
     /**
+     * @var mixed
+     */
+    private $requeue;
+
+    /**
      * @var array
      */
     private $attributes;
@@ -140,6 +145,11 @@ class JobConfig
     public function getJobFactory()
     {
         return $this->jobFactory;
+    }
+
+    public function getRequeue()
+    {
+        return $this->requeue;
     }
 
     /**
@@ -252,6 +262,13 @@ class JobConfig
     public function setJobFactory(JobFactory $jobFactory)
     {
         $this->jobFactory = $jobFactory;
+
+        return $this;
+    }
+
+    public function setRequeue($requeue)
+    {
+        $this->requeue = $requeue;
 
         return $this;
     }

@@ -216,28 +216,9 @@ class Job implements \IteratorAggregate, JobInterface
         return $this->getParent()->getName().'.'.$this->getName();
     }
 
-    /**
-     * @return boolean
-     */
-    public function isExtractor()
+    public function getRequeue()
     {
-        return $this->config->getAttribute('etl_type') === ETLType::TYPE_EXTRACTOR;
-    }
-
-    /**
-     * @return boolean
-     */
-    public function isTransformer()
-    {
-        return $this->config->getAttribute('etl_type') === ETLType::TYPE_TRANSFORMER;
-    }
-
-    /**
-     * @return boolean
-     */
-    public function isLoader()
-    {
-        return $this->config->getAttribute('etl_type') === ETLType::TYPE_LOADER;
+        return $this->config->getRequeue();
     }
 
     public function __toString()

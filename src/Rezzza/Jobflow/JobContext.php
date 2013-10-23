@@ -36,6 +36,14 @@ class JobContext implements JobContextInterface
     private $steps = array();
 
     /**
+     * Step which start this context.
+     * At the end of loops, we will requeue to this step
+     *
+     * @var string
+     */
+    private $origin;
+
+    /**
      * @var array
      */
     private $options = array();
@@ -185,5 +193,15 @@ class JobContext implements JobContextInterface
     public function addStep($step)
     {
         $this->steps[] = $step;
+    }
+
+    public function setOrigin($origin)
+    {
+        $this->origin = $origin;
+    }
+
+    public function getOrigin()
+    {
+        return $this->origin;
     }
 }

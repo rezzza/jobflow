@@ -14,7 +14,8 @@ class LoaderType extends ETLType
         parent::setInitOptions($resolver);
 
         $resolver->setDefaults(array(
-            'etl_type' => self::TYPE_LOADER
+            'etl_type' => self::TYPE_LOADER,
+            'requeue' => true
         ));
     }
     

@@ -6,6 +6,7 @@ use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 use Rezzza\Jobflow\AbstractJobType;
+use Rezzza\Jobflow\JobBuilder;
 use Rezzza\Jobflow\JobConfig;
 use Rezzza\Jobflow\Metadata\MetadataAccessor;
 
@@ -16,6 +17,16 @@ use Rezzza\Jobflow\Metadata\MetadataAccessor;
  */
 class JobType extends AbstractJobType
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function buildJob(JobBuilder $builder, array $options)
+    {
+        $builder
+            ->setRequeue($options['requeue'])
+        ;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -60,7 +71,8 @@ class JobType extends AbstractJobType
     public function setInitOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'context' => array()
+            'context' => array(),
+            'requeue' => null
         ));
     }
 

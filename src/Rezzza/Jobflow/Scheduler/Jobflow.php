@@ -178,43 +178,29 @@ class Jobflow
         $child = $this->job->get($current);
 
         if ($msg->pipe instanceof Pipe) {
-            foreach ($msg->pipe->params as $pipe) {
-                $forward = clone $msg;
-                $forward->context->initOptions();
-                $forward->pipe = $pipe;
-                $graph = clone $this->jobGraph;
-                $forward->context->updateToNextJob($graph);
-                $this->addMessage($forward);
-            }
-
+            $this->forwardPipeMessage($msg, $this->jobGraph);
+            
             // Reset pipe as we already ran through above
             $msg->pipe = array();
         } 
 
-        if ($child->isLoader() || $this->jobGraph->isLast($current)) {
-            $msg->context->tick();
+        if (null !== $child->getRequeue()) {
+            if (true === $child->getRequeue()) {
+                $msg->context->tick();
 
-            if (!$msg->context->isFinished()) {
-                // When loader we add msg to the requeue to the previous extractor
-                $extractor = false;
+                if (!$msg->context->isFinished()) {
+                    $origin = $msg->context->getOrigin();
+                    $this->jobGraph->move($origin);
 
-                while (false === $extractor) {
-                    $previous = $this->jobGraph->getPreviousJob();
-                    $jobPrevious = $this->job->get($previous);
-
-                    if ($jobPrevious->isExtractor()) {
-                        $extractor = $previous;
-                    }
-
-                    $this->jobGraph->move($previous);
+                    $msg->context->addStep($current);
+                    $msg->context->setCurrent($origin);
+                } else {
+                    $msg = null;
                 }
-
-                $msg->context->addStep($current);
-                $msg->context->setCurrent($extractor);
             } else {
                 $msg = null;
             }
-        } elseif (!$this->jobGraph->hasNextJob() && $msg->context->isFinished()) {
+        } elseif (!$this->jobGraph->hasNextJob()) {
             $msg = null;
         } else {
             $msg->context->updateToNextJob($this->jobGraph);
@@ -312,6 +298,19 @@ class Jobflow
         return $this->setJob($job);
     }
 
+    public function forwardPipeMessage($msg, $graph)
+    {
+        foreach ($msg->pipe->params as $pipe) {
+            $graph = clone $graph;
+            $forward = clone $msg;
+            $forward->context->initOptions();
+            $forward->pipe = $pipe;
+            $forward->context->updateToNextJob($graph);
+            $forward->context->setOrigin($forward->context->getCurrent());
+            $this->addMessage($forward);
+        }
+    }
+
     /**
      * Create job thanks to jobFactory
      *
@@ -338,6 +337,7 @@ class Jobflow
             )
         );
 
+        $msg->context->setOrigin($this->jobGraph->current());
         $msg->jobOptions = $this->getJob()->getOptions();
 
         return $msg;
