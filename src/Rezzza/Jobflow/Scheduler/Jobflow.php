@@ -184,19 +184,15 @@ class Jobflow
             $msg->pipe = array();
         } 
 
-        if (null !== $child->getRequeue()) {
-            if (true === $child->getRequeue()) {
-                $msg->context->tick();
+        if (true === $child->getRequeue()) {
+            $msg->context->tick();
 
-                if (!$msg->context->isFinished()) {
-                    $origin = $msg->context->getOrigin();
-                    $this->jobGraph->move($origin);
+            if (!$msg->context->isFinished()) {
+                $origin = $msg->context->getOrigin();
+                $this->jobGraph->move($origin);
 
-                    $msg->context->addStep($current);
-                    $msg->context->setCurrent($origin);
-                } else {
-                    $msg = null;
-                }
+                $msg->context->addStep($current);
+                $msg->context->setCurrent($origin);
             } else {
                 $msg = null;
             }
