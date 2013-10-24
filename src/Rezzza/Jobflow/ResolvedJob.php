@@ -5,6 +5,8 @@ namespace Rezzza\Jobflow;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+use Rezzza\Jobflow\JobConfig;
+
 /**
  * Wraps JobType and builder
  *
@@ -60,7 +62,7 @@ class ResolvedJob
         return $this->innerType;
     }
 
-    public function execJob($config, $options)
+    public function execJob(JobConfig $config, $options)
     {
         $options = $this->getExecOptionsResolver()->resolve($options);
 
