@@ -4,7 +4,6 @@ namespace Rezzza\Jobflow\Scheduler;
 
 use Psr\Log\LoggerInterface;
 
-use Rezzza\Jobflow\Extension\Pipe\Pipe;
 use Rezzza\Jobflow\JobContext;
 use Rezzza\Jobflow\JobInterface;
 use Rezzza\Jobflow\JobFactory;
@@ -12,6 +11,7 @@ use Rezzza\Jobflow\JobMessage;
 use Rezzza\Jobflow\JobInput;
 use Rezzza\Jobflow\JobOutput;
 use Rezzza\Jobflow\Scheduler\ExecutionContext;
+use Rezzza\Jobflow\Strategy\ClassicStrategy;
 
 /**
  * Handles job execution
@@ -45,6 +45,8 @@ class Jobflow
      */
     protected $jobGraph;
 
+    protected $strategy;
+
     /**
      * @param TransportInterface $transport
      */
@@ -74,6 +76,15 @@ class Jobflow
     public function getJobGraph()
     {
         return $this->jobGraph;
+    }
+
+    public function getStrategy()
+    {
+        if (null === $this->strategy) {
+            $this->strategy = new ClassicStrategy();
+        }
+
+        return $this->strategy;
     }
 
     /**
@@ -110,6 +121,13 @@ class Jobflow
         }
 
         $this->buildGraph();
+
+        return $this;
+    }
+
+    public function setStrategy($strategy)
+    {
+        $this->strategy = $strategy;
 
         return $this;
     }
@@ -169,42 +187,7 @@ class Jobflow
             ));
         }
 
-        $current = $msg->context->getCurrent();
-
-        // Move graph to the current value
-        $this->jobGraph->move($current);
-
-        // Gets the current job
-        $child = $this->job->get($current);
-
-        if ($msg->pipe instanceof Pipe) {
-            $this->forwardPipeMessage($msg, $this->jobGraph);
-            
-            // Reset pipe as we already ran through above
-            $msg->pipe = array();
-        } 
-
-        if (true === $child->getRequeue()) {
-            $msg->context->tick();
-
-            if (!$msg->context->isFinished()) {
-                $origin = $msg->context->getOrigin();
-                $this->jobGraph->move($origin);
-
-                $msg->context->addStep($current);
-                $msg->context->setCurrent($origin);
-            } else {
-                $msg = null;
-            }
-        } elseif (!$this->jobGraph->hasNextJob()) {
-            $msg = null;
-        } else {
-            $msg->context->updateToNextJob($this->jobGraph);
-        }
-
-        if (null !== $msg) {
-            $this->addMessage($msg);
-        }
+        $this->getStrategy()->handle($this, $msg);
 
         return $this;
     }
