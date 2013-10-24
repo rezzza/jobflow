@@ -42,6 +42,11 @@ class LoaderProxy extends ETLProcessor implements LoaderInterface
             $this->load($d, $context);
         }
 
+        // If loader not requeue, we should keep data for the next step
+        if (false === $execution->getJobOption('requeue')) {
+            $output->setData($input->read());
+        }
+
         // Should not use Events ? Will be more flexible
         $output->writePipe($this->flush($context));
         $this->clear($context);
