@@ -37,6 +37,11 @@ class JobOutput extends JobStream
         $this->message->context->setOptions($options);
     }
 
+    public function setData($data)
+    {
+        $this->message->data = $data;
+    }
+
     public function end()
     {
         $this->message->ended = true;
