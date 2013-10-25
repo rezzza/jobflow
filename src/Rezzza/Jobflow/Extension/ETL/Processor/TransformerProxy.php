@@ -32,6 +32,10 @@ class TransformerProxy extends ETLProcessor implements TransformerInterface
             }
 
             $transformedData = $this->transform($result, $context);
+
+            if (null !== ($updateMethod = $execution->getJobOption('update_method'))) {
+                call_user_func($updateMethod, $transformedData);
+            }
             
             $output->write($transformedData, $k);
         }
