@@ -51,6 +51,15 @@ class ExtractorProxy extends ETLProcessor implements ExtractorInterface
             }
         }
 
+        // No data
+        if (count($data) <= 0) {
+            $output->end();
+
+            if ($execution->getLogger()) {
+                $execution->getLogger()->debug('No data');
+            }
+        }
+
         // Store data read
         foreach ($data as $k => $v) {
             $key = $offset + $k;
