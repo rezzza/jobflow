@@ -67,6 +67,11 @@ class JobConfig
     private $execOptions;
 
     /**
+     * @var array
+     */
+    private $resolvedExecOptions;
+
+    /**
      * @param string $name
      * @param array $options
      */
@@ -76,6 +81,7 @@ class JobConfig
         $this->dispatcher = $dispatcher;
         $this->initOptions = $initOptions;
         $this->execOptions = $execOptions;
+        $this->resolvedExecOptions = array();
     }
 
     /**
@@ -181,7 +187,7 @@ class JobConfig
      */
     public function getOptions()
     {
-        return array_merge($this->initOptions, $this->execOptions);
+        return array_merge($this->initOptions, $this->resolvedExecOptions);
     }
 
     /**
@@ -198,6 +204,14 @@ class JobConfig
     public function getExecOptions()
     {
         return $this->execOptions;
+    }
+
+    /**
+     * @return array
+     */
+    public function getResolvedExecOptions()
+    {
+        return $this->resolvedExecOptions;
     }
 
     /**
@@ -309,6 +323,16 @@ class JobConfig
     public function setExecOptions(array $options)
     {
         $this->execOptions = $options;
+
+        return $this;
+    }
+
+    /**
+     * @param array
+     */
+    public function setResolvedExecOptions(array $options)
+    {
+        $this->resolvedExecOptions = $options;
 
         return $this;
     }
