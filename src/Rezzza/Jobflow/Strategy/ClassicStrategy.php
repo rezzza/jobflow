@@ -8,39 +8,39 @@ use Rezzza\Jobflow\Scheduler\Jobflow;
 
 class ClassicStrategy implements MessageStrategyInterface
 {
-    public function handle(Jobflow $jobflow, JobMessage $msg)
+    public function handle(Jobflow $jobflow, $jobExecution, JobMessage $msg)
     {
         $current = $msg->context->getCurrent();
 
         // Move graph to the current value
-        $jobflow->getJobGraph()->move($current);
+        $jobExecution->getJobGraph()->move($current);
 
         // Gets the current job
-        $child = $jobflow->getJob()->get($current);
+        $child = $jobExecution->getJob()->get($current);
 
         if ($msg->pipe instanceof Pipe) {
-            $jobflow->forwardPipeMessage($msg, $jobflow->getJobGraph());
-            
+            $jobflow->forwardPipeMessage($msg, $jobExecution->getJobGraph());
+
             // Reset pipe as we already ran through above
             $msg->pipe = array();
-        } 
+        }
 
         if (true === $child->getRequeue()) {
             $msg->context->tick();
 
             if (!$msg->context->isFinished()) {
                 $origin = $msg->context->getOrigin();
-                $jobflow->getJobGraph()->move($origin);
+                $jobExecution->getJobGraph()->move($origin);
 
                 $msg->context->addStep($current);
                 $msg->context->setCurrent($origin);
             } else {
                 $msg = null;
             }
-        } elseif (!$jobflow->getJobGraph()->hasNextJob()) {
+        } elseif (!$jobExecution->getJobGraph()->hasNextJob()) {
             $msg = null;
         } else {
-            $msg->context->updateToNextJob($jobflow->getJobGraph());
+            $msg->context->updateToNextJob($jobExecution->getJobGraph());
         }
 
         if (null !== $msg) {

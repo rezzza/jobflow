@@ -3,6 +3,8 @@
 require_once __DIR__.'/init.php';
 
 use Rezzza\Jobflow\Extension;
+use Rezzza\Jobflow\Io;
+use Rezzza\Jobflow\Scheduler\JobExecution;
 
 // Create RabbitMq Client
 $rmqClient = new Extension\RabbitMq\JobRpcClient('localhost', 5672, 'guest', 'guest', '/');
@@ -19,14 +21,17 @@ $jobflowFactory = $builder->getJobflowFactory();
 
 $rmqClient->setJobflowFactory($jobflowFactory);
 
-// Create the scheduler responsible for the job execution
-$jobflow = $jobflowFactory->create('rabbitmq');
-
 echo 'Started...'.PHP_EOL;
 // Now we can execute our job
-$jobflow
-    ->setJob('github_email')
-    ->init() // Will create the first message to run the process
-    ->run()
+$jobflowFactory
+    ->create('php')
+    ->execute(
+        'github_email',
+        array(),
+        new Io\IoDescriptor(
+            new Io\Input('https://api.github.com/repos/symfony/console/stargazers?access_token=236b93940ce523226035931f67d2de6bcc1aeab9'),
+            new Io\Output('file://'.__DIR__."/temp/email.csv")
+        )
+    )
 ;
 echo 'Ended...'.PHP_EOL;

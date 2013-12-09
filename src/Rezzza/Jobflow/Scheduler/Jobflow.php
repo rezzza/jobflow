@@ -4,6 +4,7 @@ namespace Rezzza\Jobflow\Scheduler;
 
 use Psr\Log\LoggerInterface;
 
+use Rezzza\Jobflow\Io\Input;
 use Rezzza\Jobflow\JobContext;
 use Rezzza\Jobflow\JobInterface;
 use Rezzza\Jobflow\JobFactory;
@@ -21,11 +22,6 @@ use Rezzza\Jobflow\Strategy\ClassicStrategy;
 class Jobflow
 {
     /**
-     * @var JobInterface
-     */
-    protected $job;
-
-    /**
      * @var TransportInterface
      */
     protected $transport;
@@ -41,10 +37,8 @@ class Jobflow
     protected $logger;
 
     /**
-     * @var JobGraph
+     * @var MessageStrategyInterface
      */
-    protected $jobGraph;
-
     protected $strategy;
 
     /**
@@ -65,19 +59,6 @@ class Jobflow
         return $this->transport;
     }
 
-    /**
-     * @return JobInterface
-     */
-    public function getJob()
-    {
-        return $this->job;
-    }
-
-    public function getJobGraph()
-    {
-        return $this->jobGraph;
-    }
-
     public function getStrategy()
     {
         if (null === $this->strategy) {
@@ -87,47 +68,38 @@ class Jobflow
         return $this->strategy;
     }
 
-    /**
-     * Creates init message to start execution.
-     *
-     * @return Jobflow
-     */
-    public function init()
-    {
-        if (null === $this->getJob()) {
-            throw new \RuntimeException('You need to set a job');
-        }
-
-        $init = $this->getInitMessage();
-
-        $this->addMessage($init);
-
-        return $this;
-    }
-
-    /**
-     * @param JobInterface $job
-     *
-     * @return Jobflow
-     */
-    public function setJob($job, array $jobOptions = array())
-    {
-        if (is_string($job)) {
-            $this->job = $this->createJob($job, $jobOptions);
-        } elseif ($job instanceof JobInterface) {
-            $this->job = $job;
-        } else {
-            throw new \InvalidArgumentException('Job should be a string or a JobInterface');
-        }
-
-        $this->buildGraph();
-
-        return $this;
-    }
-
     public function setStrategy($strategy)
     {
         $this->strategy = $strategy;
+
+        return $this;
+    }
+
+    /**
+     * @param String | JobInterface | JobExecution $job
+     *
+     * @return Jobflow
+     */
+    public function execute($job, array $jobOptions = array(), $io = null)
+    {
+        if (is_string($job)) {
+            $job = $this->createJob($job, $jobOptions);
+        }
+
+        if ($job instanceof JobInterface) {
+            $job = new JobExecution($job, $io);
+        }
+
+        if (!$job instanceof JobExecution) {
+            throw new \InvalidArgumentException('Job should be a string, a JobInterface or a JobExecution');
+        }
+
+        $messages = $job->getMessages();
+
+        foreach ($messages as $msg) {
+            $this->addMessage($msg);
+        }
+        $this->run($job);
 
         return $this;
     }
@@ -149,45 +121,13 @@ class Jobflow
             }
 
             $this->logger->info(sprintf(
-                'Add new message for job [%s] : %s', 
+                'Add new message for job [%s] : %s',
                 $msg->context->getJobId(),
-                $step            
+                $step
             ));
         }
-        
+
         $this->transport->addMessage($msg);
-
-        return $this;
-    }
-
-    /**
-     * Need to work on this method to make it more simple and readable
-     */
-    public function handleMessage($msg)
-    {
-        if (!$msg instanceof JobMessage) {
-            if ($this->logger) {
-                $this->logger->info('No more message');
-            }
-
-            return false;
-        }
-
-        // We can get back the job from the msg. So job does not have to be set before. 
-        if (null === $this->job) {
-            $this->setJobFromMessage($msg);
-        }
-
-        if ($this->logger) {
-            $this->logger->info(sprintf(
-                'Read message for job [%s] : %s => %s',
-                $msg->context->getJobId(),
-                $msg->context->getCurrent(),
-                json_encode($msg->context->getOptions())
-            ));
-        }
-
-        $this->getStrategy()->handle($this, $msg);
 
         return $this;
     }
@@ -197,35 +137,23 @@ class Jobflow
      *
      * @param JobMessage|null $msg
      */
-    public function run(JobMessage $msg = null)
+    public function run($jobExecution = null)
     {
-        if (null !== $msg) {
-            return $this->runJob($msg);
-        }
+        $result = null;
 
         while ($msg = $this->wait()) {
             if (!$msg instanceof JobMessage) {
                 return;
             }
 
-            $result = $this->runJob($msg);
+            $result = $this->runJob($msg, $jobExecution);
 
             if ($result instanceof JobMessage) {
-                $this->handleMessage($result);
+                $this->handleMessage($result, $jobExecution);
             }
         }
 
         return $result;
-    }
-
-    /**
-     * Waits for message
-     *
-     * @return JobMessage
-     */
-    public function wait()
-    {
-        return $this->transport->getMessage();
     }
 
     /**
@@ -234,10 +162,10 @@ class Jobflow
      *
      * @param JobMessage $msg
      */
-    public function runJob(JobMessage $msg)
+    public function runJob(JobMessage $msg, $jobExecution = null)
     {
-        if (null === $this->job) {
-            $this->setJobFromMessage($msg);
+        if (null === $jobExecution) {
+            $jobExecution = $this->createJobExecutionFromMessage($msg);
         }
 
         // Store input message
@@ -245,12 +173,12 @@ class Jobflow
         $endMsg = clone $msg;
         $endMsg->reset();
 
-        $this->jobGraph->move($msg->context->getCurrent());
+        $jobExecution->getJobGraph()->move($msg->context->getCurrent());
         $context = new ExecutionContext(
-            new JobInput($this->startMsg), 
+            new JobInput($this->startMsg),
             new JobOutput($endMsg)
         );
-        $output = $context->executeJob($this->job);
+        $output = $context->executeJob($jobExecution->getJob());
 
         // Event ? To handle createEndMsg in a more readable way ?
         if (!$output instanceof JobOutput) {
@@ -266,15 +194,54 @@ class Jobflow
     }
 
     /**
+     * Need to work on this method to make it more simple and readable
+     */
+    public function handleMessage($msg, $jobExecution = null)
+    {
+        if (!$msg instanceof JobMessage) {
+            if ($this->logger) {
+                $this->logger->info('No more message');
+            }
+
+            return false;
+        }
+
+        if (null === $jobExecution) {
+            $jobExecution = $this->createJobExecutionFromMessage($msg);
+        }
+
+        if ($this->logger) {
+            $this->logger->info(sprintf(
+                'Read message for job [%s] : %s => %s',
+                $msg->context->getJobId(),
+                $msg->context->getCurrent(),
+                json_encode($msg->context->getOptions())
+            ));
+        }
+
+        $this->getStrategy()->handle($this, $jobExecution, $msg);
+
+        return $this;
+    }
+
+    /**
+     * Waits for message
+     *
+     * @return JobMessage
+     */
+    public function wait()
+    {
+        return $this->transport->getMessage();
+    }
+
+    /**
      * Init job from the message
      *
      * @param JobMessage $msg
      */
-    public function setJobFromMessage(JobMessage $msg)
+    public function createJobExecutionFromMessage(JobMessage $msg)
     {
-        $job = $this->createJob($msg->context->getJobId(), $msg->jobOptions);
-
-        return $this->setJob($job);
+        return new JobExecution($this->createJob($msg->context->getJobId(), $msg->jobOptions));
     }
 
     public function forwardPipeMessage($msg, $graph)
@@ -301,34 +268,5 @@ class Jobflow
     private function createJob($job, array $jobOptions = array())
     {
         return $this->jobFactory->create($job, $jobOptions);
-    }
-
-    /**
-     * @return JobMessage
-     */
-    private function getInitMessage()
-    {
-        $msg = new JobMessage(
-            new JobContext(
-                $this->getJob()->getName(),
-                $this->getJob()->getConfig()->getOption('context', array()),
-                $this->jobGraph->current()
-            )
-        );
-
-        $msg->context->setOrigin($this->jobGraph->current());
-        $msg->jobOptions = $this->getJob()->getOptions();
-
-        return $msg;
-    }
-
-    /**
-     * Build a graph on children execution order
-     */
-    private function buildGraph()
-    {
-        $children = $this->getJob()->getChildren();
-
-        $this->jobGraph = new JobGraph(new \ArrayIterator(array_keys($children)));
     }
 }

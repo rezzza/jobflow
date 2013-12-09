@@ -24,7 +24,8 @@
         "monolog/monolog": "To use monolog Extension"
     },
     "require-dev": {
-        "atoum/atoum": "dev-master"
+        "atoum/atoum": "dev-master",
+        "monolog/monolog": ">1.0"
     },
     "minimum-stability": "dev",
     "autoload":     {

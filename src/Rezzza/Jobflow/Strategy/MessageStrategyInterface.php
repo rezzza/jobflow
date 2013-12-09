@@ -7,5 +7,5 @@ use Rezzza\Jobflow\JobMessage;
 
 interface MessageStrategyInterface
 {
-    public function handle(Jobflow $jobflow, JobMessage $message);
+    public function handle(Jobflow $jobflow, $jobExecution, JobMessage $message);
 }

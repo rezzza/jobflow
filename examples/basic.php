@@ -41,11 +41,8 @@ $job = $jobFactory
     ->getJob()
 ;
 
-$jobflow = $jobflowFactory->create('php');
-
 // Now we can execute our job
-$jobflow
-    ->setJob($job)
-    ->init() // Will create the first message to run the process
-    ->run()
+$jobflowFactory
+    ->create('php')
+    ->execute($job)
 ;

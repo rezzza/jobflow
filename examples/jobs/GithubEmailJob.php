@@ -3,7 +3,6 @@
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 use Rezzza\Jobflow\AbstractJobType;
-use Rezzza\Jobflow\Io;
 use Rezzza\Jobflow\JobBuilder;
 
 class GithubEmailJob extends AbstractJobType
@@ -15,8 +14,7 @@ class GithubEmailJob extends AbstractJobType
                 'extract_user_url',
                 'json_extractor',
                 array(
-                    'path' => '*.url',
-                    'io' => $this->getIo()
+                    'path' => '*.url'
                 )
             )
             ->add(
@@ -40,7 +38,7 @@ class GithubEmailJob extends AbstractJobType
                 )
             )
             ->add(
-                'email_extractor', 
+                'email_extractor',
                 'json_extractor'
             )
             ->add(
@@ -58,10 +56,7 @@ class GithubEmailJob extends AbstractJobType
             )
             ->add(
                 'email_loader',
-                'file_loader',
-                array(
-                    'io' => $this->getIo()
-                )
+                'file_loader'
             )
         ;
     }
@@ -73,14 +68,6 @@ class GithubEmailJob extends AbstractJobType
                 'limit' => 15
             )
         ));
-    }
-
-    public function getIo()
-    {
-        return new Io\IoDescriptor(
-            new Io\Input('https://api.github.com/repos/symfony/console/stargazers?access_token=236b93940ce523226035931f67d2de6bcc1aeab9'),
-            new Io\Output('file:///'.__DIR__."/../temp/email.csv")
-        );
     }
 
     public function getName()

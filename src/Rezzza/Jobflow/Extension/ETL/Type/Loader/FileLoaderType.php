@@ -14,10 +14,10 @@ class FileLoaderType extends AbstractJobType
         $resolver->setDefaults(array(
             'class' => 'Knp\ETL\Loader\FileLoader',
             'args' => function(Options $options) {
-                $io = $options['io'];
+                $output = $options['message']->context->getIo()->getStdout();
 
                 return array(
-                    'file' =>  new \SplFileObject($io->stdout->getDsn(), 'a+')
+                    'file' => new \SplFileObject($output->getDsn(), 'a+')
                 );
             }
         ));

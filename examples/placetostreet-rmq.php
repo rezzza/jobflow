@@ -3,6 +3,7 @@
 require_once __DIR__.'/init.php';
 
 use Rezzza\Jobflow\Extension;
+use Rezzza\Jobflow\Io;
 
 // Create RabbitMq Client
 $rmqClient = new Extension\RabbitMq\JobRpcClient('localhost', 5672, 'guest', 'guest', '/');
@@ -18,17 +19,18 @@ $builder->addExtension(new Extension\Monolog\MonologExtension(new \Monolog\Logge
 $jobflowFactory = $builder->getJobflowFactory();
 $rmqClient->setJobflowFactory($jobflowFactory);
 
-// Create the scheduler responsible for the job execution
-$jobflow = $jobflowFactory->create('php');
-
 // Moreover : Don't forget to insert your google api key
-
 echo 'Started...'.PHP_EOL;
 // Now we can execute our job
-$jobflow
-    ->setJob('place_to_street')
-    ->init() // Will create the first message to run the process
-    ->run()
+$jobflowFactory
+    ->create('rabbitmq')
+    ->execute(
+        'place_to_street',
+        array(),
+        new Io\IoDescriptor(
+            new Io\Input('https://maps.googleapis.com/maps/api/place/textsearch/json?query=pub+in+marseille+france&sensor=false&key=AIzaSyCuR9yU9lRmzdnyU7YWVKZZRUIsymWkQdU')
+        )
+    )
 ;
 echo 'Ended...'.PHP_EOL;
 

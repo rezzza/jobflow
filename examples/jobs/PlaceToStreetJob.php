@@ -16,10 +16,7 @@ class PlaceToStreetJob extends AbstractJobType
                 'example_extractor', // name
                 'json_extractor',
                 array(
-                    'path' => 'results',
-                    'io' => new Io\IoDescriptor(
-                       new Io\Input('https://maps.googleapis.com/maps/api/place/textsearch/json?query=pub+in+marseille+france&sensor=false&key=AIzaSyCuR9yU9lRmzdnyU7YWVKZZRUIsymWkQdU')
-                    )
+                    'path' => 'results'
                 )
             )
             ->add(

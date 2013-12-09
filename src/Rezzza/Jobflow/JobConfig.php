@@ -14,7 +14,7 @@ use Rezzza\Jobflow\Processor\ConfigProcessor;
  *
  * @author Timothée Barray <tim@amicalement-web.net>
  */
-class JobConfig 
+class JobConfig
 {
     /**
      * @var string

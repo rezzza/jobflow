@@ -44,6 +44,11 @@ class JobContext implements JobContextInterface
     private $origin;
 
     /**
+     * IO
+     */
+    private $io;
+
+    /**
      * @var array
      */
     private $options = array();
@@ -203,5 +208,15 @@ class JobContext implements JobContextInterface
     public function getOrigin()
     {
         return $this->origin;
+    }
+
+    public function setIo($io)
+    {
+        $this->io = $io;
+    }
+
+    public function getIo()
+    {
+        return $this->io;
     }
 }

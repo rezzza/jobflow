@@ -18,7 +18,7 @@ class LoaderType extends ETLType
             'requeue' => true
         ));
     }
-    
+
     public function setExecOptions(OptionsResolverInterface $resolver)
     {
         parent::setExecOptions($resolver);
@@ -27,12 +27,12 @@ class LoaderType extends ETLType
             'proxy_class' => 'Rezzza\Jobflow\Extension\ETL\Processor\LoaderProxy',
             'property' => null,
             'args' => function(Options $options) {
-                $io = $options['io'];
+                $output = $options['message']->context->getOption('output');
 
                 return array(
-                    'dsn' => $io->stdout->getDsn()
+                    'dsn' => $output->getDsn()
                 );
-            } 
+            }
         ));
     }
 
