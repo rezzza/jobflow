@@ -249,7 +249,7 @@ class JobConfig
      *
      * @return JobConfig
      */
-    public function setProcessorConfig(ProcessorConfig $config)
+    public function setProcessorConfig($config)
     {
         $this->processorConfig = $config;
 
