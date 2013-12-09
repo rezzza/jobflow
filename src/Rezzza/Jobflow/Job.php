@@ -6,7 +6,7 @@ use Rezzza\Jobflow\Event\JobEvent;
 use Rezzza\Jobflow\Event\JobEvents;
 use Rezzza\Jobflow\Extension\ETL\Type\ETLType;
 use Rezzza\Jobflow\Scheduler\ExecutionContext;
-use Rezzza\Jobflow\Processor\ConfigProcessor;
+use Rezzza\Jobflow\Processor\ProcessorConfig;
 
 /**
  * @author Timothée Barray <tim@amicalement-web.net>
@@ -70,9 +70,9 @@ class Job implements \IteratorAggregate, JobInterface
 
         $input = $context->getInput();
         $output = $context->getOutput();
-        $config = $this->getConfig()->getConfigProcessor();
+        $config = $this->getConfig()->getProcessorConfig();
 
-        if ($config instanceof ConfigProcessor) {
+        if ($config instanceof ProcessorConfig) {
             $factory = new \Rezzza\Jobflow\Processor\ProcessorFactory;
             $factory
                 ->create($input->getMessage()->pipe, $config, $this->getConfig()->getMetadataAccessor())
@@ -88,7 +88,7 @@ class Job implements \IteratorAggregate, JobInterface
                 )
             );
         } else {
-            throw new \InvalidArgumentException('processor should be a ConfigProcessor or a callable');
+            throw new \InvalidArgumentException('processor should be a ProcessorConfig or a callable');
         }
 
         // Update context

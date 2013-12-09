@@ -39,7 +39,7 @@ class JobType extends AbstractJobType
                     $options['metadata_write']
                 )
             )
-            ->setConfigProcessor($options['processor'])
+            ->setProcessorConfig($options['processor'])
         ;
     }
 
@@ -56,7 +56,7 @@ class JobType extends AbstractJobType
             'metadata_write' => array(),
             'message' => null,
             'processor' => function(Options $options) {
-                return new ConfigProcessor(
+                return new ProcessorConfig(
                     $options['class'],
                     $options['args'],
                     $options['calls']

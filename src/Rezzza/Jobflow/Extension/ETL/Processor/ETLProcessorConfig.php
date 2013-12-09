@@ -2,9 +2,9 @@
 
 namespace Rezzza\Jobflow\Extension\ETL\Processor;
 
-use Rezzza\Jobflow\Processor\ConfigProcessor;
+use Rezzza\Jobflow\Processor\ProcessorConfig;
 
-class ETLConfigProcessor extends ConfigProcessor
+class ETLProcessorConfig extends ProcessorConfig
 {
     protected $proxy;
 

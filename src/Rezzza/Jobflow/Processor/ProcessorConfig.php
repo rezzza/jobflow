@@ -2,7 +2,7 @@
 
 namespace Rezzza\Jobflow\Processor;
 
-class ConfigProcessor
+class ProcessorConfig
 {
     protected $class;
 

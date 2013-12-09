@@ -43,7 +43,7 @@ abstract class ETLType extends AbstractJobType
         $resolver->setDefaults(array(
             'io' => null,
             'processor' => function(Options $options) {
-                return new ETLConfigProcessor(
+                return new ETLProcessorConfig(
                     $options['class'],
                     $options['args'],
                     $options['calls'],

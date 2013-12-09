@@ -7,7 +7,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 
 use Rezzza\Jobflow\Metadata\MetadataAccessor;
-use Rezzza\Jobflow\Processor\ConfigProcessor;
+use Rezzza\Jobflow\Processor\ProcessorConfig;
 
 /**
  * Config the job.
@@ -32,9 +32,9 @@ class JobConfig
     private $resolved;
 
     /**
-     * @var ConfigProcessor
+     * @var processorConfig
      */
-    private $configProcessor;
+    private $processorConfig;
 
     /**
      * @var MetadataAccessor
@@ -130,11 +130,11 @@ class JobConfig
     }
 
     /**
-     * @return ConfigProcessor
+     * @return ProcessorConfig
      */
-    public function getConfigProcessor()
+    public function getProcessorConfig()
     {
-        return $this->configProcessor;
+        return $this->processorConfig;
     }
 
     /**
@@ -245,13 +245,13 @@ class JobConfig
     }
 
     /**
-     * @param ConfigProcessor $config
+     * @param processorConfig $config
      *
      * @return JobConfig
      */
-    public function setConfigProcessor(ConfigProcessor $config)
+    public function setProcessorConfig(ProcessorConfig $config)
     {
-        $this->configProcessor = $config;
+        $this->processorConfig = $config;
 
         return $this;
     }
