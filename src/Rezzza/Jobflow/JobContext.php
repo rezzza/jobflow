@@ -47,7 +47,7 @@ class JobContext implements JobContextInterface
      * @var array
      */
     private $options = array();
-    
+
     public function __construct($jobId, array $options = array(), $current = null)
     {
         $this->jobId = $jobId;

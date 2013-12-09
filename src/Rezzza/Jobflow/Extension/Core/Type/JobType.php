@@ -31,11 +31,11 @@ class JobType extends AbstractJobType
      * {@inheritdoc}
      */
     public function buildExec(JobConfig $config, array $options)
-    {   
+    {
         $config
             ->setMetadataAccessor(
                 new MetadataAccessor(
-                    $options['metadata_read'], 
+                    $options['metadata_read'],
                     $options['metadata_write']
                 )
             )

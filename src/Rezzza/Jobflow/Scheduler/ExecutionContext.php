@@ -67,7 +67,7 @@ class ExecutionContext
         }
 
         $this->job = $parent->get($this->getCurrentJob());
-        
+
         return $this->job->execute($this);
     }
 
@@ -83,7 +83,7 @@ class ExecutionContext
 
     /**
      * Get name of the child job in execution
-     * 
+     *
      * @return string
      */
     public function getCurrentJob()

@@ -80,7 +80,7 @@ class Job implements \IteratorAggregate, JobInterface
             ;
         } elseif (is_callable($config)) {
             call_user_func_array(
-                $config, 
+                $config,
                 array(
                     $input,
                     $output,

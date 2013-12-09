@@ -49,7 +49,7 @@ abstract class ETLType extends AbstractJobType
                     $options['calls'],
                     $options['proxy_class']
                 );
-            } 
+            }
         ));
     }
 

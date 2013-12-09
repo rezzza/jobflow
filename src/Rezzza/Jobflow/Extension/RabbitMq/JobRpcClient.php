@@ -28,7 +28,7 @@ class JobRpcClient extends RpcClient
             // Display error and stop
             throw new \RuntimeException($msg->body);
         }
-        
+
         return $this->jobflowFactory
             ->create('rabbitmq')
             ->handleMessage($jobMsg)

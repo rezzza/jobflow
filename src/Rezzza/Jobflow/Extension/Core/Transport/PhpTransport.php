@@ -11,7 +11,7 @@ class PhpTransport implements TransportInterface
      * @var JobMessage[]
      */
     protected $messages = array();
-    
+
     public function addMessage(JobMessage $msg)
     {
         $this->messages[] = $msg;
