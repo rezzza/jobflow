@@ -127,7 +127,11 @@ class JobFactory extends Units\Test
                 ->mock($factory)
                     ->call('createResolvedType')
                         ->withArguments($parentType, null)
-                        ->withArguments($type, $parentType)
+                        ->once()
+
+                    ->call('createResolvedType')
+                        ->withArguments($type, $resolved)
+                        ->once()
 
                 ->mock($resolved)
                     ->call('createBuilder')
