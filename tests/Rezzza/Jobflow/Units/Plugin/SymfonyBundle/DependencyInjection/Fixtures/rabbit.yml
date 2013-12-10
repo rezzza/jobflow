@@ -1,0 +1,10 @@
+rezzza_jobflow:
+    transports:
+        rabbitmq:
+            connections:
+                jobflow:
+                    host:      'localhost'
+                    port:      5672
+                    user:      'guest'
+                    password:  'guest'
+                    vhost:     '/'

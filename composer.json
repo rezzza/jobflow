@@ -21,11 +21,16 @@
     "suggest": {
         "doctrine/orm": "To use ORM loader",
         "videlalvaro/thumper": "To use RabbitMq Extension",
-        "monolog/monolog": "To use monolog Extension"
+        "monolog/monolog": "To use monolog Extension",
+        "symfony/framework-bundle": "To use Symfony Bundle",
+        "symfony/console": "To use CLI commands"
     },
     "require-dev": {
         "atoum/atoum": "dev-master",
-        "monolog/monolog": ">1.0"
+        "monolog/monolog": ">1.0",
+        "symfony/framework-bundle": "~2.3",
+        "symfony/console": "~2.3",
+        "symfony/yaml": "~2.3"
     },
     "minimum-stability": "dev",
     "autoload":     {

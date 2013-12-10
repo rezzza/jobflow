@@ -1,0 +1,48 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="rezzza_jobflow.registry.class">Rezzza\Jobflow\JobRegistry</parameter>
+        <parameter key="rezzza_jobflow.factory.class">Rezzza\Jobflow\JobFactory</parameter>
+        <parameter key="rezzza_jobflow.jobflow_factory.class">Rezzza\Jobflow\Scheduler\JobflowFactory</parameter>
+        <parameter key="rezzza_jobflow.extensions.class">Rezzza\Jobflow\Extension\DI\DependencyInjectionExtension</parameter>
+    </parameters>
+
+    <services>
+         <service id="rezzza_jobflow.registry" class="%rezzza_jobflow.registry.class%">
+            <argument type="collection">
+                <argument type="service" id="rezzza_jobflow.extensions" />
+            </argument>
+        </service>
+
+        <service id="rezzza_jobflow.factory" class="%rezzza_jobflow.factory.class%">
+            <argument type="service" id="rezzza_jobflow.registry" />
+        </service>
+
+        <service id="rezzza_jobflow.flow" class="%rezzza_jobflow.jobflow_factory.class%">
+            <argument type="service" id="rezzza_jobflow.registry" />
+            <argument type="service" id="rezzza_jobflow.factory" />
+            <argument type="service" id="logger" />
+
+            <tag name="monolog.logger" channel="jobflow" />
+        </service>
+
+        <service id="rezzza_jobflow.extensions" class="%rezzza_jobflow.extensions.class%" public="false">
+            <argument type="service" id="service_container" />
+            <!-- All services with tag "jobflow.type" are inserted here by JobPass -->
+            <argument type="collection" />
+            <!-- All services with tag "jobflow.extension" are inserted here by JobPass -->
+            <argument type="collection" />
+            <!-- All services with tag "jobflow.transport" are inserted here by JobPass -->
+            <argument type="collection" />
+        </service>
+
+        <!-- Core Transport -->
+        <service id="rezzza_jobflow.transport.php" class="Rezzza\Jobflow\Extension\Core\Transport\PhpTransport">
+            <tag name="jobflow.transport" alias="php" />
+        </service>
+    </services>
+</container>

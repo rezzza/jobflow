@@ -1,0 +1,29 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="rezzza_jobflow.rabbitmq.rpc_client.class">Rezzza\Jobflow\Extension\RabbitMq\JobRpcClient</parameter>
+        <parameter key="rezzza_jobflow.rabbitmq.rpc_server.class">Thumper\RpcServer</parameter>
+        <parameter key="rezzza_jobflow.rabbitmq.class">Thumper\ConnectionRegistry</parameter>
+        <parameter key="rezzza_jobflow.rabbitmq.connection.class">PhpAmqpLib\Connection\AMQPLazyConnection</parameter>
+        <parameter key="rezzza_jobflow.rabbitmq.producer.class">Thumper\Producer</parameter>
+    </parameters>
+
+    <services>
+        <service id="rezzza_jobflow.transport.rabbitmq" class="Rezzza\Jobflow\Extension\RabbitMq\Transport\RabbitMqTransport">
+            <argument type="service" id="rezzza_jobflow.rabbitmq.rpc_client" />
+            <tag name="jobflow.transport" alias="rabbitmq" />
+        </service>
+
+        <service id="rezzza_jobflow.rabbitmq.worker" class="Rezzza\Jobflow\Extension\RabbitMq\JobWorker">
+            <argument type="service" id="rezzza_jobflow.flow" />
+        </service>
+
+        <service id="rezzza_jobflow.rabbitmq" class="%rezzza_jobflow.rabbitmq.class%">
+            <argument></argument>
+        </service>
+    </services>
+</container>

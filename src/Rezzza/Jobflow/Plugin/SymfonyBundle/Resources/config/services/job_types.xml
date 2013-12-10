@@ -1,0 +1,48 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <!-- Core -->
+        <service id="rezzza_jobflow.type.job" class="Rezzza\Jobflow\Extension\Core\Type\JobType">
+            <tag name="jobflow.type" alias="job" />
+        </service>
+
+        <!-- Extractors -->
+        <service id="rezzza_jobflow.type.extractor" class="Rezzza\Jobflow\Extension\ETL\Type\Extractor\ExtractorType">
+            <tag name="jobflow.type" alias="extractor" />
+        </service>
+        <service id="rezzza_jobflow.type.csv_extractor" class="Rezzza\Jobflow\Extension\ETL\Type\Extractor\CsvExtractorType">
+            <tag name="jobflow.type" alias="csv_extractor" />
+        </service>
+        <service id="rezzza_jobflow.type.tsv_extractor" class="Rezzza\Jobflow\Extension\ETL\Type\Extractor\TsvExtractorType">
+            <tag name="jobflow.type" alias="tsv_extractor" />
+        </service>
+        <service id="rezzza_jobflow.type.json_extractor" class="Rezzza\Jobflow\Extension\ETL\Type\Extractor\JsonExtractorType">
+            <tag name="jobflow.type" alias="json_extractor" />
+        </service>
+
+        <!-- Transformers -->
+        <service id="rezzza_jobflow.type.transformer" class="Rezzza\Jobflow\Extension\ETL\Type\Transformer\TransformerType">
+            <tag name="jobflow.type" alias="transformer" />
+        </service>
+        <service id="rezzza_jobflow.type.callback_transformer" class="Rezzza\Jobflow\Extension\ETL\Type\Transformer\CallbackTransformerType">
+            <tag name="jobflow.type" alias="callback_transformer" />
+        </service>
+        <service id="rezzza_jobflow.type.datamapper_transformer" class="Rezzza\Jobflow\Extension\ETL\Type\Transformer\DataMapperTransformerType">
+            <tag name="jobflow.type" alias="datamapper_transformer" />
+        </service>
+
+        <!-- Loaders -->
+        <service id="rezzza_jobflow.type.loader" class="Rezzza\Jobflow\Extension\ETL\Type\Loader\LoaderType">
+            <tag name="jobflow.type" alias="loader" />
+        </service>
+        <service id="rezzza_jobflow.type.file_loader" class="Rezzza\Jobflow\Extension\ETL\Type\Loader\FileLoaderType">
+            <tag name="jobflow.type" alias="file_loader" />
+        </service>
+        <service id="rezzza_jobflow.type.pipe_loader" class="Rezzza\Jobflow\Extension\ETL\Type\Loader\PipeLoaderType">
+            <tag name="jobflow.type" alias="pipe_loader" />
+        </service>
+    </services>
+</container>
