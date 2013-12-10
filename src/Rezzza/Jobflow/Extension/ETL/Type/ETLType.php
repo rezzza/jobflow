@@ -6,7 +6,7 @@ use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 use Rezzza\Jobflow\AbstractJobType;
-use Rezzza\Jobflow\Extension\ETL\Processor\ETLConfigProcessor;
+use Rezzza\Jobflow\Extension\ETL\Processor\ETLProcessorConfig;
 use Rezzza\Jobflow\JobBuilder;
 
 /**
