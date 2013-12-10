@@ -16,7 +16,7 @@ class JsonExtractorType extends AbstractJobType
             'adapter' => null,
             'class' => 'Knp\ETL\Extractor\JsonExtractor',
             'args' => function(Options $options) {
-                $io = $options['message']->context->getIo();
+                $io = $options['io'];
 
                 return [
                     'dsn' => $io ? $io->getStdin()->getDsn() : null,
