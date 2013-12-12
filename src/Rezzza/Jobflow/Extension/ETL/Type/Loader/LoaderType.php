@@ -27,7 +27,7 @@ class LoaderType extends ETLType
             'proxy_class' => 'Rezzza\Jobflow\Extension\ETL\Processor\LoaderProxy',
             'property' => null,
             'args' => function(Options $options) {
-                $output = $options['message']->context->getOption('output');
+                $output = $options['io']->getStdout();
 
                 return array(
                     'dsn' => $output->getDsn()

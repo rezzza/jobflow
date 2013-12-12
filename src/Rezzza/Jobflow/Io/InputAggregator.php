@@ -17,7 +17,7 @@ class InputAggregator extends Input implements \IteratorAggregate
     /**
      * @param array $inputs inputs
      */
-    public function __construct(array $inputs)
+    public function __construct(array $inputs = [])
     {
         foreach ($inputs as $input) {
             $this->add($input);
@@ -37,11 +37,6 @@ class InputAggregator extends Input implements \IteratorAggregate
         if ($current = $this->getIterator()->current()) {
             return $current->getDsn();
         }
-    }
-
-    public function __sleep()
-    {
-        return array('inputs');
     }
 
     /**

@@ -31,7 +31,7 @@ class JobRpcClient extends RpcClient
 
         return $this->jobflowFactory
             ->create('rabbitmq')
-            ->handleMessage($jobMsg)
+            ->handle($jobMsg)
         ;
     }
 }

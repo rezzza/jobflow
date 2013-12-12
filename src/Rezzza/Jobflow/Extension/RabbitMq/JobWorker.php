@@ -19,7 +19,7 @@ class JobWorker
 
         $result = $this->jobflowFactory
             ->create('rabbitmq')
-            ->runJob($jobMsg)
+            ->executeMsg($jobMsg)
         ;
 
         return serialize($result);

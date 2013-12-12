@@ -19,25 +19,21 @@ class MetadataAccessor
         $this->accessor = PropertyAccess::createPropertyAccessor();
     }
 
-    public function write(&$metadatas, $result, $offset)
+    public function createMetadata($result)
     {
-        if (null === $metadatas) {
-            $metadatas = new Metadata('root');
-        }
+        $metadata = new Metadata();
 
         foreach ($this->writeMapping as $k => $v) {
-            $metadata = isset($metadatas[$v]) ? $metadatas[$v] : new Metadata($v);
-            $metadata[$offset] = $this->accessor->getValue($result, $k);
-            $metadatas[$v] = $metadata;
+            $metadata[$k] = $this->accessor->getValue($result, $v);
         }
+
+        return $metadata;
     }
 
-    public function read($metadatas, &$target, $offset)
+    public function read($metadata, &$target)
     {
         foreach ($this->readMapping as $k => $v) {
-            $metadata = $metadatas[$k][$offset];
-
-            $this->accessor->setValue($target, $v, $metadata);
+            $this->accessor->setValue($target, $k, $metadata[$v]);
         }
     }
 }

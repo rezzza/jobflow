@@ -90,7 +90,11 @@ class JobGraph implements \IteratorAggregate, \Countable
      */
     public function getJob($index)
     {
-        return $this->getIterator()->offsetGet($index);
+        if ($this->hasNextJob($index)) {
+            return $this->getIterator()->offsetGet($index);
+        }
+
+        return false;
     }
 
     /**

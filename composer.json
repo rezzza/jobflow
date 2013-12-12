@@ -30,7 +30,8 @@
         "monolog/monolog": ">1.0",
         "symfony/framework-bundle": "~2.3",
         "symfony/console": "~2.3",
-        "symfony/yaml": "~2.3"
+        "symfony/yaml": "~2.3",
+        "videlalvaro/thumper": "~0.3"
     },
     "minimum-stability": "dev",
     "autoload":     {

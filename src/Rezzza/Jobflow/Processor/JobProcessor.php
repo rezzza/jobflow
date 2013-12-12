@@ -22,7 +22,7 @@ abstract class JobProcessor
         $this->metadataAccessor = $metadataAccessor;
     }
 
-    abstract function execute(JobInput $input, JobOutput &$output, ExecutionContext $context);
+    //abstract function execute(JobInput $input, JobOutput &$output, ExecutionContext $context);
 
     public function getProcessor()
     {

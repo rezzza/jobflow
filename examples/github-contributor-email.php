@@ -7,7 +7,9 @@ use Rezzza\Jobflow\Io;
 use Rezzza\Jobflow\Scheduler\JobExecution;
 
 // Create RabbitMq Client
-$rmqClient = new Extension\RabbitMq\JobRpcClient('localhost', 5672, 'guest', 'guest', '/');
+$rmqClient = new Extension\RabbitMq\JobRpcClient(
+    new \PhpAmqpLib\Connection\AMQPConnection('localhost', 5672, 'guest', 'guest', '/')
+);
 $rmqClient->initClient();
 
 // Add RabbitMqExtension
@@ -25,7 +27,7 @@ echo 'Started...'.PHP_EOL;
 // Now we can execute our job
 $jobflowFactory
     ->create('php')
-    ->execute(
+    ->run(
         'github_email',
         array(),
         new Io\IoDescriptor(

@@ -4,13 +4,10 @@ namespace Rezzza\Jobflow\Metadata;
 
 class Metadata implements \ArrayAccess
 {
-    protected $name;
+    protected $values;
 
-    protected $values = array();
-
-    public function __construct($name, array $values = array())
+    public function __construct(array $values = array())
     {
-        $this->name = $name;
         $this->values = $values;
     }
 

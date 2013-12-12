@@ -15,11 +15,11 @@ use Rezzza\Jobflow\Scheduler\JobGraph;
 class JobContext implements JobContextInterface
 {
     /**
-     * The job we run
+     * The job id we run
      *
      * @var string
      */
-    private $jobId;
+    public $jobId;
 
     /**
      * Current job name in execution
@@ -53,103 +53,44 @@ class JobContext implements JobContextInterface
      */
     private $options = array();
 
-    public function __construct($jobId, array $options = array(), $current = null)
+    public $jobOptions = array();
+
+    public function __construct($jobId, $io = null, $current = null, array $options = [], array $jobOptions = [])
     {
         $this->jobId = $jobId;
+        $this->io = $io;
         $this->current = $current;
+        $this->jobOptions = $jobOptions;
         $this->initOptions($options);
-    }
 
-    /**
-     * Moves the execution graph to the next job
-     *
-     * @param JobGraph $graph
-     */
-    public function updateToNextJob(JobGraph $graph)
-    {
-        // We stock we executed this job
-        $this->addStep($this->current);
-        $nextJob = null;
-
-        if ($graph->hasNextJob()) {
-            $nextJob = $graph->getNextJob();
+        if (null === $this->origin) {
+            $this->origin = $current;
         }
-
-        $this->current = $nextJob;
-    }
-
-    public function getJobId()
-    {
-        return $this->jobId;
     }
 
     /**
-     * @param string $current
+     * Adds step to keep trace
      */
-    public function setCurrent($current)
+    public function completeStep($step)
     {
-        $this->current = $current;
-
-        return $this;
+        $this->steps[] = $step;
     }
 
-    /**
-     * @return string
-     */
-    public function getCurrent()
+    public function completeCurrent()
     {
-        return $this->current;
+        $this->completeStep($this->current);
+        $this->current = null;
     }
 
-    /**
-     * @return array
-     */
-    public function getOptions()
+    public function moveTo($next)
     {
-        return $this->options;
+        $this->completeCurrent();
+        $this->current = $next;
     }
 
-    public function setOptions(array $options)
+    public function reset()
     {
-        $this->options = $options;
-    }
-
-    public function getOption($name, $default = null)
-    {
-        return array_key_exists($name, $this->options) ? $this->options[$name] : $default;
-    }
-
-    /**
-     * @param mixed $key
-     * @param mixed $value
-     *
-     * @return JobContext
-     */
-    public function setOption($key, $value)
-    {
-        $this->options[$key] = $value;
-
-        return $this;
-    }
-
-    /**
-     * Gets the previous job executed
-     *
-     * @return string
-     */
-    public function getPrevious()
-    {
-        return end($this->steps);
-    }
-
-    /**
-     * Checks we need to requeue job again
-     *
-     * @return boolean
-     */
-    public function isFinished()
-    {
-        return is_integer($this->options['total']) && $this->options['total'] <= $this->options['offset'];
+        $this->moveTo($this->origin);
     }
 
     /**
@@ -192,31 +133,38 @@ class JobContext implements JobContextInterface
         $this->options['offset'] += $this->options['limit'];
     }
 
-    /**
-     * Adds step to keep trace
-     */
-    public function addStep($step)
+    public function getOptions()
     {
-        $this->steps[] = $step;
+        return $this->options;
     }
 
-    public function setOrigin($origin)
+    public function setOptions(array $options)
     {
-        $this->origin = $origin;
+        $this->options = $options;
     }
 
-    public function getOrigin()
+    public function getOption($name, $default = null)
     {
-        return $this->origin;
+        return array_key_exists($name, $this->options) ? $this->options[$name] : $default;
     }
 
-    public function setIo($io)
+    public function setOption($key, $value)
     {
-        $this->io = $io;
+        $this->options[$key] = $value;
+    }
+
+    public function getCurrent()
+    {
+        return $this->current;
     }
 
     public function getIo()
     {
         return $this->io;
+    }
+
+    public function getOrigin()
+    {
+        return $this->origin;
     }
 }
