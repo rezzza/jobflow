@@ -19,21 +19,6 @@ class Jobflow extends Units\Test
         $this->transport = new \mock\Rezzza\Jobflow\Scheduler\TransportInterface;
     }
 
-    public function test_add_message()
-    {
-        $this
-            ->if($flow = $this->getMockJobflow())
-            ->and($this->transport->getMockController()->addMessage = true)
-            ->and($msg = $this->getMockMsg())
-            ->then($flow->addMessage($msg))
-
-                ->mock($this->transport)
-                    ->call('addMessage')
-                    ->withArguments($msg)
-                    ->once()
-        ;
-    }
-
     private function getMockJobflow()
     {
         return new \mock\Rezzza\Jobflow\Scheduler\Jobflow($this->transport, $this->factory);
@@ -49,6 +34,8 @@ class Jobflow extends Units\Test
 
     private function getMockMsg()
     {
-        return new \mock\Rezzza\Jobflow\JobMessage(null);
+        $this->mockGenerator->orphanize('__construct');
+
+        return new \mock\Rezzza\Jobflow\JobMessage();
     }
 }

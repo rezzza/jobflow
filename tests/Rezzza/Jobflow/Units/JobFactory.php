@@ -24,9 +24,9 @@ class JobFactory extends Units\Test
         $initOptions = array('a' => '1', 'b' => '2');
         $execOptions = array('c' => '3');
         $resolved = $this->getMockResolvedJob();
-        
+
         $resolved->getMockController()->createBuilder = 'jean-marc';
-        $this->registry->getMockController()->getType = $resolved; 
+        $this->registry->getMockController()->getType = $resolved;
 
         $this
             ->if($builder = $this->factory->createNamedBuilder('name', 'type', $initOptions, $execOptions))
@@ -54,7 +54,7 @@ class JobFactory extends Units\Test
         $factory = $this->getMockFactory();
 
         $resolved->getMockController()->createBuilder = 'jean-marc';
-        $factory->getMockController()->createResolvedType = $resolved; 
+        $factory->getMockController()->createResolvedType = $resolved;
 
         $this
             ->if($builder = $factory->createNamedBuilder('name', $type, $initOptions, $execOptions))
@@ -76,7 +76,7 @@ class JobFactory extends Units\Test
     public function test_it_creates_builder_with_type_with_parent()
     {
         $initOptions = array('a' => '1', 'b' => '2');
-        $execOptions = array('c' => '3');        
+        $execOptions = array('c' => '3');
         $factory = $this->getMockFactory();
         $type = new \mock\Rezzza\Jobflow\Extension\Core\Type\JobType();
         $parentType = new \mock\Rezzza\Jobflow\Extension\Core\Type\JobType();
@@ -85,7 +85,7 @@ class JobFactory extends Units\Test
         $type->getMockController()->getParent = 'flex';
         $this->registry->getMockController()->getType = $parentType;
         $factory->getMockController()->createResolvedType = $resolved;
-        $resolved->getMockController()->createBuilder = 'jean-marc'; 
+        $resolved->getMockController()->createBuilder = 'jean-marc';
 
         $this
             ->if($builder = $factory->createNamedBuilder('name', $type, $initOptions, $execOptions))
@@ -170,7 +170,7 @@ class JobFactory extends Units\Test
         $resolved = $this->getMockResolvedJob();
 
         $resolved->getMockController()->createBuilder = 'jean-marc';
-        $this->registry->getMockController()->getType = $resolved; 
+        $this->registry->getMockController()->getType = $resolved;
 
         $this
             ->if($builder = $this->factory->createNamedBuilder('name', 'type', $initOptions, $execOptions))
@@ -192,11 +192,11 @@ class JobFactory extends Units\Test
     public function test_it_creates_builder_and_keeps_io()
     {
         $initOptions = array('a' => '1', 'b' => '2');
-        $execOptions = array('c' => '3');        
+        $execOptions = array('c' => '3');
         $resolved = $this->getMockResolvedJob();
 
         $resolved->getMockController()->createBuilder = 'jean-marc';
-        $this->registry->getMockController()->getType = $resolved; 
+        $this->registry->getMockController()->getType = $resolved;
 
         $this
             ->if($builder = $this->factory->createNamedBuilder('name', 'type', $initOptions, $execOptions))

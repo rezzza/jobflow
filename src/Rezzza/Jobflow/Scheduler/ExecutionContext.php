@@ -6,10 +6,14 @@ use Rezzza\Jobflow\Io;
 use Rezzza\Jobflow\JobInterface;
 use Rezzza\Jobflow\JobContext;
 use Rezzza\Jobflow\JobMessage;
+use Rezzza\Jobflow\JobMessageFactory;
 use Rezzza\Jobflow\JobPayload;
 use Rezzza\Jobflow\JobData;
 use Rezzza\Jobflow\Metadata\MetadataAccessor;
 
+/**
+ * Wraps job execution around current context
+ */
 class ExecutionContext
 {
     protected $job;
@@ -33,13 +37,14 @@ class ExecutionContext
         $this->buildGraph();
     }
 
-    public function execute($msg, $msgFactory)
+    public function execute(JobMessage $msg, JobMessageFactory $msgFactory)
     {
-        $this
+        $child = $this
             ->start($msg)
             ->currentChild()
-            ->execute($this)
         ;
+
+        $child->execute($this);
 
         return $msgFactory->createMsg($this->jobContext, $this->output);
     }

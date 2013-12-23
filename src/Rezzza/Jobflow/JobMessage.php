@@ -52,7 +52,6 @@ class JobMessage
         );
 
         $execution->end($this);
-echo $execution->currentChild(); exit;
 
         return $execution;
     }

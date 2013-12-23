@@ -45,9 +45,9 @@ class Jobflow
     }
 
     /**
-     * Init $job execution and run it
+     * Init $job execution and execute it.
      */
-    public function run($job, array $jobOptions = array(), Io\IoDescriptor $io = null)
+    public function run($job, array $jobOptions = [], Io\IoDescriptor $io = null)
     {
         if (is_string($job)) {
             $job = $this->createJob($job, $jobOptions);
@@ -61,12 +61,7 @@ class Jobflow
             throw new \InvalidArgumentException('Job should be a string, a JobInterface or a JobExecution');
         }
 
-        $messages = $job->createInitMsgs($this->msgFactory, $io);
-
-        foreach ($messages as $msg) {
-            $this->push($msg);
-        }
-
+        $this->init($job, $io);
         $this->execute($job);
 
         return $this;
@@ -131,6 +126,15 @@ class Jobflow
         return $this;
     }
 
+    protected function init(ExecutionContext $execution, Io\IoDescriptor $io = null)
+    {
+        $msgs = $execution->createInitMsgs($this->msgFactory, $io);
+
+        foreach ($msgs as $msg) {
+            $this->push($msg);
+        }
+    }
+
     protected function push(JobMessage $msg)
     {
         $msg->logState($this->logger);
@@ -159,7 +163,7 @@ class Jobflow
         return $msg->createEndedJobExecution($this->jobFactory);
     }
 
-    private function createJob($job, array $jobOptions = array())
+    private function createJob($job, array $jobOptions = [])
     {
         return $this->jobFactory->create($job, $jobOptions);
     }
