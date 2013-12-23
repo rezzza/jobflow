@@ -54,7 +54,7 @@ class JobType extends AbstractJobType
             'calls' => array(),
             'metadata_read' => array(),
             'metadata_write' => array(),
-            'message' => null,
+            'execution' => null,
             'processor' => function(Options $options) {
                 return new ProcessorConfig(
                     $options['class'],

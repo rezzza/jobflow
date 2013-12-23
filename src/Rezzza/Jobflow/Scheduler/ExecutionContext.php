@@ -2,111 +2,187 @@
 
 namespace Rezzza\Jobflow\Scheduler;
 
+use Rezzza\Jobflow\Io;
 use Rezzza\Jobflow\JobInterface;
-use Rezzza\Jobflow\JobInput;
+use Rezzza\Jobflow\JobContext;
 use Rezzza\Jobflow\JobMessage;
-use Rezzza\Jobflow\JobOutput;
+use Rezzza\Jobflow\JobMessageFactory;
+use Rezzza\Jobflow\JobPayload;
+use Rezzza\Jobflow\JobData;
+use Rezzza\Jobflow\Metadata\MetadataAccessor;
 
 /**
- * Wrap and contextualize execution of job
- *
- * @author Timothée Barray <tim@amicalement-web.net>
+ * Wraps job execution around current context
  */
 class ExecutionContext
 {
-    /**
-     * Current msg
-     *
-     * @var JobInput
-     */
-    protected $input;
-
-    /**
-     * Next msg
-     *
-     * @var JobOutput
-     */
-    protected $output;
-
-    /**
-     * Global Context moved from message to message
-     *
-     * @var JobContext
-     */
-    protected $globalContext;
-
-    /**
-     * Current job in execution
-     *
-     * @var JobInterface
-     */
     protected $job;
 
-    /**
-     * @param JobMessage $msg
-     * @param JobGraph $graph
-     */
-    public function __construct(JobInput $input, JobOutput $output)
+    protected $jobGraph;
+
+    protected $jobContext;
+
+    protected $input;
+
+    protected $output;
+
+    protected $pipe;
+
+    public function __construct(JobInterface $job)
     {
-        $this->input = $input;
-        $this->output = $output;
-        $this->globalContext = $input->getMessage()->context;
+        $this->job = $job;
+        $this->output = new JobPayload();
+
+        $this->initPipe();
+        $this->buildGraph();
     }
 
-    /**
-     * Run execute on a job for the current msg.
-     * It will determine himself which child need to be execute
-     *
-     * @param JobInterface $job
-     */
-    public function executeJob(JobInterface $parent)
+    public function execute(JobMessage $msg, JobMessageFactory $msgFactory)
     {
-        if (null === $this->getCurrentJob()) {
-            // No more Job to run. debug
-            return 0;
-        }
+        $child = $this
+            ->start($msg)
+            ->currentChild()
+        ;
 
-        $this->job = $parent->get($this->getCurrentJob());
+        $child->execute($this);
 
-        return $this->job->execute($this);
+        return $msgFactory->createMsg($this->jobContext, $this->output);
     }
 
-    public function getInput()
+    public function tick()
+    {
+        $this->jobContext->tick();
+    }
+
+    public function initContext(JobContext $context)
+    {
+        $this->jobContext = $context;
+        $this->jobGraph->move($context->getCurrent());
+    }
+
+    public function initInput(JobPayload $payload)
+    {
+        $this->input = $payload;
+    }
+
+    public function initOutput(JobPayload $payload)
+    {
+        $this->output = $payload;
+    }
+
+    public function read()
     {
         return $this->input;
     }
 
-    public function getOutput()
+    public function write($result, $metadata = null)
     {
-        return $this->output;
+        if ($metadata instanceof MetadataAccessor) {
+            $metadata = $metadata->createMetadata($result);
+        }
+
+        $this->output->store(new JobData($result, $metadata));
     }
 
-    /**
-     * Get name of the child job in execution
-     *
-     * @return string
-     */
-    public function getCurrentJob()
+    public function start($msg)
     {
-        return $this->globalContext->getCurrent();
+        $msg->initExecutionContext($this);
+        $msg->initExecutionInput($this);
+        $this->output = new JobPayload();
+
+        return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getJobId()
+    public function end($msg)
     {
-        return $this->globalContext->jobId;
+        $msg->initExecutionContext($this);
+        $msg->initExecutionOutput($this);
+
+        return $this;
     }
 
-    public function setGlobalOption($key, $value)
+    public function createInitMsgs($msgFactory, $io)
     {
-        $this->globalContext->setOption($key, $value);
+        $stdin = $io ? $io->getStdin() : null;
+        $stdout = $io ? $io->getStdout() : null;
+
+        $inputs = $this->buildInputs($stdin, $stdout);
+
+        return $msgFactory->createInitMsgs(
+            $this->createJobContexts($inputs, $this->jobGraph->current())
+        );
     }
 
-    public function getGlobalOption($name)
+    public function createPipeMsgs($msgFactory)
     {
-        return $this->globalContext->getOption($name);
+        foreach ($this->output as $data) {
+            if ($data->getValue() instanceof Io\Input) {
+                $this->pipe->add($data->getValue());
+            }
+        }
+
+        if (count($this->pipe) <= 0) {
+            return [];
+        }
+
+        $inputs = $this->buildInputs($this->pipe, $this->getIo()->getStdout());
+        $this->initPipe();
+
+        return $msgFactory->createInitMsgs(
+            $this->createJobContexts($inputs, $this->jobGraph->getNextJob())
+        );
+    }
+
+    public function createNextMsg($msgFactory)
+    {
+        $next = $this->jobGraph->getNextJob();
+
+        if ($next) {
+            $this->jobContext->moveTo($next);
+        } else {
+            $this->jobContext->reset();
+        }
+
+        return $msgFactory->createMsg($this->jobContext, $this->output);
+    }
+
+    public function currentChild()
+    {
+        return $this->job->get($this->jobContext->getCurrent());
+    }
+
+    public function hasNextJob()
+    {
+        return $this->jobGraph->hasNextJob();
+    }
+
+    public function isFinished()
+    {
+        return is_integer($this->getContextOption('total')) && $this->getContextOption('total') <= $this->getContextOption('offset');
+    }
+
+    public function logState($logger)
+    {
+        if (!$logger) {
+            return;
+        }
+
+        $logger->info(sprintf(
+            'Read message for job [%s] : %s => %s',
+            $this->jobContext->jobId,
+            $this->jobContext->getCurrent(),
+            json_encode($this->jobContext->getOptions())
+        ));
+    }
+
+    public function setContextOption($key, $value)
+    {
+        return $this->jobContext->setOption($key, $value);
+    }
+
+    public function getContextOption($name)
+    {
+        return $this->jobContext->getOption($name);
     }
 
     public function getJobOption($name, $default = null)
@@ -117,5 +193,59 @@ class ExecutionContext
     public function getLogger()
     {
         return $this->job->getConfig()->getAttribute('logger');
+    }
+
+    public function getIo()
+    {
+        return $this->jobContext->getIo();
+    }
+
+    protected function createJobContexts($inputs, $current)
+    {
+        $contexts = [];
+
+        foreach ($inputs as $input) {
+            $contexts[] = new JobContext(
+                $this->job->getName(),
+                $input,
+                $current,
+                $this->job->getConfig()->getOption('context', []),
+                $this->job->getOptions()
+            );
+        }
+
+        return $contexts;
+    }
+
+    protected function buildInputs($stdin, $stdout)
+    {
+        $inputs = [];
+
+        if (null === $stdin) {
+            // If no IO defined, we want to keep the loop over results of this method.
+            // So we return explicitely an array with only null value
+            return [null];
+        }
+
+        if ($stdin instanceof \Traversable) {
+            foreach ($stdin as $input) {
+                $inputs[] = new Io\IoDescriptor($input, $stdout);
+            }
+        } else {
+            $inputs[] = new Io\IoDescriptor($stdin, $stdout);
+        }
+
+        return $inputs;
+    }
+
+    protected function buildGraph()
+    {
+        $children = $this->job->getChildren();
+        $this->jobGraph = new JobGraph(new \ArrayIterator(array_keys($children)));
+    }
+
+    protected function initPipe()
+    {
+        $this->pipe = new Io\InputAggregator;
     }
 }

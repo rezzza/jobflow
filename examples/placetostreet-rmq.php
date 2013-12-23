@@ -6,7 +6,9 @@ use Rezzza\Jobflow\Extension;
 use Rezzza\Jobflow\Io;
 
 // Create RabbitMq Client
-$rmqClient = new Extension\RabbitMq\JobRpcClient('localhost', 5672, 'guest', 'guest', '/');
+$rmqClient = new Extension\RabbitMq\JobRpcClient(
+    new \PhpAmqpLib\Connection\AMQPConnection('localhost', 5672, 'guest', 'guest', '/')
+);
 $rmqClient->initClient();
 
 // Add RabbitMqExtension
@@ -24,7 +26,7 @@ echo 'Started...'.PHP_EOL;
 // Now we can execute our job
 $jobflowFactory
     ->create('rabbitmq')
-    ->execute(
+    ->run(
         'place_to_street',
         array(),
         new Io\IoDescriptor(

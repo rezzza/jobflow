@@ -82,6 +82,7 @@ class JobConfig
         $this->initOptions = $initOptions;
         $this->execOptions = $execOptions;
         $this->resolvedExecOptions = array();
+        $this->attributes = array();
     }
 
     /**

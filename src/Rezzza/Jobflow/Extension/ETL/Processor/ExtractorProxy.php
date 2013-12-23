@@ -11,16 +11,16 @@ use Rezzza\Jobflow\Scheduler\ExecutionContext;
 
 class ExtractorProxy extends ETLProcessor implements ExtractorInterface
 {
-    public function execute(JobInput $input, JobOutput &$output, ExecutionContext $execution)
+    public function execute(ExecutionContext $execution)
     {
         if ($execution->getLogger()) {
             $this->getProcessor()->setLogger($execution->getLogger());
         }
 
-        $offset = $execution->getGlobalOption('offset');
-        $limit = $execution->getGlobalOption('limit');
-        $max = $execution->getGlobalOption('max');
-        $total = $execution->getGlobalOption('total');
+        $offset = $execution->getContextOption('offset');
+        $limit = $execution->getContextOption('limit');
+        $max = $execution->getContextOption('max');
+        $total = $execution->getContextOption('total');
 
         // Limit total to the max if lesser
         if (null === $total) {
@@ -30,12 +30,12 @@ class ExtractorProxy extends ETLProcessor implements ExtractorInterface
                 $total = $max;
             }
 
-            $execution->setGlobalOption('total', $total);
+            $execution->setContextOption('total', $total);
         }
 
         if ($execution->getJobOption('offset', 0) > $offset) {
             $offset = $execution->getJobOption('offset');
-            $execution->setGlobalOption('offset', $offset);
+            $execution->setContextOption('offset', $offset);
         }
 
         // Read data
@@ -43,8 +43,8 @@ class ExtractorProxy extends ETLProcessor implements ExtractorInterface
             $data = $this->slice($offset, $limit);
         } catch (\OutOfBoundsException $e) {
             // Message has no more data and should not be spread
-            $output->end();
-            $data = array();
+            $execution->end();
+            $data = [];
 
             if ($execution->getLogger()) {
                 $execution->getLogger()->debug('No data');
@@ -53,7 +53,7 @@ class ExtractorProxy extends ETLProcessor implements ExtractorInterface
 
         // No data
         if (count($data) <= 0) {
-            $output->end();
+            $execution->end();
 
             if ($execution->getLogger()) {
                 $execution->getLogger()->debug('No data');
@@ -62,13 +62,8 @@ class ExtractorProxy extends ETLProcessor implements ExtractorInterface
 
         // Store data read
         foreach ($data as $k => $v) {
-            $key = $offset + $k;
-            
-            $output->writeMetadata($v, $key, $this->getMetadataAccessor());
-            $output->write($v, $key);
+            $execution->write($v, $this->getMetadataAccessor());
         }
-
-        return $output;
     }
 
     public function slice($offset, $limit)
@@ -78,7 +73,7 @@ class ExtractorProxy extends ETLProcessor implements ExtractorInterface
         }
 
         $this->seek($offset);
-        $data = array();
+        $data = [];
 
         for ($i = 0; $i < $limit && $this->valid(); $i++) {
             $data[] = $this->extract($this->createContext());

@@ -4,21 +4,13 @@ namespace Rezzza\Jobflow\Scheduler;
 
 use Psr\Log\LoggerInterface;
 
-use Rezzza\Jobflow\Io\Input;
-use Rezzza\Jobflow\JobContext;
+use Rezzza\Jobflow\Io;
 use Rezzza\Jobflow\JobInterface;
 use Rezzza\Jobflow\JobFactory;
 use Rezzza\Jobflow\JobMessage;
-use Rezzza\Jobflow\JobInput;
-use Rezzza\Jobflow\JobOutput;
-use Rezzza\Jobflow\Scheduler\ExecutionContext;
+use Rezzza\Jobflow\JobMessageFactory;
 use Rezzza\Jobflow\Strategy\ClassicStrategy;
 
-/**
- * Handles job execution
- *
- * @author Timothée Barray <tim@amicalement-web.net>
- */
 class Jobflow
 {
     /**
@@ -49,154 +41,48 @@ class Jobflow
         $this->transport = $transport;
         $this->jobFactory = $jobFactory;
         $this->logger = $logger;
+        $this->msgFactory = new JobMessageFactory();
     }
 
     /**
-     * @return TransportInterface
+     * Init $job execution and execute it.
      */
-    public function getTransport()
-    {
-        return $this->transport;
-    }
-
-    public function getStrategy()
-    {
-        if (null === $this->strategy) {
-            $this->strategy = new ClassicStrategy();
-        }
-
-        return $this->strategy;
-    }
-
-    public function setStrategy($strategy)
-    {
-        $this->strategy = $strategy;
-
-        return $this;
-    }
-
-    /**
-     * @param String | JobInterface | JobExecution $job
-     *
-     * @return Jobflow
-     */
-    public function execute($job, array $jobOptions = array(), $io = null)
+    public function run($job, array $jobOptions = [], Io\IoDescriptor $io = null)
     {
         if (is_string($job)) {
             $job = $this->createJob($job, $jobOptions);
         }
 
         if ($job instanceof JobInterface) {
-            $job = new JobExecution($job, $io);
+            $job = new ExecutionContext($job);
         }
 
-        if (!$job instanceof JobExecution) {
+        if (!$job instanceof ExecutionContext) {
             throw new \InvalidArgumentException('Job should be a string, a JobInterface or a JobExecution');
         }
 
-        $messages = $job->getMessages();
-
-        foreach ($messages as $msg) {
-            $this->addMessage($msg);
-        }
-        $this->run($job);
+        $this->init($job, $io);
+        $this->execute($job);
 
         return $this;
     }
 
     /**
-     * Adds message in transport layer
-     *
-     * @param JobMessage $msg
-     *
-     * @return Jobflow
+     * Execute current step of $msg in $executionContext
      */
-    public function addMessage(JobMessage $msg)
+    public function executeMsg(JobMessage $msg, ExecutionContext $execution = null)
     {
-        if ($this->logger) {
-            if (null === $msg->context->getCurrent()) {
-                $step = 'starting';
-            } else {
-                $step = 'step '.$msg->context->getCurrent();
-            }
-
-            $this->logger->info(sprintf(
-                'Add new message for job [%s] : %s',
-                $msg->context->getJobId(),
-                $step
-            ));
+        if (null === $execution) {
+            $execution = $this->createJobExecutionFromStartMessage($msg);
         }
 
-        $this->transport->addMessage($msg);
-
-        return $this;
+        return $execution->execute($msg, $this->msgFactory);
     }
 
     /**
-     * Handles a message in args or look to the transport for next one
-     *
-     * @param JobMessage|null $msg
+     * Handle msg after its execution. If we need to create a new msg to continue execution or stop here
      */
-    public function run($jobExecution = null)
-    {
-        $result = null;
-
-        while ($msg = $this->wait()) {
-            if (!$msg instanceof JobMessage) {
-                return;
-            }
-
-            $result = $this->runJob($msg, $jobExecution);
-
-            if ($result instanceof JobMessage) {
-                $this->handleMessage($result, $jobExecution);
-            }
-        }
-
-        return $result;
-    }
-
-    /**
-     * Executes current job.
-     * Injects ExecutionContext as Visitor
-     *
-     * @param JobMessage $msg
-     */
-    public function runJob(JobMessage $msg, $jobExecution = null)
-    {
-        if (null === $jobExecution) {
-            $jobExecution = $this->createJobExecutionFromMessage($msg);
-        }
-
-        // Store input message
-        $this->startMsg = $msg;
-        $endMsg = clone $msg;
-        $endMsg->reset();
-
-        $jobExecution->getJobGraph()->move($msg->context->getCurrent());
-        $context = new ExecutionContext(
-            new JobInput($this->startMsg),
-            new JobOutput($endMsg)
-        );
-        $output = $context->executeJob($jobExecution->getJob());
-
-        // Event ? To handle createEndMsg in a more readable way ?
-        if (!$output instanceof JobOutput) {
-            return $output;
-        }
-
-        // If $output is ended (no data for example)
-        if ($output->isEnded()) {
-            return null;
-        }
-
-        return $output->getMessage();
-    }
-
-    /**
-     * Need to work on this method to make it more simple and readable
-     */
-    public function handleMessage($msg, $jobExecution = null)
+    public function handle($msg)
     {
         if (!$msg instanceof JobMessage) {
             if ($this->logger) {
@@ -206,67 +92,84 @@ class Jobflow
             return false;
         }
 
-        if (null === $jobExecution) {
-            $jobExecution = $this->createJobExecutionFromMessage($msg);
+        return $this->handleMsg($msg);
+    }
+
+    protected function execute(ExecutionContext $execution)
+    {
+        while ($msg = $this->wait()) {
+            // In RabbitMQ mode, $msg will be empty and it is normal.
+            // The worker handles the 'executeMsg' method and the rpc client (injected in RabbitMqTransport) the 'handleMsg' method
+            // so we no longer need any more step at this point, so 'return' break point here is not a mistake ;)
+            if (!$msg instanceof JobMessage) {
+                return;
+            }
+
+            $msg = $this->executeMsg($msg, $execution);
+            $this->handleMsg($msg, $execution);
+        }
+    }
+
+    protected function handleMsg(JobMessage $msg, ExecutionContext $execution = null)
+    {
+        if (null === $execution) {
+            $execution = $this->createJobExecutionFromEndMessage($msg);
         }
 
-        if ($this->logger) {
-            $this->logger->info(sprintf(
-                'Read message for job [%s] : %s => %s',
-                $msg->context->getJobId(),
-                $msg->context->getCurrent(),
-                json_encode($msg->context->getOptions())
-            ));
-        }
+        $execution->logState($this->logger);
+        $msgs = $this->getStrategy()->handle($execution, $this->msgFactory);
 
-        $this->getStrategy()->handle($this, $jobExecution, $msg);
+        foreach ($msgs as $msg) {
+            $this->push($msg);
+        }
 
         return $this;
     }
 
-    /**
-     * Waits for message
-     *
-     * @return JobMessage
-     */
-    public function wait()
+    protected function init(ExecutionContext $execution, Io\IoDescriptor $io = null)
     {
-        return $this->transport->getMessage();
-    }
+        $msgs = $execution->createInitMsgs($this->msgFactory, $io);
 
-    /**
-     * Init job from the message
-     *
-     * @param JobMessage $msg
-     */
-    public function createJobExecutionFromMessage(JobMessage $msg)
-    {
-        return new JobExecution($this->createJob($msg->context->getJobId(), $msg->jobOptions));
-    }
-
-    public function forwardPipeMessage($msg, $graph)
-    {
-        foreach ($msg->pipe->params as $pipe) {
-            $graph = clone $graph;
-            $forward = clone $msg;
-            $forward->context->initOptions();
-            $forward->pipe = $pipe;
-            $forward->context->updateToNextJob($graph);
-            $forward->context->setOrigin($forward->context->getCurrent());
-            $this->addMessage($forward);
+        foreach ($msgs as $msg) {
+            $this->push($msg);
         }
     }
 
-    /**
-     * Create job thanks to jobFactory
-     *
-     * @param string $job
-     * @param array $jobOptions
-     *
-     * @return JobInterface
-     */
-    private function createJob($job, array $jobOptions = array())
+    protected function push(JobMessage $msg)
+    {
+        $msg->logState($this->logger);
+
+        $this->transport->addMessage($msg);
+
+        return $this;
+    }
+
+    protected function getStrategy()
+    {
+        if (null === $this->strategy) {
+            $this->strategy = new ClassicStrategy();
+        }
+
+        return $this->strategy;
+    }
+
+    private function createJobExecutionFromStartMessage(JobMessage $msg)
+    {
+        return $msg->createStartedJobExecution($this->jobFactory);
+    }
+
+    private function createJobExecutionFromEndMessage(JobMessage $msg)
+    {
+        return $msg->createEndedJobExecution($this->jobFactory);
+    }
+
+    private function createJob($job, array $jobOptions = [])
     {
         return $this->jobFactory->create($job, $jobOptions);
+    }
+
+    private function wait()
+    {
+        return $this->transport->getMessage();
     }
 }

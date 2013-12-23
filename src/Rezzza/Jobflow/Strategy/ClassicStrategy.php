@@ -5,46 +5,28 @@ namespace Rezzza\Jobflow\Strategy;
 use Rezzza\Jobflow\Extension\Pipe\Pipe;
 use Rezzza\Jobflow\JobMessage;
 use Rezzza\Jobflow\Scheduler\Jobflow;
+use Rezzza\Jobflow\Scheduler\JobExecutionContext;
 
 class ClassicStrategy implements MessageStrategyInterface
 {
-    public function handle(Jobflow $jobflow, $jobExecution, JobMessage $msg)
+    public function handle($execution, $messageFactory)
     {
-        $current = $msg->context->getCurrent();
-
-        // Move graph to the current value
-        $jobExecution->getJobGraph()->move($current);
-
         // Gets the current job
-        $child = $jobExecution->getJob()->get($current);
-
-        if ($msg->pipe instanceof Pipe) {
-            $jobflow->forwardPipeMessage($msg, $jobExecution->getJobGraph());
-
-            // Reset pipe as we already ran through above
-            $msg->pipe = array();
-        }
+        $child = $execution->currentChild();
+        $msgs = $execution->createPipeMsgs($messageFactory);
 
         if (true === $child->getRequeue()) {
-            $msg->context->tick();
+            $execution->tick();
 
-            if (!$msg->context->isFinished()) {
-                $origin = $msg->context->getOrigin();
-                $jobExecution->getJobGraph()->move($origin);
-
-                $msg->context->addStep($current);
-                $msg->context->setCurrent($origin);
-            } else {
-                $msg = null;
+            if (!$execution->isFinished()) {
+                // Create following msg by reset position msg
+                $msgs[] = $execution->createNextMsg($messageFactory);
             }
-        } elseif (!$jobExecution->getJobGraph()->hasNextJob()) {
-            $msg = null;
-        } else {
-            $msg->context->updateToNextJob($jobExecution->getJobGraph());
+        } elseif ($execution->hasNextJob()) {
+            // Create following msg by updating to next step
+            $msgs[] = $execution->createNextMsg($messageFactory);
         }
 
-        if (null !== $msg) {
-            $jobflow->addMessage($msg);
-        }
+        return $msgs;
     }
 }

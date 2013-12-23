@@ -11,18 +11,19 @@ class PipeLoaderType extends AbstractJobType
 {
     public function setExecOptions(OptionsResolverInterface $resolver)
     {
-        $resolver->setRequired(array(
-            'mapping'
-        ));
+        $resolver->setRequired([
+            'forward'
+        ]);
 
-        $resolver->setDefaults(array(
+        $resolver->setDefaults([
             'class' => 'Rezzza\Jobflow\Extension\Pipe\PipeLoader',
             'args' => function(Options $options) {
-                return array(
-                    'mapping' => $options['mapping']
-                );
-            } 
-        ));
+                return [
+                    'forward' => $options['forward'],
+                    'execution' => $options['execution']
+                ];
+            }
+        ]);
     }
 
     public function getName()

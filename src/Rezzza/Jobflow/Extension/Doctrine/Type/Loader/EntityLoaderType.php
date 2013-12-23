@@ -29,7 +29,7 @@ class EntityLoaderType extends AbstractJobType
                     $doctrine,
                     $options['flush_every']
                 );
-            } 
+            }
         ));
     }
 

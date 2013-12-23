@@ -48,58 +48,45 @@ class Job implements \IteratorAggregate, JobInterface
     }
 
     /**
-     * @var ExecutionContext $context
+     * @var ExecutionContext $execution
      */
-    public function execute(ExecutionContext $context)
+    public function execute(ExecutionContext $execution)
     {
-        // We inject msg as it could be used during job runtime configuration
         $options = $this->getExecOptions();
-        $options['message'] = $context->getInput()->getMessage();
 
-        // Runtime configuration (!= buildJob which is executed when we build job)
+        // We inject execution here to be able to use it hen.
+        $options['execution'] = $execution;
+
         $options = $this->getResolved()->execJob($this->getConfig(), $options);
-        // Should avoid this kind of operations. ConfigJob Runtime need to be improve.
+
         $this->getConfig()->setResolvedExecOptions($options);
 
         $dispatcher = $this->config->getEventDispatcher();
 
         if ($dispatcher->hasListeners(JobEvents::PRE_EXECUTE)) {
-            $event = new JobEvent($this);
-            $dispatcher->dispatch(JobEvents::PRE_EXECUTE, $event);
+            $dispatcher->dispatch(JobEvents::PRE_EXECUTE, new JobEvent($this));
         }
 
-        $input = $context->getInput();
-        $output = $context->getOutput();
-        $config = $this->getConfig()->getProcessorConfig();
+        $processorConfig = $this->config->getProcessorConfig();
 
-        if ($config instanceof ProcessorConfig) {
+        if ($processorConfig instanceof ProcessorConfig) {
             $factory = new \Rezzza\Jobflow\Processor\ProcessorFactory;
             $factory
-                ->create($input->getMessage()->pipe, $config, $this->getConfig()->getMetadataAccessor())
-                ->execute($input, $output, $context)
+                ->create($processorConfig, $this->config->getMetadataAccessor())
+                ->execute($execution)
             ;
-        } elseif (is_callable($config)) {
+        } elseif (is_callable($processorConfig)) {
             call_user_func_array(
-                $config,
-                array(
-                    $input,
-                    $output,
-                    $context
-                )
+                $processorConfig,
+                [$execution]
             );
         } else {
             throw new \InvalidArgumentException('processor should be a ProcessorConfig or a callable');
         }
 
-        // Update context
-        $output->setContextFromInput($input);
-
         if ($dispatcher->hasListeners(JobEvents::POST_EXECUTE)) {
-            $event = new JobEvent($this);
-            $dispatcher->dispatch(JobEvents::POST_EXECUTE, $event);
+            $dispatcher->dispatch(JobEvents::POST_EXECUTE, new JobEvent($this));
         }
-
-        return $output;
     }
 
     /**

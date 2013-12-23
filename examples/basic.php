@@ -17,12 +17,12 @@ $job = $jobFactory
         'multiplicator',
         'job',
         array(
-            'processor' => function($input, $output, $execution) {
+            'processor' => function($execution) {
                 $nums = range(0, 9);
-                $execution->setGlobalOption('total', count($nums));
+                $execution->setContextOption('total', count($nums));
 
                 foreach ($nums as $num) {
-                    $output->write($num * 2);
+                    $execution->write($num * 2);
                 }
             }
         )
@@ -31,9 +31,9 @@ $job = $jobFactory
         'addition',
         'job',
         array(
-            'processor' => function($input, $output, $context) {
-                foreach ($input->read() as $key => $data) {
-                    $output->write($data + 1);
+            'processor' => function($execution) {
+                foreach ($execution->read() as $key => $data) {
+                    $execution->write($data->getValue() + 1);
                 }
             }
         )
@@ -44,5 +44,5 @@ $job = $jobFactory
 // Now we can execute our job
 $jobflowFactory
     ->create('php')
-    ->execute($job)
+    ->run($job)
 ;

@@ -18,9 +18,4 @@ abstract class JobStream
     {
         return $this->message;
     }
-
-    public function getMetadata()
-    {
-        return $this->message->metadata;
-    }
 }

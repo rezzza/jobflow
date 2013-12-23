@@ -4,8 +4,10 @@ require_once __DIR__.'/init.php';
 
 use Rezzza\Jobflow\Extension;
 
+$amqpConnection = new \PhpAmqpLib\Connection\AMQPConnection('localhost', 5672, 'guest', 'guest', '/');
+
 // Create RabbitMq Client
-$rmqClient = new Thumper\RpcClient('localhost', 5672, 'guest', 'guest', '/');
+$rmqClient = new Thumper\RpcClient($amqpConnection);
 $rmqClient->initClient();
 
 // Add rabbitmq Extension
@@ -16,7 +18,7 @@ $builder->addExtension(new Extension\Monolog\MonologExtension(new \Monolog\Logge
 $jobflowFactory = $builder->getJobflowFactory();
 
 // Create worker
-$server = new Thumper\RpcServer('localhost', 5672, 'guest', 'guest', '/');
+$server = new Thumper\RpcServer($amqpConnection);
 $server->initServer('jobflow');
 $server->setCallback(new Extension\RabbitMq\JobWorker($jobflowFactory));
 $server->start();

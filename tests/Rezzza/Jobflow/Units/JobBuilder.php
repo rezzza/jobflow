@@ -59,7 +59,7 @@ class JobBuilder extends Units\Test
         $this
             ->boolean($this->builder->has('foo'))
                 ->isFalse()
-            
+
             ->then($this->builder->add('foo', 'text', array('bar' => 'baz')))
                 ->boolean($this->builder->has('foo'))
                     ->isTrue()

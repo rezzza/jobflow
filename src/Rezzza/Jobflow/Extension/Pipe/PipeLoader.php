@@ -7,25 +7,35 @@ use Knp\ETL\ContextInterface;
 
 use Psr\Log\LoggerAwareTrait;
 
+use Rezzza\Jobflow\Io;
+
+/**
+ * Build input and write them in the current ExecutionContext as $data
+ * On handleMsg, all Input will be transform as a new JobMessage
+ */
 class PipeLoader implements LoaderInterface
 {
     use LoggerAwareTrait;
 
-    private $pipe;
+    private $forward;
 
-    public function __construct(array $mapping)
+    private $execution;
+
+    public function __construct($forward, $execution)
     {
-        $this->pipe = new Pipe($mapping);
+        $this->forward = $forward;
+        $this->execution = $execution;
     }
 
     public function load($data, ContextInterface $context)
     {
-        $this->pipe->addParam($data);
+        $input = new Io\Input($data[$this->forward]);
+
+        $this->execution->write($input);
     }
 
     public function flush(ContextInterface $context)
     {
-        return $this->pipe;
     }
 
     public function clear(ContextInterface $context)
