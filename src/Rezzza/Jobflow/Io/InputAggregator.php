@@ -7,7 +7,7 @@ namespace Rezzza\Jobflow\Io;
  *
  * @author Stephane PY <py.stephane1@gmail.com>
  */
-class InputAggregator extends Input implements \IteratorAggregate
+class InputAggregator extends Input implements \IteratorAggregate, \Countable
 {
     /**
      * @var array
@@ -45,5 +45,10 @@ class InputAggregator extends Input implements \IteratorAggregate
     public function getIterator()
     {
         return new \ArrayIterator($this->inputs);
+    }
+
+    public function count()
+    {
+        return count($this->inputs);
     }
 }

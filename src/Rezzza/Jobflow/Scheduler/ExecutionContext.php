@@ -116,6 +116,10 @@ class ExecutionContext
             }
         }
 
+        if (count($this->pipe) <= 0) {
+            return [];
+        }
+
         $inputs = $this->buildInputs($this->pipe, $this->getIo()->getStdout());
         $this->initPipe();
 
