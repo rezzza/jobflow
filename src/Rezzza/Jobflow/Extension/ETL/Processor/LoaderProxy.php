@@ -6,8 +6,6 @@ use Knp\ETL\ContextInterface;
 use Knp\ETL\LoaderInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
-use Rezzza\Jobflow\JobInput;
-use Rezzza\Jobflow\JobOutput;
 use Rezzza\Jobflow\Scheduler\ExecutionContext;
 
 class LoaderProxy extends ETLProcessor implements LoaderInterface

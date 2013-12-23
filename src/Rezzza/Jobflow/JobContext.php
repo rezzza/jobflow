@@ -5,8 +5,6 @@ namespace Rezzza\Jobflow;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
-use Rezzza\Jobflow\Scheduler\JobGraph;
-
 /**
  * Keeps state for the job execution
  *

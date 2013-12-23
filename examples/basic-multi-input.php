@@ -6,7 +6,6 @@ use Rezzza\Jobflow\Jobs;
 use Rezzza\Jobflow\Io;
 use Rezzza\Jobflow\Extension\ETL\Type;
 use Rezzza\Jobflow\Extension;
-use Rezzza\Jobflow\Scheduler\JobExecution;
 
 $builder = Jobs::createJobsBuilder();
 $builder->addExtension(new Extension\Monolog\MonologExtension(new \Monolog\Logger('jobflow')));

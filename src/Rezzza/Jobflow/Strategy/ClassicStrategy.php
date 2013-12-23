@@ -2,14 +2,12 @@
 
 namespace Rezzza\Jobflow\Strategy;
 
-use Rezzza\Jobflow\Extension\Pipe\Pipe;
-use Rezzza\Jobflow\JobMessage;
-use Rezzza\Jobflow\Scheduler\Jobflow;
-use Rezzza\Jobflow\Scheduler\JobExecutionContext;
+use Rezzza\Jobflow\JobMessageFactory;
+use Rezzza\Jobflow\Scheduler\ExecutionContext;
 
 class ClassicStrategy implements MessageStrategyInterface
 {
-    public function handle($execution, $messageFactory)
+    public function handle(ExecutionContext $execution, JobMessageFactory $messageFactory)
     {
         // Gets the current job
         $child = $execution->currentChild();

@@ -2,11 +2,10 @@
 
 namespace Rezzza\Jobflow\Strategy;
 
-use Rezzza\Jobflow\Scheduler\Jobflow;
-use Rezzza\Jobflow\Scheduler\JobExecutionContext;
-use Rezzza\Jobflow\JobMessage;
+use Rezzza\Jobflow\JobMessageFactory;
+use Rezzza\Jobflow\Scheduler\ExecutionContext;
 
 interface MessageStrategyInterface
 {
-    //public function handle(Jobflow $jobflow, JobExecutionContext $jobExecution, JobMessage $message);
+    public function handle(ExecutionContext $execution, JobMessageFactory $messageFactory);
 }

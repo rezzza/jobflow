@@ -5,8 +5,6 @@ namespace Rezzza\Jobflow\Extension\ETL\Processor;
 use Knp\ETL\ContextInterface;
 use Knp\ETL\TransformerInterface;
 
-use Rezzza\Jobflow\JobInput;
-use Rezzza\Jobflow\JobOutput;
 use Rezzza\Jobflow\Scheduler\ExecutionContext;
 
 class TransformerProxy extends ETLProcessor implements TransformerInterface

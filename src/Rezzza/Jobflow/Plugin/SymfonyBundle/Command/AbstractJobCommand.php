@@ -18,11 +18,9 @@ abstract class AbstractJobCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $container = $this->getContainer();
-
-        $factory = $container->get('rezzza_jobflow.flow');
-
-        $scheduler = $factory
+        $this
+            ->getContainer()
+            ->get('rezzza_jobflow.flow')
             ->create($this->transport)
             ->execute($this->jobId, $this->jobOptions)
         ;

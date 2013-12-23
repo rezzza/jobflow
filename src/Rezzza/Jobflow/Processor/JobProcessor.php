@@ -4,10 +4,6 @@ namespace Rezzza\Jobflow\Processor;
 
 use Psr\Log\LoggerAwareTrait;
 
-use Rezzza\Jobflow\JobInput;
-use Rezzza\Jobflow\JobOutput;
-use Rezzza\Jobflow\Scheduler\ExecutionContext;
-
 abstract class JobProcessor
 {
     use LoggerAwareTrait;

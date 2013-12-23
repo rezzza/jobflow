@@ -9,6 +9,7 @@ use Rezzza\Jobflow\AbstractJobType;
 use Rezzza\Jobflow\JobBuilder;
 use Rezzza\Jobflow\JobConfig;
 use Rezzza\Jobflow\Metadata\MetadataAccessor;
+use Rezzza\Jobflow\Processor\ProcessorConfig;
 
 /**
  * Generic Parent Class for all job type. Generic logic should go here

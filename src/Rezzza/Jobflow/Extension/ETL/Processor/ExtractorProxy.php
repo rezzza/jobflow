@@ -5,8 +5,6 @@ namespace Rezzza\Jobflow\Extension\ETL\Processor;
 use Knp\ETL\ContextInterface;
 use Knp\ETL\ExtractorInterface;
 
-use Rezzza\Jobflow\JobInput;
-use Rezzza\Jobflow\JobOutput;
 use Rezzza\Jobflow\Scheduler\ExecutionContext;
 
 class ExtractorProxy extends ETLProcessor implements ExtractorInterface

@@ -4,7 +4,6 @@ require_once __DIR__.'/init.php';
 
 use Rezzza\Jobflow\Extension;
 use Rezzza\Jobflow\Io;
-use Rezzza\Jobflow\Scheduler\JobExecution;
 
 // Create RabbitMq Client
 $rmqClient = new Extension\RabbitMq\JobRpcClient(

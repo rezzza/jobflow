@@ -4,7 +4,6 @@ namespace Rezzza\Jobflow;
 
 use Rezzza\Jobflow\Event\JobEvent;
 use Rezzza\Jobflow\Event\JobEvents;
-use Rezzza\Jobflow\Extension\ETL\Type\ETLType;
 use Rezzza\Jobflow\Scheduler\ExecutionContext;
 use Rezzza\Jobflow\Processor\ProcessorConfig;
 
