@@ -7,7 +7,12 @@ class JobPayload implements \ArrayAccess, \IteratorAggregate
     /**
      * JobData[]
      */
-    public $datas = array();
+    public $datas;
+
+    public function __construct(array $datas = [])
+    {
+        $this->datas = $datas;
+    }
 
     public function store($data)
     {

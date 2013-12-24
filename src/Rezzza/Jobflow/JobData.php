@@ -23,4 +23,9 @@ class JobData
     {
         return $this->metadata;
     }
+
+    public function isPiped()
+    {
+        return false;
+    }
 }

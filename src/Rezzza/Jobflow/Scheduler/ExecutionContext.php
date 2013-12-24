@@ -10,6 +10,7 @@ use Rezzza\Jobflow\JobMessageFactory;
 use Rezzza\Jobflow\JobPayload;
 use Rezzza\Jobflow\JobData;
 use Rezzza\Jobflow\Metadata\MetadataAccessor;
+use Rezzza\Jobflow\Extension\Pipe\PipeData;
 
 /**
  * Wraps job execution around current context
@@ -79,10 +80,6 @@ class ExecutionContext
 
     public function write($result, $metadata = null)
     {
-        if ($metadata instanceof MetadataAccessor) {
-            $metadata = $metadata->createMetadata($result);
-        }
-
         $this->output->store(new JobData($result, $metadata));
     }
 
@@ -117,28 +114,31 @@ class ExecutionContext
 
     public function createPipeMsgs($msgFactory)
     {
-        foreach ($this->output as $data) {
-            if ($data->getValue() instanceof Io\Input) {
-                $this->pipe->add($data->getValue());
-            }
-        }
-
-        if (count($this->pipe) <= 0) {
-            return [];
-        }
-
         $stdout = null;
+        $msgs = [];
 
         if ($this->getIo()) {
             $stdout = $this->getIo()->getStdout();
         }
 
-        $inputs = $this->buildInputs($this->pipe, $stdout);
-        $this->initPipe();
+        foreach ($this->output as $data) {
+            if ($data->getValue() instanceof Io\Input) {
+                $io = new Io\IoDescriptor($data->getValue(), $stdout);
 
-        return $msgFactory->createInitMsgs(
-            $this->createJobContexts($inputs, $this->jobGraph->getNextJob())
-        );
+                $context = new JobContext(
+                    $this->job->getName(),
+                    $io,
+                    $this->jobGraph->getNextJob(),
+                    $this->job->getConfig()->getOption('context', []),
+                    $this->job->getOptions()
+                );
+
+                $payload = new JobPayload([new PipeData(null, $data->getMetadata())]);
+                $msgs[] = $msgFactory->createMsg($context, $payload);
+            }
+        }
+
+        return $msgs;
     }
 
     public function createNextMsg($msgFactory)
@@ -158,7 +158,7 @@ class ExecutionContext
     {
         $this->jobContext->reset();
 
-        return $msgFactory->createMsg($this->jobContext, $this->output);
+        return $msgFactory->createMsg($this->jobContext, new JobPayload());
     }
 
     public function currentChild()

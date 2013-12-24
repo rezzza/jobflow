@@ -39,6 +39,8 @@ class LoaderProxy extends ETLProcessor implements LoaderInterface
             $this->load($data, $context);
         }
 
+        $context = $this->createContext();
+
         $this->flush($context);
         $this->clear($context);
     }

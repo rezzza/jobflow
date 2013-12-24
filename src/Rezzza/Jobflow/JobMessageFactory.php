@@ -15,11 +15,6 @@ class JobMessageFactory
         return $messages;
     }
 
-    public function createTickedMessage()
-    {
-
-    }
-
     public function createMsg($context, $payload)
     {
         return new JobMessage($context, $payload);

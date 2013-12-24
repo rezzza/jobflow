@@ -15,6 +15,9 @@ class ExtractorProxy extends ETLProcessor implements ExtractorInterface
             $this->getProcessor()->setLogger($execution->getLogger());
         }
 
+        $data = $execution->read();
+        $metadata = isset($data[0]) && $data[0]->isPiped() ? $data[0]->getMetadata() : null;
+
         $offset = $execution->getContextOption('offset');
         $limit = $execution->getContextOption('limit');
         $max = $execution->getContextOption('max');
@@ -59,8 +62,10 @@ class ExtractorProxy extends ETLProcessor implements ExtractorInterface
         }
 
         // Store data read
-        foreach ($data as $k => $v) {
-            $execution->write($v, $this->getMetadataAccessor());
+        foreach ($data as $k => $result) {
+            $metadata = $this->getMetadataAccessor()->createMetadata($result, $metadata);
+
+            $execution->write($result, $metadata);
         }
     }
 

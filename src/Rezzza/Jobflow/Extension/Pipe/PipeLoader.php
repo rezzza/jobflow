@@ -30,8 +30,7 @@ class PipeLoader implements LoaderInterface
     public function load($data, ContextInterface $context)
     {
         $input = new Io\Input($data[$this->forward]);
-
-        $this->execution->write($input);
+        $this->execution->write($input, $context->metadata);
     }
 
     public function flush(ContextInterface $context)
