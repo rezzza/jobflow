@@ -28,6 +28,8 @@ class ExecutionContext
 
     protected $pipe;
 
+    protected $terminated = false;
+
     public function __construct(JobInterface $job)
     {
         $this->job = $job;
@@ -125,7 +127,13 @@ class ExecutionContext
             return [];
         }
 
-        $inputs = $this->buildInputs($this->pipe, $this->getIo()->getStdout());
+        $stdout = null;
+
+        if ($this->getIo()) {
+            $stdout = $this->getIo()->getStdout();
+        }
+
+        $inputs = $this->buildInputs($this->pipe, $stdout);
         $this->initPipe();
 
         return $msgFactory->createInitMsgs(
@@ -158,7 +166,12 @@ class ExecutionContext
 
     public function isFinished()
     {
-        return is_integer($this->getContextOption('total')) && $this->getContextOption('total') <= $this->getContextOption('offset');
+        return true == $this->terminated || (is_integer($this->getContextOption('total')) && $this->getContextOption('total') <= $this->getContextOption('offset'));
+    }
+
+    public function terminate()
+    {
+        $this->terminated = true;
     }
 
     public function logState($logger)

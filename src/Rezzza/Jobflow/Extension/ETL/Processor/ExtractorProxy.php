@@ -41,7 +41,7 @@ class ExtractorProxy extends ETLProcessor implements ExtractorInterface
             $data = $this->slice($offset, $limit);
         } catch (\OutOfBoundsException $e) {
             // Message has no more data and should not be spread
-            $execution->end();
+            $execution->terminate();
             $data = [];
 
             if ($execution->getLogger()) {
@@ -51,7 +51,7 @@ class ExtractorProxy extends ETLProcessor implements ExtractorInterface
 
         // No data
         if (count($data) <= 0) {
-            $execution->end();
+            $execution->terminate();
 
             if ($execution->getLogger()) {
                 $execution->getLogger()->debug('No data');
