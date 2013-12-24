@@ -154,6 +154,13 @@ class ExecutionContext
         return $msgFactory->createMsg($this->jobContext, $this->output);
     }
 
+    public function createResetMsg($msgFactory)
+    {
+        $this->jobContext->reset();
+
+        return $msgFactory->createMsg($this->jobContext, $this->output);
+    }
+
     public function currentChild()
     {
         return $this->job->get($this->jobContext->getCurrent());
@@ -200,12 +207,12 @@ class ExecutionContext
 
     public function getJobOption($name, $default = null)
     {
-        return $this->job->getOption($name, $default);
+        return $this->currentChild()->getOption($name, $default);
     }
 
     public function getLogger()
     {
-        return $this->job->getConfig()->getAttribute('logger');
+        return $this->currentChild()->getConfig()->getAttribute('logger');
     }
 
     public function getIo()

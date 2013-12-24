@@ -17,8 +17,8 @@ class ClassicStrategy implements MessageStrategyInterface
             $execution->tick();
 
             if (!$execution->isFinished()) {
-                // Create following msg by reset position msg
-                $msgs[] = $execution->createNextMsg($messageFactory);
+                // Create following msg by reset position msg to the origin
+                $msgs[] = $execution->createResetMsg($messageFactory);
             }
         } elseif ($execution->hasNextJob()) {
             // Create following msg by updating to next step
