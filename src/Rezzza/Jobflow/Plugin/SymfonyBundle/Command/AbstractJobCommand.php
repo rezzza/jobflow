@@ -22,7 +22,7 @@ abstract class AbstractJobCommand extends Command
             ->getContainer()
             ->get('rezzza_jobflow.flow')
             ->create($this->transport)
-            ->execute($this->jobId, $this->jobOptions)
+            ->run($this->jobId, $this->jobOptions)
         ;
     }
 
