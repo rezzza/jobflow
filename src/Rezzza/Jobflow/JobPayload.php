@@ -2,7 +2,7 @@
 
 namespace Rezzza\Jobflow;
 
-class JobPayload implements \ArrayAccess, \IteratorAggregate
+class JobPayload implements \ArrayAccess, \IteratorAggregate, \Countable
 {
     /**
      * JobData[]
@@ -42,5 +42,10 @@ class JobPayload implements \ArrayAccess, \IteratorAggregate
     public function offsetUnset($offset)
     {
         unset($this->datas[$offset]);
+    }
+
+    public function count()
+    {
+        return count($this->datas);
     }
 }
