@@ -11,16 +11,16 @@ class TsvExtractorType extends AbstractJobType
 {
     public function setExecOptions(OptionsResolverInterface $resolver)
     {
-        $resolver->setDefaults(array(
+        $resolver->setDefaults([
             'args' => function(Options $options) {
                 $io = $options['io'];
 
-                return array(
-                    'dsn' => $io->stdin->getDsn(), 
+                return [
+                    'dsn' => $io->getStdin()->getDsn(),
                     'delimiter' => "\t"
-                );
-            } 
-        ));
+                ];
+            }
+        ]);
     }
 
     public function getName()

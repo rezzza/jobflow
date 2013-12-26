@@ -11,9 +11,9 @@ class CsvExtractorType extends AbstractJobType
 {
     public function setExecOptions(OptionsResolverInterface $resolver)
     {
-        $resolver->setDefaults(array(
+        $resolver->setDefaults([
             'class' => 'Knp\ETL\Extractor\CsvExtractor'
-        ));
+        ]);
     }
 
     public function getName()
