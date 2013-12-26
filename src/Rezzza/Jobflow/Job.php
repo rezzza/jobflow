@@ -71,7 +71,7 @@ class Job implements \IteratorAggregate, JobInterface
         if ($processorConfig instanceof ProcessorConfig) {
             $factory = new \Rezzza\Jobflow\Processor\ProcessorFactory;
             $factory
-                ->create($processorConfig, $this->config->getMetadataAccessor())
+                ->create($processorConfig, $this->config->getMetadataAccessor(), $execution->getLogger())
                 ->execute($execution)
             ;
         } elseif (is_callable($processorConfig)) {

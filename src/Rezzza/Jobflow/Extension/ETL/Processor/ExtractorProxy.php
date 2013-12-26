@@ -11,10 +11,6 @@ class ExtractorProxy extends ETLProcessor implements ExtractorInterface
 {
     public function execute(ExecutionContext $execution)
     {
-        if ($execution->getLogger()) {
-            $this->getProcessor()->setLogger($execution->getLogger());
-        }
-
         $data = $execution->read();
         $metadata = isset($data[0]) && $data[0]->isPiped() ? $data[0]->getMetadata() : null;
 
@@ -46,19 +42,12 @@ class ExtractorProxy extends ETLProcessor implements ExtractorInterface
             // Message has no more data and should not be spread
             $execution->terminate();
             $data = [];
-
-            if ($execution->getLogger()) {
-                $execution->getLogger()->debug('No data');
-            }
         }
 
         // No data
         if (count($data) <= 0) {
             $execution->terminate();
-
-            if ($execution->getLogger()) {
-                $execution->getLogger()->debug('No data');
-            }
+            $this->debug('No data');
         }
 
         // Store data read

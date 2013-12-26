@@ -18,7 +18,7 @@ class TransformerProxy extends ETLProcessor implements TransformerInterface
     {
         $data = $execution->read();
 
-        $execution->getLogger()->debug(count($data) .' rows');
+        $this->debug(count($data) .' rows');
 
         foreach ($data as $k => $result) {
             $context = $this->createContext();
