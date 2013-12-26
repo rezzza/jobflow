@@ -161,6 +161,11 @@ class ExecutionContext
         return $msgFactory->createMsg($this->jobContext, new JobPayload());
     }
 
+    public function rewindData()
+    {
+        $this->output = $this->input;
+    }
+
     public function currentChild()
     {
         return $this->job->get($this->jobContext->getCurrent());

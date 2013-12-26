@@ -39,6 +39,11 @@ class LoaderProxy extends ETLProcessor implements LoaderInterface
 
         $this->flush($context);
         $this->clear($context);
+
+        if (false === $execution->getJobOption('requeue')) {
+            // If a loader don't requeue message, the next job step will need the original data
+            $execution->rewindData();
+        }
     }
 
     public function flush(ContextInterface $context)
