@@ -36,7 +36,7 @@ class LoggerListener implements EventSubscriberInterface
         $job = $event->getJob();
 
         $this->logger->info(sprintf(
-            'Start to execute Job [%s] : %s',
+            '[%s] [%s] : Start to execute',
             $job->getParent()->getName(),
             $job->getName()
         ));
@@ -47,7 +47,7 @@ class LoggerListener implements EventSubscriberInterface
         $job = $event->getJob();
 
         $this->logger->info(sprintf(
-            'End to execute Job [%s] : %s',
+            '[%s] [%s] : End to execute',
             $job->getParent()->getName(),
             $job->getName()
         ));

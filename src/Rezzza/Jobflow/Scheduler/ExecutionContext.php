@@ -188,11 +188,12 @@ class ExecutionContext
         }
 
         $logger->info(sprintf(
-            'Read message for job [%s] : %s => %s',
-            $this->jobContext->jobId,
-            $this->jobContext->getCurrent(),
-            json_encode($this->jobContext->getOptions())
-        ));
+                '[%s] [%s] : Read message for job',
+                $this->jobContext->jobId,
+                $this->jobContext->getCurrent()
+            ),
+            $this->jobContext->getOptions()
+        );
     }
 
     public function setContextOption($key, $value)

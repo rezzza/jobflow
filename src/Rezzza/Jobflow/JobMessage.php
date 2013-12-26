@@ -89,14 +89,10 @@ class JobMessage
             return;
         }
 
-        if (null === $this->context->getCurrent()) {
-            $step = 'starting';
-        } else {
-            $step = 'step '.$this->context->getCurrent();
-        }
+        $step = $this->context->getCurrent() ?: 'starting';
 
         $logger->info(sprintf(
-            'Add new message for job [%s] : %s',
+            '[%s] [%s] : New message',
             $this->context->jobId,
             $step
         ));
