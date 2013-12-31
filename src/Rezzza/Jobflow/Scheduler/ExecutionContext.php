@@ -100,7 +100,7 @@ class ExecutionContext
         return $this;
     }
 
-    public function createInitMsgs($msgFactory, $io)
+    public function createInitMsgs($msgFactory, $io, $transport)
     {
         $stdin = $io ? $io->getStdin() : null;
         $stdout = $io ? $io->getStdout() : null;
@@ -108,7 +108,7 @@ class ExecutionContext
         $inputs = $this->buildInputs($stdin, $stdout);
 
         return $msgFactory->createInitMsgs(
-            $this->createJobContexts($inputs, $this->jobGraph->current())
+            $this->createJobContexts($inputs, $this->jobGraph->current(), $transport)
         );
     }
 
@@ -130,7 +130,8 @@ class ExecutionContext
                     $io,
                     $this->jobGraph->getNextJob(),
                     $this->job->getConfig()->getOption('context', []),
-                    $this->job->getOptions()
+                    $this->job->getOptions(),
+                    $this->jobContext->transport
                 );
 
                 $payload = new JobPayload([new PipeData(null, $data->getMetadata())]);
@@ -226,7 +227,7 @@ class ExecutionContext
         return $this->jobContext->getIo();
     }
 
-    protected function createJobContexts($inputs, $current)
+    protected function createJobContexts($inputs, $current, $transport = null)
     {
         $contexts = [];
 
@@ -236,7 +237,8 @@ class ExecutionContext
                 $input,
                 $current,
                 $this->job->getConfig()->getOption('context', []),
-                $this->job->getOptions()
+                $this->job->getOptions(),
+                $transport
             );
         }
 

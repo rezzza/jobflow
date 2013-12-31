@@ -5,7 +5,6 @@ namespace Rezzza\Jobflow;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-
 use Rezzza\Jobflow\Metadata\MetadataAccessor;
 use Rezzza\Jobflow\Processor\ProcessorConfig;
 

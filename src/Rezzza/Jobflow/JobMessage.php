@@ -14,8 +14,6 @@ class JobMessage
 
     protected $payload;
 
-    public $pipe = array();
-
     protected $ended = false;
 
     public function __construct(JobContext $context, JobPayload $payload)
@@ -74,13 +72,6 @@ class JobMessage
     public function getUniqName()
     {
         return $this->context->getMessageName().uniqid();
-    }
-
-    public function changeData($payload)
-    {
-        $this->payload = $payload;
-
-        return $this;
     }
 
     public function logState($logger)

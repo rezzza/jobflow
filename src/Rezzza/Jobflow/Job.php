@@ -53,7 +53,7 @@ class Job implements \IteratorAggregate, JobInterface
     {
         $options = $this->getExecOptions();
 
-        // We inject execution here to be able to use it hen.
+        // We inject execution here to be able to use it then in JobType options.
         $options['execution'] = $execution;
 
         $options = $this->getResolved()->execJob($this->getConfig(), $options);
@@ -62,6 +62,7 @@ class Job implements \IteratorAggregate, JobInterface
 
         $dispatcher = $this->config->getEventDispatcher();
 
+        // Dispatch PRE_EXECUTE After resolvedOptions has been set !
         if ($dispatcher->hasListeners(JobEvents::PRE_EXECUTE)) {
             $dispatcher->dispatch(JobEvents::PRE_EXECUTE, new JobEvent($this));
         }

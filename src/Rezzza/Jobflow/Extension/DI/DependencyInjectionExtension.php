@@ -18,7 +18,7 @@ class DependencyInjectionExtension extends BaseExtension
 
     public function __construct(
         ContainerInterface $container,
-        array $typeServiceIds, 
+        array $typeServiceIds,
         array $typeExtensionServiceIds,
         array $transportServiceIds
     )
@@ -57,7 +57,7 @@ class DependencyInjectionExtension extends BaseExtension
     public function getTypeExtensions($name)
     {
         $extensions = array();
-        
+
         if (isset($this->typeExtensionServiceIds[$name])) {
             foreach ($this->typeExtensionServiceIds[$name] as $serviceId) {
                 $extensions[] = $this->container->get($serviceId);

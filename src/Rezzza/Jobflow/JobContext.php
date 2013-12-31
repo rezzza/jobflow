@@ -53,12 +53,22 @@ class JobContext implements JobContextInterface
 
     public $jobOptions = array();
 
-    public function __construct($jobId, $io = null, $current = null, array $options = [], array $jobOptions = [])
+    public $transport;
+
+    public function __construct(
+        $jobId,
+        $io = null,
+        $current = null,
+        array $options = [],
+        array $jobOptions = [],
+        $transport = null
+    )
     {
         $this->jobId = $jobId;
         $this->io = $io;
         $this->current = $current;
         $this->jobOptions = $jobOptions;
+        $this->transport = $transport;
         $this->initOptions($options);
 
         if (null === $this->origin) {

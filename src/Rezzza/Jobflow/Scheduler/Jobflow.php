@@ -128,7 +128,7 @@ class Jobflow
 
     protected function init(ExecutionContext $execution, Io\IoDescriptor $io = null)
     {
-        $msgs = $execution->createInitMsgs($this->msgFactory, $io);
+        $msgs = $execution->createInitMsgs($this->msgFactory, $io, $this->transport->getName());
 
         foreach ($msgs as $msg) {
             $this->push($msg);

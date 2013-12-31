@@ -19,9 +19,7 @@ class InputAggregator extends Input implements \IteratorAggregate, \Countable
      */
     public function __construct(array $inputs = [])
     {
-        foreach ($inputs as $input) {
-            $this->add($input);
-        }
+        $this->merge($inputs);
     }
 
     /**
@@ -30,6 +28,13 @@ class InputAggregator extends Input implements \IteratorAggregate, \Countable
     public function add(Input $input)
     {
         $this->inputs[] = $input;
+    }
+
+    public function merge(array $inputs)
+    {
+        foreach ($inputs as $input) {
+            $this->add($input);
+        }
     }
 
     public function getDsn()
