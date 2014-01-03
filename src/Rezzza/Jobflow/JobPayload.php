@@ -48,4 +48,14 @@ class JobPayload implements \ArrayAccess, \IteratorAggregate, \Countable
     {
         return count($this->datas);
     }
+
+    public function filter()
+    {
+        $this->datas = array_filter(
+            $this->datas,
+            function ($data) {
+                return false !== $data->getValue();
+            }
+        );
+    }
 }

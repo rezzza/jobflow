@@ -46,7 +46,6 @@ class ExtractorProxy extends ETLProcessor implements ExtractorInterface
 
         // No data
         if (count($data) <= 0) {
-            $execution->terminate();
             $this->debug('No data');
         }
 
@@ -56,6 +55,8 @@ class ExtractorProxy extends ETLProcessor implements ExtractorInterface
 
             $execution->write($result, $metadata);
         }
+
+        $execution->valid();
     }
 
     public function slice($offset, $limit)

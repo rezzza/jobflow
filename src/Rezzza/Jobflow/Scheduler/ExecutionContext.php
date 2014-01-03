@@ -29,8 +29,6 @@ class ExecutionContext
 
     protected $pipe;
 
-    protected $terminated = false;
-
     public function __construct(JobInterface $job)
     {
         $this->job = $job;
@@ -81,6 +79,15 @@ class ExecutionContext
     public function write($result, $metadata = null)
     {
         $this->output->store(new JobData($result, $metadata));
+    }
+
+    public function valid()
+    {
+        $this->output->filter();
+
+        if (count($this->output) <= 0) {
+            $this->terminate();
+        }
     }
 
     public function start($msg)
@@ -179,12 +186,22 @@ class ExecutionContext
 
     public function isFinished()
     {
-        return true == $this->terminated || (is_integer($this->getContextOption('total')) && $this->getContextOption('total') <= $this->getContextOption('offset'));
+        return (is_integer($this->getContextOption('total')) && $this->getContextOption('total') <= $this->getContextOption('offset'));
+    }
+
+    public function isTerminated()
+    {
+        return true === $this->jobContext->terminated;
+    }
+
+    public function shouldContinue()
+    {
+        return !$this->isTerminated() && $this->hasNextJob();
     }
 
     public function terminate()
     {
-        $this->terminated = true;
+        $this->jobContext->terminated = true;
     }
 
     public function logState($logger)

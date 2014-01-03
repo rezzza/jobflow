@@ -55,6 +55,8 @@ class JobContext implements JobContextInterface
 
     public $transport;
 
+    public $terminated = false;
+
     public function __construct(
         $jobId,
         $io = null,
@@ -98,6 +100,7 @@ class JobContext implements JobContextInterface
 
     public function reset()
     {
+        $this->terminated = false;
         $this->moveTo($this->origin);
     }
 

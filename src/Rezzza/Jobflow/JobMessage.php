@@ -14,8 +14,6 @@ class JobMessage
 
     protected $payload;
 
-    protected $ended = false;
-
     public function __construct(JobContext $context, JobPayload $payload)
     {
         $this->context = $context;
@@ -25,11 +23,6 @@ class JobMessage
     public function __clone()
     {
         $this->context = clone $this->context;
-    }
-
-    public function isEnded()
-    {
-        return true === $this->ended;
     }
 
     public function createStartedJobExecution($jobFactory)

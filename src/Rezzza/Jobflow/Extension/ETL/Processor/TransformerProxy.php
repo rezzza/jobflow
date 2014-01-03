@@ -40,5 +40,7 @@ class TransformerProxy extends ETLProcessor implements TransformerInterface
 
             $execution->write($transformedData, $metadata);
         }
+
+        $execution->valid();
     }
 }

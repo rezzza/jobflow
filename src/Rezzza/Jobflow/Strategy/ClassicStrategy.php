@@ -13,14 +13,14 @@ class ClassicStrategy implements MessageStrategyInterface
         $child = $execution->currentChild();
         $msgs = $execution->createPipeMsgs($messageFactory);
 
-        if (true === $child->getRequeue()) {
+        if (true === $child->getRequeue() || $execution->isTerminated()) {
             $execution->tick();
 
             if (!$execution->isFinished()) {
                 // Create following msg by reset position msg to the origin
                 $msgs[] = $execution->createResetMsg($messageFactory);
             }
-        } elseif ($execution->hasNextJob()) {
+        } elseif ($execution->shouldContinue()) {
             // Create following msg by updating to next step
             $msgs[] = $execution->createNextMsg($messageFactory);
         }
