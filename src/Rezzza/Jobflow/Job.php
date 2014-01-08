@@ -64,7 +64,7 @@ class Job implements \IteratorAggregate, JobInterface
 
         // Dispatch PRE_EXECUTE After resolvedOptions has been set !
         if ($dispatcher->hasListeners(JobEvents::PRE_EXECUTE)) {
-            $dispatcher->dispatch(JobEvents::PRE_EXECUTE, new JobEvent($this));
+            $dispatcher->dispatch(JobEvents::PRE_EXECUTE, new JobEvent($this, $execution));
         }
 
         $processorConfig = $this->config->getProcessorConfig();
@@ -85,7 +85,7 @@ class Job implements \IteratorAggregate, JobInterface
         }
 
         if ($dispatcher->hasListeners(JobEvents::POST_EXECUTE)) {
-            $dispatcher->dispatch(JobEvents::POST_EXECUTE, new JobEvent($this));
+            $dispatcher->dispatch(JobEvents::POST_EXECUTE, new JobEvent($this, $execution));
         }
     }
 

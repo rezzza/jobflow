@@ -34,12 +34,16 @@ class LoggerListener implements EventSubscriberInterface
     public function logStart(JobEvent $event)
     {
         $job = $event->getJob();
+        $execution = $event->getExecutionContext();
 
-        $this->logger->info(sprintf(
-            '[%s] [%s] : Start to execute',
-            $job->getParent()->getName(),
-            $job->getName()
-        ));
+        $this->logger->info(
+            sprintf(
+                '[%s] [%s] : Start to execute',
+                $job->getParent()->getName(),
+                $job->getName()
+            ),
+            $execution->getContextOptions()
+        );
     }
 
     public function logEnd(JobEvent $event)

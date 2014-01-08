@@ -76,9 +76,11 @@ class JobMessage
         $step = $this->context->getCurrent() ?: 'starting';
 
         $logger->info(sprintf(
-            '[%s] [%s] : New message',
-            $this->context->jobId,
-            $step
-        ));
+                '[%s] [%s] : New message',
+                $this->context->jobId,
+                $step
+            ),
+            $this->context->getOptions()
+        );
     }
 }

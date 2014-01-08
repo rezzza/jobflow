@@ -10,11 +10,12 @@ use Symfony\Component\EventDispatcher\Event;
 class JobEvent extends Event
 {
     private $job;
-    protected $message;
+    private $execution;
 
-    public function __construct($job)
+    public function __construct($job, $execution)
     {
         $this->job = $job;
+        $this->execution = $execution;
     }
 
     public function getJob()
@@ -22,8 +23,8 @@ class JobEvent extends Event
         return $this->job;
     }
 
-    public function getMessage()
+    public function getExecutionContext()
     {
-        return $this->message;
+        return $this->execution;
     }
 }

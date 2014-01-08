@@ -211,7 +211,7 @@ class ExecutionContext
         }
 
         $logger->info(sprintf(
-                '[%s] [%s] : Read message for job',
+                '[%s] [%s] : Handle message',
                 $this->jobContext->jobId,
                 $this->jobContext->getCurrent()
             ),
@@ -227,6 +227,11 @@ class ExecutionContext
     public function getContextOption($name)
     {
         return $this->jobContext->getOption($name);
+    }
+
+    public function getContextOptions()
+    {
+        return $this->jobContext->getOptions();
     }
 
     public function getJobOption($name, $default = null)
