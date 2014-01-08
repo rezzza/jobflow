@@ -4,6 +4,9 @@ namespace Rezzza\Jobflow;
 
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Psr\Log\LoggerInterface;
+
+use Rezzza\Jobflow\Scheduler\JobGraph;
 
 /**
  * Keeps state for the job execution
@@ -20,7 +23,18 @@ class JobContext implements JobContextInterface
     public $jobId;
 
     /**
-     * Current job name in execution
+     * IO
+     */
+    public $io;
+
+    public $jobOptions = array();
+
+    public $transport;
+
+    public $terminated = false;
+
+    /**
+     * Current job child name in execution
      *
      * @var string
      */
@@ -41,21 +55,7 @@ class JobContext implements JobContextInterface
      */
     private $origin;
 
-    /**
-     * IO
-     */
-    private $io;
-
-    /**
-     * @var array
-     */
     private $options = array();
-
-    public $jobOptions = array();
-
-    public $transport;
-
-    public $terminated = false;
 
     public function __construct(
         $jobId,
@@ -63,7 +63,8 @@ class JobContext implements JobContextInterface
         $current = null,
         array $options = [],
         array $jobOptions = [],
-        $transport = null
+        $transport = null,
+        $metadata = null
     )
     {
         $this->jobId = $jobId;
@@ -71,6 +72,7 @@ class JobContext implements JobContextInterface
         $this->current = $current;
         $this->jobOptions = $jobOptions;
         $this->transport = $transport;
+        $this->metadata = $metadata;
         $this->initOptions($options);
 
         if (null === $this->origin) {
@@ -78,24 +80,15 @@ class JobContext implements JobContextInterface
         }
     }
 
-    /**
-     * Adds step to keep trace
-     */
-    public function completeStep($step)
+    public function currentStep($step)
     {
-        $this->steps[] = $step;
-    }
-
-    public function completeCurrent()
-    {
-        $this->completeStep($this->current);
-        $this->current = null;
+        $this->current = $step;
     }
 
     public function moveTo($next)
     {
         $this->completeCurrent();
-        $this->current = $next;
+        $this->currentStep($next);
     }
 
     public function reset()
@@ -144,14 +137,33 @@ class JobContext implements JobContextInterface
         $this->options['offset'] += $this->options['limit'];
     }
 
+    public function logState(LoggerInterface $logger)
+    {
+        $step = $this->current ?: 'starting';
+
+        $logger->info(
+            sprintf(
+                '[%s] [%s] : New message',
+                $this->jobId,
+                $step
+            ),
+            $this->getOptions()
+        );
+    }
+
+    public function currentChild(Job $job)
+    {
+        return $job->get($this->current);
+    }
+
+    public function initGraph(JobGraph $graph)
+    {
+        $graph->move($this->current);
+    }
+
     public function getOptions()
     {
         return $this->options;
-    }
-
-    public function setOptions(array $options)
-    {
-        $this->options = $options;
     }
 
     public function getOption($name, $default = null)
@@ -164,18 +176,16 @@ class JobContext implements JobContextInterface
         $this->options[$key] = $value;
     }
 
-    public function getCurrent()
+    /**
+     * Adds step to keep trace
+     */
+    protected function completeStep($step)
     {
-        return $this->current;
+        $this->steps[] = $step;
     }
 
-    public function getIo()
+    protected function completeCurrent()
     {
-        return $this->io;
-    }
-
-    public function getOrigin()
-    {
-        return $this->origin;
+        $this->completeStep($this->current);
     }
 }

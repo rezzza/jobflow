@@ -19,10 +19,12 @@ class MetadataAccessor
         $this->accessor = PropertyAccess::createPropertyAccessor();
     }
 
-    public function createMetadata($result, $metadata = null)
+    public function createMetadata($result, Metadata $source = null)
     {
-        if (null == $metadata) {
-            $metadata = new Metadata();
+        $metadata = new Metadata();
+
+        if (null !== $source) {
+            $metadata->copy($source);
         }
 
         foreach ($this->writeMapping as $k => $v) {

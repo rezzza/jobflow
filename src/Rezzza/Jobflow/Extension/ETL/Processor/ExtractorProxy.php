@@ -12,7 +12,9 @@ class ExtractorProxy extends ETLProcessor implements ExtractorInterface
     public function execute(ExecutionContext $execution)
     {
         $data = $execution->read();
-        $metadata = isset($data[0]) && $data[0]->isPiped() ? $data[0]->getMetadata() : null;
+
+        // For data from pipe, we need to get back global metadata... Little crappy I know...
+        $metadata = $execution->getContextMetadata();
 
         $offset = $execution->getContextOption('offset');
         $limit = $execution->getContextOption('limit');
@@ -52,7 +54,6 @@ class ExtractorProxy extends ETLProcessor implements ExtractorInterface
         // Store data read
         foreach ($data as $k => $result) {
             $metadata = $this->getMetadataAccessor()->createMetadata($result, $metadata);
-
             $execution->write($result, $metadata);
         }
 

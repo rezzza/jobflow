@@ -58,7 +58,7 @@ class ExecutionContext
     public function initContext(JobContext $context)
     {
         $this->jobContext = $context;
-        $this->jobGraph->move($context->getCurrent());
+        $context->initGraph($this->jobGraph);
     }
 
     public function initInput(JobPayload $payload)
@@ -138,11 +138,11 @@ class ExecutionContext
                     $this->jobGraph->getNextJob(),
                     $this->job->getConfig()->getOption('context', []),
                     $this->job->getOptions(),
-                    $this->jobContext->transport
+                    $this->jobContext->transport,
+                    $data->getMetadata()
                 );
 
-                $payload = new JobPayload([new PipeData(null, $data->getMetadata())]);
-                $msgs[] = $msgFactory->createMsg($context, $payload);
+                $msgs[] = $msgFactory->createMsg($context, new JobPayload);
             }
         }
 
@@ -176,7 +176,7 @@ class ExecutionContext
 
     public function currentChild()
     {
-        return $this->job->get($this->jobContext->getCurrent());
+        return $this->jobContext->currentChild($this->job);
     }
 
     public function hasNextJob()
@@ -210,13 +210,7 @@ class ExecutionContext
             return;
         }
 
-        $logger->info(sprintf(
-                '[%s] [%s] : Handle message',
-                $this->jobContext->jobId,
-                $this->jobContext->getCurrent()
-            ),
-            $this->jobContext->getOptions()
-        );
+        $this->jobContext->logState($logger);
     }
 
     public function setContextOption($key, $value)
@@ -246,7 +240,12 @@ class ExecutionContext
 
     public function getIo()
     {
-        return $this->jobContext->getIo();
+        return $this->jobContext->io;
+    }
+
+    public function getContextMetadata()
+    {
+        return $this->jobContext->metadata;
     }
 
     protected function createJobContexts($inputs, $current, $transport = null)
