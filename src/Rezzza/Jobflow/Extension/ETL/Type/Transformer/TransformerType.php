@@ -23,9 +23,7 @@ class TransformerType extends ETLType
         parent::setExecOptions($resolver);
 
         $resolver->setDefaults(array(
-            'proxy_class' => 'Rezzza\Jobflow\Extension\ETL\Processor\TransformerProxy',
-            'transform_class' => null,
-            'update_method' => null,
+            'proxy_class' => 'Rezzza\Jobflow\Extension\ETL\Processor\TransformerProxy'
         ));
     }
 

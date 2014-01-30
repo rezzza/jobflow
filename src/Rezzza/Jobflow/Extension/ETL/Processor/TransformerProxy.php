@@ -21,20 +21,11 @@ class TransformerProxy extends ETLProcessor implements TransformerInterface
         $this->debug(count($data) .' rows');
 
         foreach ($data as $k => $result) {
-            $context = $this->createContext();
             $value = $result->getValue();
             $metadata = $result->getMetadata();
-            $context->metadata = $metadata;
-
-            if (null !== ($transformClass = $execution->getJobOption('transform_class'))) {
-                $context->setTransformedData(new $transformClass);
-            }
+            $context = $this->createContext($execution, $metadata);
 
             $transformedData = $this->transform($value, $context);
-
-            if (null !== ($updateMethod = $execution->getJobOption('update_method'))) {
-                call_user_func_array($updateMethod, array($transformedData, $execution));
-            }
 
             $metadata = $this->getMetadataAccessor()->createMetadata($value, $metadata);
 

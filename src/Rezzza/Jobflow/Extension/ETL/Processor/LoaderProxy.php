@@ -24,8 +24,7 @@ class LoaderProxy extends ETLProcessor implements LoaderInterface
         }
 
         foreach ($execution->read() as $k => $result) {
-            $context = $this->createContext();
-            $context->metadata = $result->getMetadata();
+            $context = $this->createContext($execution, $result->getMetadata());
             $data = $result->getValue();
 
             if (null !== $property) {
@@ -35,7 +34,7 @@ class LoaderProxy extends ETLProcessor implements LoaderInterface
             $this->load($data, $context);
         }
 
-        $context = $this->createContext();
+        $context = $this->createContext($execution, $result->getMetadata());
 
         $this->flush($context);
         $this->clear($context);
