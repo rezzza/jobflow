@@ -31,6 +31,8 @@ class JobContext implements JobContextInterface
 
     public $transport;
 
+    public $metadata;
+
     public $terminated = false;
 
     /**

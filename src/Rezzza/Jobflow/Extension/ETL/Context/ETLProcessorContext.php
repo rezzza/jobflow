@@ -13,7 +13,7 @@ class ETLProcessorContext extends Context
     public function __construct($execution, $metadata, $id = null)
     {
         $this->execution = $execution;
-        $this->metaata = $metadata;
+        $this->metadata = $metadata;
 
         parent::__construct($id);
     }
