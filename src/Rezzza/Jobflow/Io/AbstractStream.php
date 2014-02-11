@@ -4,33 +4,15 @@ namespace Rezzza\Jobflow\Io;
 
 abstract class AbstractStream
 {
-    protected $dsn;
+    protected $driver;
 
-    protected $fileInfo;
-
-    public function __construct($dsn)
+    public function __construct(Driver\DriverInterface $driver)
     {
-        $this->initFileInfo($dsn);
-        $this->dsn = $dsn;
+        $this->driver = $driver;
     }
 
-    public function initFileInfo($dsn)
+    public function getDriver()
     {
-        $this->fileInfo = new \SplFileInfo($dsn);
-    }
-
-    public function getDsn()
-    {
-        return $this->dsn;
-    }
-
-    public function __sleep()
-    {
-        return array('dsn');
-    }
-
-    public function _wakeup()
-    {
-        $this->initFileInfo($this->dsn);
+        return $this->driver;
     }
 }

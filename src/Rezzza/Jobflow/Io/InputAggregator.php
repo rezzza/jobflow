@@ -37,13 +37,6 @@ class InputAggregator extends Input implements \IteratorAggregate, \Countable
         }
     }
 
-    public function getDsn()
-    {
-        if ($current = $this->getIterator()->current()) {
-            return $current->getDsn();
-        }
-    }
-
     /**
      * @return \ArrayIterator
      */

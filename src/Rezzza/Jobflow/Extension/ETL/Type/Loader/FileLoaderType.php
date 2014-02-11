@@ -17,7 +17,7 @@ class FileLoaderType extends AbstractJobType
                 $output = $options['io']->getStdout();
 
                 return array(
-                    'file' => new \SplFileObject($output->getDsn(), 'a+')
+                    'file' => new \SplFileObject($output->getDriver()->getDsn(), 'a+')
                 );
             }
         ));

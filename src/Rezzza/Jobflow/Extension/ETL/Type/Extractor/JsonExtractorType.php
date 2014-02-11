@@ -19,7 +19,7 @@ class JsonExtractorType extends AbstractJobType
                 $io = $options['io'];
 
                 return [
-                    'dsn' => $io ? $io->getStdin()->getDsn() : null,
+                    'dsn' => $io ? $io->getStdin()->getDriver()->getDsn() : null,
                     'path' => $options['path'],
                     'adapter' => $options['adapter']
                 ];

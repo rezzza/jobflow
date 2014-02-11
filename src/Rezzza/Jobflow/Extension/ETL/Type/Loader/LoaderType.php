@@ -30,7 +30,7 @@ class LoaderType extends ETLType
                 $output = $options['io']->getStdout();
 
                 return array(
-                    'dsn' => $output->getDsn()
+                    'dsn' => $output->getDriver()->getDsn()
                 );
             }
         ));
