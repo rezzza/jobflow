@@ -25,13 +25,6 @@ class ExtractorType extends ETLType
         $resolver->setDefaults(array(
             'proxy_class' => 'Rezzza\Jobflow\Extension\ETL\Processor\ExtractorProxy',
             'offset' => 0,
-            'args' => function(Options $options) {
-                $input = $options['io']->getStdin();
-
-                return array(
-                    'filename' => $input->getDriver()->getDsn()
-                );
-            }
         ));
     }
 

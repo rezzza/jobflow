@@ -41,6 +41,7 @@ abstract class ETLType extends AbstractJobType
         ));
 
         $resolver->setDefaults(array(
+            'args' => [],
             'io' => function(Options $options) {
                 return $options['execution']->getIo();
             },

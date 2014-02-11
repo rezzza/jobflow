@@ -13,6 +13,9 @@
         <service id="rezzza_jobflow.type.extractor" class="Rezzza\Jobflow\Extension\ETL\Type\Extractor\ExtractorType">
             <tag name="jobflow.type" alias="extractor" />
         </service>
+        <service id="rezzza_jobflow.type.file_extractor" class="Rezzza\Jobflow\Extension\ETL\Type\Extractor\FileExtractorType">
+            <tag name="jobflow.type" alias="file_extractor" />
+        </service>
         <service id="rezzza_jobflow.type.csv_extractor" class="Rezzza\Jobflow\Extension\ETL\Type\Extractor\CsvExtractorType">
             <tag name="jobflow.type" alias="csv_extractor" />
         </service>
