@@ -16,7 +16,7 @@ class TsvExtractorType extends AbstractJobType
                 $io = $options['io'];
 
                 return [
-                    'dsn' => $io->getStdin()->getDsn(),
+                    'dsn' => $io->getStdin()->getDriver()->getDsn(),
                     'delimiter' => "\t"
                 ];
             }

@@ -19,8 +19,8 @@ $jobflowFactory = $builder->getJobflowFactory();
 
 // We will inject IO to our job to indicate where Extractor needs to read and where Loader needs to write
 $io = new Io\IoDescriptor(
-    new Io\Input('file://'.__DIR__.'/fixtures.csv'),
-    new Io\Output('file:///'.__DIR__.'/temp/result.json')
+    new Io\Input(new Io\Driver\File('file://'.__DIR__.'/fixtures.csv')),
+    new Io\Output(new Io\Driver\File('file:///'.__DIR__.'/temp/result.json'))
 );
 
 // Here we go, you can build job on the fly
@@ -34,11 +34,12 @@ $job = $jobFactory
         'example_transformer', // name
         new Type\Transformer\CallbackTransformerType(), // or 'callback_transformer'
         array(
-            'callback' => function($data, $target) {
-                $value = $data->getValue();
-                $target['firstname'] = $value[0];
-                $target['name'] = $value[1];
-                $target['url'] = sprintf('http://www.lequipe.fr/Football/FootballFicheJoueur%s.html', $value[2]);
+            'callback' => function($data, $context) {
+                $target = array(
+                    'firstname' => $data[0],
+                    'name' => $data[1],
+                    'url' => sprintf('http://www.lequipe.fr/Football/FootballFicheJoueur%s.html', $data[2]),
+                );
 
                 return json_encode($target, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
             }

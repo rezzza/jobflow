@@ -29,7 +29,7 @@ class ExtractorType extends ETLType
                 $input = $options['io']->getStdin();
 
                 return array(
-                    'filename' => $input->getDsn()
+                    'filename' => $input->getDriver()->getDsn()
                 );
             }
         ));

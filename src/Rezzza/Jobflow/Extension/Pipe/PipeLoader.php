@@ -29,7 +29,9 @@ class PipeLoader implements LoaderInterface
 
     public function load($data, ContextInterface $context)
     {
-        $input = new Io\Input($data[$this->forward]);
+        $input = new Io\Input(
+            new Io\Driver\File($data[$this->forward])
+        );
         $this->execution->write($input, $context->metadata);
     }
 
