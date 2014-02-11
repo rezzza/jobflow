@@ -23,6 +23,6 @@ class CsvExtractorType extends AbstractJobType
 
     public function getParent()
     {
-        return 'extractor';
+        return 'file_extractor';
     }
 }
