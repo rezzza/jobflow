@@ -9,7 +9,9 @@ use Rezzza\Jobflow\JobInterface;
 use Rezzza\Jobflow\JobFactory;
 use Rezzza\Jobflow\JobMessage;
 use Rezzza\Jobflow\JobMessageFactory;
+use Rezzza\Jobflow\JobContextFactory;
 use Rezzza\Jobflow\Strategy\ClassicStrategy;
+use Rezzza\Jobflow\Strategy\MessageStrategyInterface;
 
 class Jobflow
 {
@@ -33,15 +35,32 @@ class Jobflow
      */
     protected $strategy;
 
+    protected $msgFactory;
+
+    protected $ctxFactory;
+
+    protected $executionFactory;
+
     /**
      * @param TransportInterface $transport
      */
-    public function __construct(TransportInterface $transport, JobFactory $jobFactory, LoggerInterface $logger = null)
+    public function __construct(
+        TransportInterface $transport,
+        JobFactory $jobFactory,
+        JobMessageFactory $msgFactory,
+        JobContextFactory $ctxFactory,
+        ExecutionContextFactory $executionFactory,
+        MessageStrategyInterface $strategy = null,
+        LoggerInterface $logger = null
+    )
     {
         $this->transport = $transport;
         $this->jobFactory = $jobFactory;
+        $this->msgFactory = $msgFactory;
+        $this->ctxFactory = $ctxFactory;
+        $this->executionFactory = $executionFactory;
+        $this->strategy = $strategy ?: new ClassicStrategy;
         $this->logger = $logger;
-        $this->msgFactory = new JobMessageFactory();
     }
 
     /**
@@ -53,16 +72,14 @@ class Jobflow
             $job = $this->createJob($job, $jobOptions);
         }
 
-        if ($job instanceof JobInterface) {
-            $job = new ExecutionContext($job);
+        if (!$job instanceof JobInterface) {
+            throw new \InvalidArgumentException('Job should be a string or a JobInterface');
         }
 
-        if (!$job instanceof ExecutionContext) {
-            throw new \InvalidArgumentException('Job should be a string, a JobInterface or a JobExecution');
-        }
-
-        $this->init($job, $io);
-        $this->execute($job);
+        $graph = $this->buildGraph($job);
+        $this->init($job, $graph, $io);
+        $execution = $this->executionFactory->create($job, $graph);
+        $this->execute($execution);
 
         return $this;
     }
@@ -73,7 +90,7 @@ class Jobflow
     public function executeMsg(JobMessage $msg, ExecutionContext $execution = null)
     {
         if (null === $execution) {
-            $execution = $this->createJobExecutionFromStartMessage($msg);
+            $execution = $this->createJobExecutionFromMessage($msg);
         }
 
         return $execution->execute($msg, $this->msgFactory);
@@ -95,6 +112,11 @@ class Jobflow
         return $this->handleMsg($msg);
     }
 
+    protected function buildGraph(JobInterface $job)
+    {
+        return new JobGraph($job);
+    }
+
     protected function execute(ExecutionContext $execution)
     {
         while ($msg = $this->wait()) {
@@ -113,11 +135,12 @@ class Jobflow
     protected function handleMsg(JobMessage $msg, ExecutionContext $execution = null)
     {
         if (null === $execution) {
-            $execution = $this->createJobExecutionFromEndMessage($msg);
+            $execution = $this->createJobExecutionFromMessage($msg);
+            $execution->end($msg);
         }
 
         $execution->logState($this->logger);
-        $msgs = $this->getStrategy()->handle($execution, $this->msgFactory);
+        $msgs = $this->strategy->handle($execution, $this->msgFactory);
 
         foreach ($msgs as $msg) {
             $this->push($msg);
@@ -126,41 +149,64 @@ class Jobflow
         return $this;
     }
 
-    protected function init(ExecutionContext $execution, Io\IoDescriptor $io = null)
+    protected function init(JobInterface $job, JobGraph $graph, Io\IoDescriptor $io = null)
     {
-        $msgs = $execution->createInitMsgs($this->msgFactory, $io, $this->transport->getName());
+        $contexts = [];
+        $inputs = $this->buildInputs($io);
 
+        foreach ($inputs as $input) {
+            $contexts[] = $this->ctxFactory->create($job, $input, $graph->current(), $this->transport);
+        }
+
+        $msgs = $this->msgFactory->createInitMsgs($contexts);
         foreach ($msgs as $msg) {
             $this->push($msg);
         }
     }
 
+    protected function buildInputs(Io\IoDescriptor $io = null)
+    {
+        $stdin = $io ? $io->getStdin() : null;
+
+        if (null === $stdin) {
+            // If no IO defined, we want to keep the loop over results of this method.
+            // So we return explicitely an array with only null value
+            return [null];
+        }
+
+        if (!$stdin instanceof \Traversable) {
+            return [$io];
+        }
+
+        // If Stdin is traversable we create a separated IO for each input.
+        // Thus we will be able to create a message for each input.
+        $inputs = [];
+        $stdout = $io ? $io->getStdout() : null;
+
+        foreach ($stdin as $input) {
+            $inputs[] = new Io\IoDescriptor($input, $stdout);
+        }
+
+        return $inputs;
+    }
+
     protected function push(JobMessage $msg)
     {
-        $msg->logState($this->logger);
+        if (null !== $this->logger) {
+            $msg->logState($this->logger);
+        }
 
         $this->transport->addMessage($msg);
 
         return $this;
     }
 
-    protected function getStrategy()
+    private function createJobExecutionFromMessage(JobMessage $msg)
     {
-        if (null === $this->strategy) {
-            $this->strategy = new ClassicStrategy();
-        }
+        $job = $msg->recoverJob($this->jobFactory);
+        $graph = $this->buildGraph($job);
 
-        return $this->strategy;
-    }
-
-    private function createJobExecutionFromStartMessage(JobMessage $msg)
-    {
-        return $msg->createStartedJobExecution($this->jobFactory);
-    }
-
-    private function createJobExecutionFromEndMessage(JobMessage $msg)
-    {
-        return $msg->createEndedJobExecution($this->jobFactory);
+        return $this->executionFactory->create($job, $graph);
     }
 
     private function createJob($job, array $jobOptions = [])

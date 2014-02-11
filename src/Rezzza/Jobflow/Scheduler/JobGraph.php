@@ -3,6 +3,7 @@
 namespace Rezzza\Jobflow\Scheduler;
 
 use ArrayIterator;
+use Rezzza\Jobflow\JobInterface;
 
 /**
  * @author Timothée Barray <tim@amicalement-web.net>
@@ -11,9 +12,9 @@ class JobGraph implements \IteratorAggregate, \Countable
 {
     private $graph;
 
-    public function __construct(ArrayIterator $graph)
+    public function __construct(JobInterface $job)
     {
-        $this->graph = $graph;
+        $this->graph = new ArrayIterator(array_keys($job->getChildren()));
     }
 
     public function current()

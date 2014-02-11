@@ -2,6 +2,7 @@
 
 namespace Rezzza\Jobflow;
 
+use Psr\Log\LoggerInterface;
 use Rezzza\Jobflow\Scheduler\ExecutionContext;
 
 /**
@@ -14,10 +15,13 @@ class JobMessage
 
     protected $payload;
 
+    protected $id;
+
     public function __construct(JobContext $context, JobPayload $payload)
     {
         $this->context = $context;
         $this->payload = $payload;
+        $this->generateId();
     }
 
     public function __clone()
@@ -25,54 +29,38 @@ class JobMessage
         $this->context = clone $this->context;
     }
 
-    public function createStartedJobExecution($jobFactory)
+    public function recoverJob(JobFactory $jobFactory)
     {
-        $execution = new ExecutionContext(
-            $jobFactory->create($this->context->jobId, $this->context->jobOptions)
-        );
-
-        $execution->start($this);
-
-        return $execution;
+        return $jobFactory->create($this->context->jobId, $this->context->jobOptions);
     }
 
-    public function createEndedJobExecution($jobFactory)
+    public function initExecutionContext(ExecutionContext $execution)
     {
-        $execution = new ExecutionContext(
-            $jobFactory->create($this->context->jobId, $this->context->jobOptions)
-        );
-
-        $execution->end($this);
-
-        return $execution;
+        $execution->initContext($this->context);
     }
 
-    public function initExecutionContext($executionContext)
-    {
-        $executionContext->initContext($this->context);
-    }
-
-    public function initExecutionInput($execution)
+    public function initExecutionInput(ExecutionContext $execution)
     {
         $execution->initInput($this->payload);
     }
 
-    public function initExecutionOutput($execution)
+    public function initExecutionOutput(ExecutionContext $execution)
     {
         $execution->initOutput($this->payload);
     }
 
     public function getUniqName()
     {
-        return $this->context->getMessageName().uniqid();
+        return $this->id;
     }
 
-    public function logState($logger)
+    public function generateId()
     {
-        if (!$logger) {
-            return;
-        }
+        $this->id = $this->context->getMessageName().uniqid();
+    }
 
+    public function logState(LoggerInterface $logger)
+    {
         $this->context->logState($logger);
     }
 }
