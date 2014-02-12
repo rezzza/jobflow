@@ -29,13 +29,13 @@ class ExecutionContext
 
     protected $pipe;
 
-    public function __construct(JobInterface $job)
+    public function __construct(JobInterface $job, JobGraph $jobGraph)
     {
         $this->job = $job;
+        $this->jobGraph = $jobGraph;
         $this->output = new JobPayload();
 
         $this->initPipe();
-        $this->buildGraph();
     }
 
     public function execute(JobMessage $msg, JobMessageFactory $msgFactory)
@@ -90,7 +90,7 @@ class ExecutionContext
         }
     }
 
-    public function start($msg)
+    public function start(JobMessage $msg)
     {
         $msg->initExecutionContext($this);
         $msg->initExecutionInput($this);
@@ -99,24 +99,12 @@ class ExecutionContext
         return $this;
     }
 
-    public function end($msg)
+    public function end(JobMessage $msg)
     {
         $msg->initExecutionContext($this);
         $msg->initExecutionOutput($this);
 
         return $this;
-    }
-
-    public function createInitMsgs($msgFactory, $io, $transport)
-    {
-        $stdin = $io ? $io->getStdin() : null;
-        $stdout = $io ? $io->getStdout() : null;
-
-        $inputs = $this->buildInputs($stdin, $stdout);
-
-        return $msgFactory->createInitMsgs(
-            $this->createJobContexts($inputs, $this->jobGraph->current(), $transport)
-        );
     }
 
     public function createPipeMsgs($msgFactory)
@@ -246,51 +234,6 @@ class ExecutionContext
     public function getContextMetadata()
     {
         return $this->jobContext->metadata;
-    }
-
-    protected function createJobContexts($inputs, $current, $transport = null)
-    {
-        $contexts = [];
-
-        foreach ($inputs as $input) {
-            $contexts[] = new JobContext(
-                $this->job->getName(),
-                $input,
-                $current,
-                $this->job->getConfig()->getOption('context', []),
-                $this->job->getOptions(),
-                $transport
-            );
-        }
-
-        return $contexts;
-    }
-
-    protected function buildInputs($stdin, $stdout)
-    {
-        $inputs = [];
-
-        if (null === $stdin) {
-            // If no IO defined, we want to keep the loop over results of this method.
-            // So we return explicitely an array with only null value
-            return [null];
-        }
-
-        if ($stdin instanceof \Traversable) {
-            foreach ($stdin as $input) {
-                $inputs[] = new Io\IoDescriptor($input, $stdout);
-            }
-        } else {
-            $inputs[] = new Io\IoDescriptor($stdin, $stdout);
-        }
-
-        return $inputs;
-    }
-
-    protected function buildGraph()
-    {
-        $children = $this->job->getChildren();
-        $this->jobGraph = new JobGraph(new \ArrayIterator(array_keys($children)));
     }
 
     protected function initPipe()

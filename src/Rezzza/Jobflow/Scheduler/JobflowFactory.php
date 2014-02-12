@@ -6,6 +6,8 @@ use Psr\Log\LoggerInterface;
 
 use Rezzza\Jobflow\JobFactory;
 use Rezzza\Jobflow\JobRegistry;
+use Rezzza\Jobflow\JobMessageFactory;
+use Rezzza\Jobflow\JobContextFactory;
 
 class JobflowFactory
 {
@@ -45,7 +47,9 @@ class JobflowFactory
     {
         if (is_string($transport)) {
             $transport = $this->registry->getTransport($transport);
-        } elseif (!$transport instanceof TransportInterface) {
+        }
+
+        if (!$transport instanceof TransportInterface) {
             throw new \InvalidArgumentException('transport should a string or a TransportInterface');
         }
 
@@ -54,6 +58,14 @@ class JobflowFactory
             $this->logger = $extension->getLogger();
         }
 
-        return new Jobflow($transport, $this->jobFactory, $this->logger);
+        return new Jobflow(
+            $transport,
+            $this->jobFactory,
+            new JobMessageFactory,
+            new JobContextFactory,
+            new ExecutionContextFactory,
+            null,
+            $this->logger
+        );
     }
 }

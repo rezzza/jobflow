@@ -27,7 +27,7 @@ $job = $jobFactory
         'example_transformer', // name
         new Type\Transformer\CallbackTransformerType(), // or 'callback_transformer'
         array(
-            'callback' => function($data, $target) {
+            'callback' => function($data, $context) {
                 $target = array(
                     'firstname' => $data[0],
                     'name' => $data[1],
