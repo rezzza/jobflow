@@ -315,7 +315,7 @@ class Jobflow extends Units\Test
 
                 ->mock($this->transport)
                     ->call('addMessage')
-                    //->withArguments($msgNext)
+                    ->withArguments($msgNext)
                     ->once()
         ;
     }
