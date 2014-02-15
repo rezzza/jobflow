@@ -23,9 +23,7 @@ class PlaceToStreetJob extends AbstractJobType
                 'example_transformer', // name
                 'callback_transformer',
                 [
-                    'callback' => function(JobData $data, $target) {
-                        $value = $data->getValue();
-
+                    'callback' => function($value, $target) {
                         $img = sprintf(
                             'http://maps.googleapis.com/maps/api/streetview?size=800x600&location=%F,%F&fov=90&heading=235&pitch=10&sensor=false',
                             $value->geometry->location->lat,

@@ -30,7 +30,7 @@ $jobflowFactory
         'place_to_street',
         array(),
         new Io\IoDescriptor(
-            new Io\Input('https://maps.googleapis.com/maps/api/place/textsearch/json?query=pub+in+marseille+france&sensor=false&key=AIzaSyCuR9yU9lRmzdnyU7YWVKZZRUIsymWkQdU')
+            new Io\Input(new Io\Driver\File('https://maps.googleapis.com/maps/api/place/textsearch/json?query=pub+in+marseille+france&sensor=false&key=AIzaSyCuR9yU9lRmzdnyU7YWVKZZRUIsymWkQdU'))
         )
     )
 ;
