@@ -71,9 +71,9 @@ class ResolvedJob extends Units\Test
             )
                 ->array($options)
                     ->isEqualTo(array(
-                        'a' => 'paul', 
-                        'b' => 'marc', 
-                        'c' => 'flex', 
+                        'a' => 'paul',
+                        'b' => 'marc',
+                        'c' => 'flex',
                         'd' => 'doe'
                     ))
         ;
@@ -92,7 +92,7 @@ class ResolvedJob extends Units\Test
                 ->array($options)
                     ->isEqualTo(array(
                         'aa' => 'jeanjean',
-                        'bb' => 'gogo', 
+                        'bb' => 'gogo',
                         'cc' => 'dodo'
                     ))
         ;
@@ -129,8 +129,8 @@ class ResolvedJob extends Units\Test
 
                 ->array($builder->getInitOptions())
                     ->isEqualTo(array(
-                        'a' => 'jean', 
-                        'b' => 'marc', 
+                        'a' => 'jean',
+                        'b' => 'marc',
                         'c' => 'bob'
                     ))
         ;
@@ -142,9 +142,9 @@ class ResolvedJob extends Units\Test
             ->given(
                 $givenOptions = array('a' => 'john', 'b' => 'doe'),
                 $expectedOptions = array(
-                    'a' => 'john', 
+                    'a' => 'john',
                     'b' => 'doe',
-                    'c' => 'john', 
+                    'c' => 'john',
                     'd' => 'doe'
                 ),
                 $factory = $this->getMockJobFactory(),
@@ -202,7 +202,7 @@ class ResolvedJob extends Units\Test
                 $givenOptions = array('aa' => 'john', 'bb' => 'doe'),
                 $expectedOptions = array(
                     'aa' => 'john',
-                    'bb' => 'doe', 
+                    'bb' => 'doe',
                     'cc' => 'dodo'
                 ),
                 $factory = $this->getMockJobFactory(),
