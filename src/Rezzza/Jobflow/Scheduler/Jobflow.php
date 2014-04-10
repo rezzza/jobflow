@@ -120,8 +120,9 @@ class Jobflow
     protected function execute(ExecutionContext $execution)
     {
         while ($msg = $this->wait()) {
-            // In RabbitMQ mode, $msg will be empty and it is normal.
-            // The worker handles the 'executeMsg' method and the rpc client (injected in RabbitMqTransport) the 'handleMsg' method
+            // In RabbitMQ mode, main script will be blocked on wait method
+            // When rpcClient will anwser, $msg will be an array of replies from it.
+            // As The worker handles the 'executeMsg' method and the rpc client (injected in RabbitMqTransport) the 'handleMsg' method
             // so we no longer need any more step at this point, so 'return' break point here is not a mistake ;)
             if (!$msg instanceof JobMessage) {
                 return;
