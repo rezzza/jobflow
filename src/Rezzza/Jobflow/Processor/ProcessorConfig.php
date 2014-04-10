@@ -2,6 +2,11 @@
 
 namespace Rezzza\Jobflow\Processor;
 
+use Psr\Log\LoggerInterface;
+
+use Rezzza\Jobflow\Metadata\MetadataAccessor;
+use Rezzza\Jobflow\Processor\JobProcessor;
+
 class ProcessorConfig
 {
     protected $class;
@@ -17,28 +22,19 @@ class ProcessorConfig
         $this->calls = $calls;
     }
 
-    public function getClass()
+    public function createProcessor(MetadataAccessor $metadataAccessor, LoggerInterface $logger = null)
     {
-        return $this->class;
+        $processor = $this->createObject($this->class, $this->args);
+
+        if (method_exists($processor, 'setLogger')) {
+            $processor->setLogger($logger);
+        }
+
+        return $processor;
     }
 
-    public function getArgs()
+    protected function createObject($class, $args)
     {
-        return $this->args;
-    }
-
-    public function setArgs($args)
-    {
-        $this->args = $args;
-    }
-
-    public function getCalls()
-    {
-        return $this->calls;
-    }
-
-    public function getProxyClass()
-    {
-        return false;
+        return call_user_func_array([new \ReflectionClass($class), 'newInstance'], $args);
     }
 }

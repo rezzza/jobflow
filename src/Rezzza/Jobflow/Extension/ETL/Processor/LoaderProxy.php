@@ -4,15 +4,24 @@ namespace Rezzza\Jobflow\Extension\ETL\Processor;
 
 use Knp\ETL\ContextInterface;
 use Knp\ETL\LoaderInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
+use Rezzza\Jobflow\Metadata\MetadataAccessor;
+use Rezzza\Jobflow\Processor\JobProcessor;
 use Rezzza\Jobflow\Scheduler\ExecutionContext;
 
-class LoaderProxy extends ETLProcessor implements LoaderInterface
+class LoaderProxy extends ETLProcessor implements LoaderInterface, JobProcessor
 {
+    public function __construct(LoaderInterface $processor, MetadataAccessor $metadataAccessor, LoggerInterface $logger = null)
+    {
+        // Construct used for TypeHinting
+        parent::__construct($processor, $metadataAccessor, $logger);
+    }
+
     public function load($data, ContextInterface $context)
     {
-        return $this->getProcessor()->load($data, $context);
+        return $this->processor->load($data, $context);
     }
 
     public function execute(ExecutionContext $execution)
@@ -47,11 +56,11 @@ class LoaderProxy extends ETLProcessor implements LoaderInterface
 
     public function flush(ContextInterface $context)
     {
-        return $this->getProcessor()->flush($context);
+        return $this->processor->flush($context);
     }
 
     function clear(ContextInterface $context)
     {
-        return $this->getProcessor()->clear($context);
+        return $this->processor->clear($context);
     }
 }

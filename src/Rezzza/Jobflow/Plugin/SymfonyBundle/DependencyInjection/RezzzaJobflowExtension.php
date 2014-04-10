@@ -24,7 +24,6 @@ class RezzzaJobflowExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
         $definitions = array();
-        $parameters = array();
 
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config/services'));
         $loader->load('job.xml');
@@ -44,10 +43,6 @@ class RezzzaJobflowExtension extends Extension
                 $definitions = array_merge($definitions, $connections);
                 $definitions = array_merge($definitions, $this->loadRabbitmqDefinitions($rabbitmqConfig));
             }
-        }
-
-        foreach ($parameters as $id => $parameter) {
-            $container->setParameter($id, $parameter);
         }
 
         foreach ($definitions as $id => $definition) {

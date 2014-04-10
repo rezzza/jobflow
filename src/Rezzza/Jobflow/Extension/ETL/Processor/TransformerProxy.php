@@ -4,14 +4,23 @@ namespace Rezzza\Jobflow\Extension\ETL\Processor;
 
 use Knp\ETL\ContextInterface;
 use Knp\ETL\TransformerInterface;
+use Psr\Log\LoggerInterface;
 
+use Rezzza\Jobflow\Metadata\MetadataAccessor;
+use Rezzza\Jobflow\Processor\JobProcessor;
 use Rezzza\Jobflow\Scheduler\ExecutionContext;
 
-class TransformerProxy extends ETLProcessor implements TransformerInterface
+class TransformerProxy extends ETLProcessor implements TransformerInterface, JobProcessor
 {
+    public function __construct(TransformerInterface $processor, MetadataAccessor $metadataAccessor, LoggerInterface $logger = null)
+    {
+        // Construct used for TypeHinting
+        parent::__construct($processor, $metadataAccessor, $logger);
+    }
+
     public function transform($data, ContextInterface $context)
     {
-        return $this->getProcessor()->transform($data, $context);
+        return $this->processor->transform($data, $context);
     }
 
     public function execute(ExecutionContext $execution)
@@ -27,7 +36,7 @@ class TransformerProxy extends ETLProcessor implements TransformerInterface
 
             $transformedData = $this->transform($value, $context);
 
-            $metadata = $this->getMetadataAccessor()->createMetadata($value, $metadata);
+            $metadata = $this->metadataAccessor->createMetadata($value, $metadata);
 
             $execution->write($transformedData, $metadata);
         }

@@ -2,13 +2,22 @@
 
 namespace Rezzza\Jobflow\Extension\ETL\Processor;
 
+use Psr\Log\LoggerInterface;
 use Knp\ETL\ContextInterface;
 use Knp\ETL\ExtractorInterface;
 
+use Rezzza\Jobflow\Metadata\MetadataAccessor;
 use Rezzza\Jobflow\Scheduler\ExecutionContext;
+use Rezzza\Jobflow\Processor\JobProcessor;
 
-class ExtractorProxy extends ETLProcessor implements ExtractorInterface
+class ExtractorProxy extends ETLProcessor implements ExtractorInterface, JobProcessor
 {
+    public function __construct(ExtractorInterface $processor, MetadataAccessor $metadataAccessor, LoggerInterface $logger = null)
+    {
+        // Construct used for TypeHinting
+        parent::__construct($processor, $metadataAccessor, $logger);
+    }
+
     public function execute(ExecutionContext $execution)
     {
         $data = $execution->read();
@@ -53,7 +62,7 @@ class ExtractorProxy extends ETLProcessor implements ExtractorInterface
 
         // Store data read
         foreach ($data as $k => $result) {
-            $metadata = $this->getMetadataAccessor()->createMetadata($result, $metadata);
+            $metadata = $this->metadataAccessor->createMetadata($result, $metadata);
             $execution->write($result, $metadata);
         }
 
@@ -62,8 +71,8 @@ class ExtractorProxy extends ETLProcessor implements ExtractorInterface
 
     public function slice($offset, $limit, ExecutionContext $execution)
     {
-        if (method_exists($this->getProcessor(), 'slice')) {
-            return $this->getProcessor()->slice($offset, $limit);
+        if (method_exists($this->processor, 'slice')) {
+            return $this->processor->slice($offset, $limit);
         }
 
         $this->seek($offset);
@@ -78,41 +87,41 @@ class ExtractorProxy extends ETLProcessor implements ExtractorInterface
 
     public function count()
     {
-        return $this->getProcessor()->count();
+        return $this->processor->count();
     }
 
     public function extract(ContextInterface $context)
     {
-        return $this->getProcessor()->extract($context);
+        return $this->processor->extract($context);
     }
 
     public function rewind()
     {
-        return $this->getProcessor()->rewind();
+        return $this->processor->rewind();
     }
 
     public function current()
     {
-        return $this->getProcessor()->current();
+        return $this->processor->current();
     }
 
     public function key()
     {
-        return $this->getProcessor()->key();
+        return $this->processor->key();
     }
 
     public function next()
     {
-        return $this->getProcessor()->next();
+        return $this->processor->next();
     }
 
     public function valid()
     {
-        return $this->getProcessor()->valid();
+        return $this->processor->valid();
     }
 
     public function seek($position)
     {
-        return $this->getProcessor()->seek($position);
+        return $this->processor->seek($position);
     }
 }
