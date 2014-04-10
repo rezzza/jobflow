@@ -165,6 +165,37 @@ class ResolvedJob extends Units\Test
         ;
     }
 
+    public function test_it_should_build_a_job_and_extensions()
+    {
+        $this
+            ->given(
+                $extension1 = new \mock\Rezzza\Jobflow\JobTypeExtensionInterface,
+                $extension2 = new \mock\Rezzza\Jobflow\JobTypeExtensionInterface,
+                $factory = $this->getMockJobFactory(),
+                $resolvedJob = new \mock\Rezzza\Jobflow\ResolvedJob(
+                    $this->jobType,
+                    [
+                        $extension1,
+                        $extension2
+                    ],
+                    $this->resolvedParent
+                )
+            )
+            ->then(
+                $builder = $resolvedJob->createBuilder('name', $factory)
+            )
+            ->mock($extension1)
+                ->call('buildJob')
+                ->withArguments($builder, ['c' => 'john', 'd' => 'doe', 'a' => 'jean', 'b' => 'marc'])
+                ->once()
+
+            ->mock($extension2)
+                ->call('buildJob')
+                ->withArguments($builder, ['c' => 'john', 'd' => 'doe', 'a' => 'jean', 'b' => 'marc'])
+                ->once()
+        ;
+    }
+
     public function test_it_should_build_exec_for_a_job()
     {
         $this

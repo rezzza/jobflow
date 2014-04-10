@@ -334,7 +334,6 @@ class Jobflow extends Units\Test
         ;
     }
 
-
     private function getMockJobflow()
     {
         return new \mock\Rezzza\Jobflow\Scheduler\Jobflow(
