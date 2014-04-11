@@ -51,28 +51,20 @@ class Job implements \IteratorAggregate, JobInterface
      */
     public function execute(ExecutionContext $execution)
     {
-        $options = $this->getExecOptions();
-
-        // We inject execution here to be able to use it then in JobType options.
-        $options['execution'] = $execution;
-
-        $options = $this->getResolved()->execJob($this->getConfig(), $options);
-
-        $this->getConfig()->setResolvedExecOptions($options);
+        // Will execute buildExec on JobType after execution options
+        $this->config->resolveExecOptions($execution);
 
         $dispatcher = $this->config->getEventDispatcher();
+        $processorConfig = $this->config->getProcessorConfig();
 
         // Dispatch PRE_EXECUTE After resolvedOptions has been set !
         if ($dispatcher->hasListeners(JobEvents::PRE_EXECUTE)) {
             $dispatcher->dispatch(JobEvents::PRE_EXECUTE, new JobEvent($this, $execution));
         }
 
-        $processorConfig = $this->config->getProcessorConfig();
-
         if ($processorConfig instanceof ProcessorConfig) {
-            $factory = new \Rezzza\Jobflow\Processor\ProcessorFactory;
-            $factory
-                ->create($processorConfig, $this->config->getMetadataAccessor(), $execution->getLogger())
+            $processorConfig
+                ->createProcessor($this->config->getMetadataAccessor(), $this->getLogger())
                 ->execute($execution)
             ;
         } elseif (is_callable($processorConfig)) {
@@ -114,14 +106,6 @@ class Job implements \IteratorAggregate, JobInterface
     }
 
     /**
-     * @return JobConfig
-     */
-    public function getConfig()
-    {
-        return $this->config;
-    }
-
-    /**
      * @return array
      */
     public function getInitOptions()
@@ -132,9 +116,9 @@ class Job implements \IteratorAggregate, JobInterface
     /**
      * @return array
      */
-    public function getExecOptions()
+    public function getContextOption()
     {
-        return $this->config->getExecOptions();
+        return $this->getOption('context', []);
     }
 
     /**
@@ -151,14 +135,6 @@ class Job implements \IteratorAggregate, JobInterface
     public function getOption($name, $default = null)
     {
         return $this->config->getOption($name, $default);
-    }
-
-    /**
-     * @return ResolvedJob
-     */
-    public function getResolved()
-    {
-        return $this->config->getResolved();
     }
 
     /**
@@ -206,6 +182,11 @@ class Job implements \IteratorAggregate, JobInterface
     public function getRequeue()
     {
         return $this->config->getRequeue();
+    }
+
+    public function getLogger()
+    {
+        return $this->config->getAttribute('logger');
     }
 
     public function __toString()

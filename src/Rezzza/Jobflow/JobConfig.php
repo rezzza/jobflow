@@ -7,6 +7,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 use Rezzza\Jobflow\Metadata\MetadataAccessor;
 use Rezzza\Jobflow\Processor\ProcessorConfig;
+use Rezzza\Jobflow\Scheduler\ExecutionContext;
 
 /**
  * Config the job.
@@ -335,5 +336,17 @@ class JobConfig
         $this->resolvedExecOptions = $options;
 
         return $this;
+    }
+
+    public function resolveExecOptions(ExecutionContext $execution)
+    {
+        $options = $this->execOptions;
+
+        // We inject execution here to be able to use it then in JobType options.
+        $options['execution'] = $execution;
+
+        $options = $this->resolved->execJob($this, $options);
+
+        $this->setResolvedExecOptions($options);
     }
 }

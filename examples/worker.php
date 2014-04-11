@@ -5,6 +5,7 @@ require_once __DIR__.'/init.php';
 use Rezzza\Jobflow\Extension;
 
 $amqpConnection = new \PhpAmqpLib\Connection\AMQPConnection('localhost', 5672, 'guest', 'guest', '/');
+$amqpConnection->set_close_on_destruct(false);
 
 // Create RabbitMq Client
 $rmqClient = new Thumper\RpcClient($amqpConnection);

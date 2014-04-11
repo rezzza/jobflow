@@ -71,9 +71,9 @@ class ResolvedJob extends Units\Test
             )
                 ->array($options)
                     ->isEqualTo(array(
-                        'a' => 'paul', 
-                        'b' => 'marc', 
-                        'c' => 'flex', 
+                        'a' => 'paul',
+                        'b' => 'marc',
+                        'c' => 'flex',
                         'd' => 'doe'
                     ))
         ;
@@ -92,7 +92,7 @@ class ResolvedJob extends Units\Test
                 ->array($options)
                     ->isEqualTo(array(
                         'aa' => 'jeanjean',
-                        'bb' => 'gogo', 
+                        'bb' => 'gogo',
                         'cc' => 'dodo'
                     ))
         ;
@@ -129,8 +129,8 @@ class ResolvedJob extends Units\Test
 
                 ->array($builder->getInitOptions())
                     ->isEqualTo(array(
-                        'a' => 'jean', 
-                        'b' => 'marc', 
+                        'a' => 'jean',
+                        'b' => 'marc',
                         'c' => 'bob'
                     ))
         ;
@@ -142,9 +142,9 @@ class ResolvedJob extends Units\Test
             ->given(
                 $givenOptions = array('a' => 'john', 'b' => 'doe'),
                 $expectedOptions = array(
-                    'a' => 'john', 
+                    'a' => 'john',
                     'b' => 'doe',
-                    'c' => 'john', 
+                    'c' => 'john',
                     'd' => 'doe'
                 ),
                 $factory = $this->getMockJobFactory(),
@@ -162,6 +162,37 @@ class ResolvedJob extends Units\Test
                 ->call('buildJob')
                     ->withArguments($builder, $expectedOptions)
                     ->once()
+        ;
+    }
+
+    public function test_it_should_build_a_job_and_extensions()
+    {
+        $this
+            ->given(
+                $extension1 = new \mock\Rezzza\Jobflow\JobTypeExtensionInterface,
+                $extension2 = new \mock\Rezzza\Jobflow\JobTypeExtensionInterface,
+                $factory = $this->getMockJobFactory(),
+                $resolvedJob = new \mock\Rezzza\Jobflow\ResolvedJob(
+                    $this->jobType,
+                    [
+                        $extension1,
+                        $extension2
+                    ],
+                    $this->resolvedParent
+                )
+            )
+            ->then(
+                $builder = $resolvedJob->createBuilder('name', $factory)
+            )
+            ->mock($extension1)
+                ->call('buildJob')
+                ->withArguments($builder, ['c' => 'john', 'd' => 'doe', 'a' => 'jean', 'b' => 'marc'])
+                ->once()
+
+            ->mock($extension2)
+                ->call('buildJob')
+                ->withArguments($builder, ['c' => 'john', 'd' => 'doe', 'a' => 'jean', 'b' => 'marc'])
+                ->once()
         ;
     }
 
@@ -202,7 +233,7 @@ class ResolvedJob extends Units\Test
                 $givenOptions = array('aa' => 'john', 'bb' => 'doe'),
                 $expectedOptions = array(
                     'aa' => 'john',
-                    'bb' => 'doe', 
+                    'bb' => 'doe',
                     'cc' => 'dodo'
                 ),
                 $factory = $this->getMockJobFactory(),

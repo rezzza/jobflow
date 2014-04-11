@@ -124,7 +124,7 @@ class ExecutionContext
                     $this->job->getName(),
                     $io,
                     $this->jobGraph->getNextJob(),
-                    $this->job->getConfig()->getOption('context', []),
+                    $this->job->getContextOption(),
                     $this->job->getOptions(),
                     $this->jobContext->transport,
                     $data->getMetadata()
@@ -219,11 +219,6 @@ class ExecutionContext
     public function getJobOption($name, $default = null)
     {
         return $this->currentChild()->getOption($name, $default);
-    }
-
-    public function getLogger()
-    {
-        return $this->currentChild()->getConfig()->getAttribute('logger');
     }
 
     public function getIo()

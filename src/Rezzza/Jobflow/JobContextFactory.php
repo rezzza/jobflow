@@ -10,7 +10,7 @@ class JobContextFactory
             $job->getName(),
             $input,
             $current,
-            $job->getConfig()->getOption('context', []),
+            $job->getContextOption(),
             $job->getOptions(),
             $transport
         );

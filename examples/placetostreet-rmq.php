@@ -5,10 +5,11 @@ require_once __DIR__.'/init.php';
 use Rezzza\Jobflow\Extension;
 use Rezzza\Jobflow\Io;
 
+$amqpConnection = new \PhpAmqpLib\Connection\AMQPConnection('localhost', 5672, 'guest', 'guest', '/');
+$amqpConnection->set_close_on_destruct(false);
+
 // Create RabbitMq Client
-$rmqClient = new Extension\RabbitMq\JobRpcClient(
-    new \PhpAmqpLib\Connection\AMQPConnection('localhost', 5672, 'guest', 'guest', '/')
-);
+$rmqClient = new Extension\RabbitMq\JobRpcClient($amqpConnection);
 $rmqClient->initClient();
 
 // Add RabbitMqExtension
