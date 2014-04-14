@@ -109,6 +109,21 @@ class JobContext implements JobContextInterface
         return count($this->steps) === 0;
     }
 
+    public function isFinished()
+    {
+        return (is_integer($this->options['total']) && $this->options['total'] <= $this->options['offset']);
+    }
+
+    public function isTerminated()
+    {
+        return true === $this->terminated;
+    }
+
+    public function terminate()
+    {
+        $this->terminated = true;
+    }
+
     /**
      * @return string
      */

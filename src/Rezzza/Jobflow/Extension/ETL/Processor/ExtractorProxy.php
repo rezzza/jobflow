@@ -25,30 +25,14 @@ class ExtractorProxy extends ETLProcessor implements ExtractorInterface, JobProc
         // For data from pipe, we need to get back global metadata... Little crappy I know...
         $metadata = $execution->getContextMetadata();
 
-        $offset = $execution->getContextOption('offset');
-        $limit = $execution->getContextOption('limit');
-        $max = $execution->getContextOption('max');
-        $total = $execution->getContextOption('total');
-
         // Limit total to the max if lesser
-        if (null === $total) {
-            $total = $this->count();
-
-            if (null !== $max && $max < $total) {
-                $total = $max;
-            }
-
-            $execution->setContextOption('total', $total);
-        }
-
-        if ($execution->getJobOption('offset', 0) > $offset) {
-            $offset = $execution->getJobOption('offset');
-            $execution->setContextOption('offset', $offset);
+        if ($execution->hasNoTotal()) {
+            $execution->changeTotal($this->count());
         }
 
         // Read data
         try {
-            $data = $this->slice($offset, $limit, $execution);
+            $data = $this->slice($execution);
         } catch (\OutOfBoundsException $e) {
             // Message has no more data and should not be spread
             $execution->terminate();
@@ -69,8 +53,11 @@ class ExtractorProxy extends ETLProcessor implements ExtractorInterface, JobProc
         $execution->valid();
     }
 
-    public function slice($offset, $limit, ExecutionContext $execution)
+    public function slice(ExecutionContext $execution)
     {
+        $offset = $execution->getOffset();
+        $limit = $execution->getLimit();
+
         if (method_exists($this->processor, 'slice')) {
             return $this->processor->slice($offset, $limit);
         }

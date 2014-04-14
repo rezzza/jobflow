@@ -59,7 +59,7 @@ class Jobflow
         $this->msgFactory = $msgFactory;
         $this->ctxFactory = $ctxFactory;
         $this->executionFactory = $executionFactory;
-        $this->strategy = $strategy ?: new ClassicStrategy;
+        $this->strategy = $strategy ?: new ClassicStrategy($jobFactory, $ctxFactory, $msgFactory);
         $this->logger = $logger;
     }
 
@@ -93,7 +93,7 @@ class Jobflow
             $execution = $this->createJobExecutionFromMessage($msg);
         }
 
-        return $execution->execute($msg, $this->msgFactory);
+        return $msg->execute($execution, $this->msgFactory);
     }
 
     /**
@@ -129,19 +129,13 @@ class Jobflow
             }
 
             $msg = $this->executeMsg($msg, $execution);
-            $this->handleMsg($msg, $execution);
+            $this->handleMsg($msg);
         }
     }
 
-    protected function handleMsg(JobMessage $msg, ExecutionContext $execution = null)
+    protected function handleMsg(JobMessage $msg)
     {
-        if (null === $execution) {
-            $execution = $this->createJobExecutionFromMessage($msg);
-            $execution->end($msg);
-        }
-
-        $execution->logState($this->logger);
-        $msgs = $this->strategy->handle($execution, $this->msgFactory);
+        $msgs = $this->strategy->handle($msg);
 
         foreach ($msgs as $msg) {
             $this->push($msg);
@@ -150,6 +144,9 @@ class Jobflow
         return $this;
     }
 
+    /**
+     * From the IO, create the first message(s) to initialize the job and then run its execution
+     */
     protected function init(JobInterface $job, JobGraph $graph, Io\IoDescriptor $io = null)
     {
         $contexts = [];
