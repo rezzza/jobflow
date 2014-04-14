@@ -6,6 +6,7 @@ use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
 
 use Rezzza\Jobflow\Extension\ETL\Context\ETLProcessorContext;
+use Rezzza\Jobflow\Metadata\MetadataAccessor;
 
 abstract class ETLProcessor
 {
@@ -15,7 +16,7 @@ abstract class ETLProcessor
 
     protected $metadataAccessor;
 
-    public function __construct($processor, $metadataAccessor, LoggerInterface $logger = null)
+    public function __construct($processor, MetadataAccessor $metadataAccessor, LoggerInterface $logger = null)
     {
         $this->processor = $processor;
         $this->metadataAccessor = $metadataAccessor;
