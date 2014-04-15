@@ -37,6 +37,9 @@
     "autoload":     {
         "psr-0": {
             "Rezzza\\Jobflow": "src/"
+        },
+        "psr-4": {
+            "Rezzza\\Jobflow\\Tests\\Fixtures\\": "tests/fixtures"
         }
     },
     "extra": {

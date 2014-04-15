@@ -1,7 +1,7 @@
 <?php
 use mageekguy\atoum;
 
-$runner->addTestsFromDirectory(__DIR__.'/tests/Rezzza/Jobflow/Units/');
+$runner->addTestsFromDirectory(__DIR__.'/tests/units/');
 
 $script
     ->addDefaultReport()
