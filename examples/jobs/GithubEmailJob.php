@@ -27,10 +27,8 @@ class GithubEmailJob extends AbstractJobType
                 'get_user_url',
                 'callback_transformer',
                 array(
-                    'callback' => function($data, $target) {
-                        $target['url'] = $data->getValue().'?access_token=236b93940ce523226035931f67d2de6bcc1aeab9';
-
-                        return $target;
+                    'callback' => function($value, $target) {
+                        return $value.'?access_token=236b93940ce523226035931f67d2de6bcc1aeab9';
                     }
                 )
             )
@@ -56,9 +54,7 @@ class GithubEmailJob extends AbstractJobType
                 'get_user_email',
                 'callback_transformer',
                 array(
-                    'callback' => function($data, $target) {
-                        $value = $data->getValue();
-
+                    'callback' => function($value, $target) {
                         if (property_exists($value, 'email') && strlen($value->email)) {
                             return $value->email."\n";
                         }
