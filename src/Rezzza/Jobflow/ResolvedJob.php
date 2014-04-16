@@ -106,6 +106,10 @@ class ResolvedJob
             }
 
             $this->innerType->setInitOptions($this->initOptionsResolver);
+
+            foreach ($this->typeExtensions as $extension) {
+                $extension->setInitOptions($this->initOptionsResolver);
+            }
         }
 
         return $this->initOptionsResolver;
@@ -126,6 +130,10 @@ class ResolvedJob
             }
 
             $this->innerType->setExecOptions($this->execOptionsResolver);
+
+            foreach ($this->typeExtensions as $extension) {
+                $extension->setExecOptions($this->execOptionsResolver);
+            }
         }
 
         return $this->execOptionsResolver;

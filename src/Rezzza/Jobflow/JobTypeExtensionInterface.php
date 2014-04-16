@@ -23,11 +23,18 @@ interface JobTypeExtensionInterface
     public function buildJob(JobBuilder $builder, array $options);
 
     /**
-     * Sets the default options for this type.
+     * Sets the init options for this type.
      *
      * @param OptionsResolverInterface $resolver The resolver for the options.
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver);
+    public function setInitOptions(OptionsResolverInterface $resolver);
+
+    /**
+     * Sets the exec options for this type.
+     *
+     * @param OptionsResolverInterface $resolver The resolver for the options.
+     */
+    public function setExecOptions(OptionsResolverInterface $resolver);
 
     /**
      * Returns the name of this type.

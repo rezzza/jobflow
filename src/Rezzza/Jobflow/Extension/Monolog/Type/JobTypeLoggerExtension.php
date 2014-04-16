@@ -3,6 +3,7 @@
 namespace Rezzza\Jobflow\Extension\Monolog\Type;
 
 use Psr\Log\LoggerInterface;
+use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 use Rezzza\Jobflow\AbstractJobTypeExtension;
 use Rezzza\Jobflow\Extension\Monolog\EventListener\LoggerListener;
@@ -24,8 +25,14 @@ class JobTypeLoggerExtension extends AbstractJobTypeExtension
     {
         $builder
             ->addEventSubscriber(new LoggerListener($this->logger))
-            ->setAttribute('logger', $this->logger)
         ;
+    }
+
+    public function setExecOptions(OptionsResolverInterface $resolver)
+    {
+        $resolver->setDefaults([
+            'logger' => $this->logger
+        ]);
     }
 
     public function getExtendedType()
