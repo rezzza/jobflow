@@ -67,7 +67,7 @@ class Jobflow extends Units\Test
 
                 ->mock($this->strategy)
                     ->call('handle')
-                    ->withArguments($execution, $this->msgFactory)
+                    ->withArguments($msgEnd)
                     ->once()
 
                 ->mock($this->transport)
@@ -243,9 +243,9 @@ class Jobflow extends Units\Test
                     ->withArguments('my.id', [])
                     ->once()
 
-                ->mock($execution)
+                ->mock($msg)
                     ->call('execute')
-                    ->withArguments($msg, $this->msgFactory)
+                    ->withArguments($execution, $this->msgFactory)
                     ->once()
         ;
     }
@@ -275,9 +275,9 @@ class Jobflow extends Units\Test
                     ->call('create')
                     ->never()
 
-                ->mock($execution)
+                ->mock($msg)
                     ->call('execute')
-                    ->withArguments($msg, $this->msgFactory)
+                    ->withArguments($execution, $this->msgFactory)
                     ->once()
         ;
     }
@@ -292,25 +292,15 @@ class Jobflow extends Units\Test
                 $this->strategy->getMockController()->handle = [$msgNext],
                 $this->mockGenerator->orphanize('__construct'),
                 $execution = new \mock\Rezzza\Jobflow\Scheduler\ExecutionContext,
-                $execution->getMockController()->end = null,
                 $this->executionFactory->getMockController()->create = $execution,
                 $this->jobFactory->getMockController()->create = $this->getMockJob()
             )
             ->then(
                 $jobflow->handle($msgStart)
             )
-                ->mock($msgStart)
-                    ->call('recoverJob')
-                    ->withArguments($this->jobFactory)
-                    ->once()
-
-                ->mock($this->executionFactory)
-                    ->call('create')
-                    ->once()
-
                 ->mock($this->strategy)
                     ->call('handle')
-                    ->withArguments($execution, $this->msgFactory)
+                    ->withArguments($msgStart)
                     ->once()
 
                 ->mock($this->transport)

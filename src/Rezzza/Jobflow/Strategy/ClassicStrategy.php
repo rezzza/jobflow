@@ -3,26 +3,44 @@
 namespace Rezzza\Jobflow\Strategy;
 
 use Rezzza\Jobflow\JobMessageFactory;
-use Rezzza\Jobflow\Scheduler\ExecutionContext;
+use Rezzza\Jobflow\JobMessage;
+use Rezzza\Jobflow\Job;
+use Rezzza\Jobflow\Scheduler\JobGraph;
 
 class ClassicStrategy implements MessageStrategyInterface
 {
-    public function handle(ExecutionContext $execution, JobMessageFactory $messageFactory)
+    private $jobFactory;
+
+    private $ctxFactory;
+
+    private $msgFactory;
+
+    public function __construct($jobFactory, $ctxFactory, $msgFactory)
     {
-        // Gets the current job
-        $child = $execution->currentChild();
-        $msgs = $execution->createPipeMsgs($messageFactory);
+        $this->jobFactory = $jobFactory;
+        $this->ctxFactory = $ctxFactory;
+        $this->msgFactory = $msgFactory;
+    }
 
-        if (true === $child->getRequeue() || $execution->isTerminated()) {
-            $execution->tick();
+    public function handle(JobMessage $msg)
+    {
+        $job = $msg->recoverJob($this->jobFactory);
+        $graph = new JobGraph($job);
+        $msg->initGraph($graph);
+        $child = $msg->currentChild($job);
+        $msgs = $msg->createPipeMsgs($job, $graph, $this->ctxFactory);
 
-            if (!$execution->isFinished()) {
-                // Create following msg by reset position msg to the origin
-                $msgs[] = $execution->createResetMsg($messageFactory);
+        if (true === $child->getRequeue() || $msg->isTerminated()) {
+            // Create following msg by reset position msg to the origin if needed
+            // If we go through all data, will return null
+            $resetMsg = $msg->createResetMsg($this->msgFactory);
+
+            if (null !== $resetMsg) {
+                $msgs[] = $resetMsg;
             }
-        } elseif ($execution->shouldContinue()) {
+        } elseif ($msg->shouldContinue($graph)) {
             // Create following msg by updating to next step
-            $msgs[] = $execution->createNextMsg($messageFactory);
+            $msgs[] = $msg->createNextMsg($graph, $this->msgFactory);
         }
 
         return $msgs;

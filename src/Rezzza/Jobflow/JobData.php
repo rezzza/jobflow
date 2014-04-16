@@ -2,13 +2,15 @@
 
 namespace Rezzza\Jobflow;
 
+use Rezzza\Jobflow\Metadata\Metadata;
+
 class JobData
 {
     protected $value;
 
     protected $metadata;
 
-    public function __construct($value, $metadata)
+    public function __construct($value, Metadata $metadata)
     {
         $this->value = $value;
         $this->metadata = $metadata;

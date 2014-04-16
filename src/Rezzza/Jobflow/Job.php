@@ -186,7 +186,7 @@ class Job implements \IteratorAggregate, JobInterface
 
     public function getLogger()
     {
-        return $this->config->getAttribute('logger');
+        return $this->config->getOption('logger');
     }
 
     public function __toString()

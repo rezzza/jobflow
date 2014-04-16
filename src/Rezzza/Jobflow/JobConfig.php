@@ -289,7 +289,7 @@ class JobConfig
     }
 
     /**
-     * {@inheritdoc}
+     * Store objects builded from options
      */
     public function setAttribute($name, $value)
     {
@@ -298,9 +298,6 @@ class JobConfig
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function setAttributes(array $attributes)
     {
         $this->attributes = $attributes;

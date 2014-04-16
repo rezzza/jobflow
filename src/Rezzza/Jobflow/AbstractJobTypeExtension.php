@@ -17,21 +17,18 @@ abstract class AbstractJobTypeExtension implements JobTypeExtensionInterface
     /**
      * {@inheritdoc}
      */
-    public function execute(JobInput $input, JobOutput $output, ExecutionContext $execution)
+    public function buildJob(JobBuilder $builder, array $options)
     {
     }
 
     /**
      * {@inheritdoc}
      */
-    public function buildJob(JobBuilder $builder, array $options)
+    public function setInitOptions(OptionsResolverInterface $resolver)
     {
     }
-    
-    /**
-     * {@inheritdoc}
-     */
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+
+    public function setExecOptions(OptionsResolverInterface $resolver)
     {
     }
 }

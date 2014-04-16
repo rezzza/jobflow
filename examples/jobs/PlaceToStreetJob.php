@@ -23,7 +23,7 @@ class PlaceToStreetJob extends AbstractJobType
                 'example_transformer', // name
                 'callback_transformer',
                 [
-                    'callback' => function($value, $target) {
+                    'callback' => function ($value, $target) {
                         $img = sprintf(
                             'http://maps.googleapis.com/maps/api/streetview?size=800x600&location=%F,%F&fov=90&heading=235&pitch=10&sensor=false',
                             $value->geometry->location->lat,
@@ -41,11 +41,13 @@ class PlaceToStreetJob extends AbstractJobType
                 'example_loader',
                 'file_loader',
                 [
-                    'args' => function(Options $options) {
+                    'args' => function (Options $options) {
                         $values = $options['execution']->read();
                         $metadata = $values[0]->getMetadata();
 
-                        return [new \SplFileObject(__DIR__."/../temp/job-".$metadata['place_id'].".jpeg", 'w+')];
+                        return [
+                            new \SplFileObject(__DIR__."/../temp/job-".$metadata['place_id'].".jpeg", 'w+')
+                        ];
                     }
                 ]
             )

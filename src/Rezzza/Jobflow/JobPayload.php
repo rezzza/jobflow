@@ -14,7 +14,7 @@ class JobPayload implements \ArrayAccess, \IteratorAggregate, \Countable
         $this->datas = $datas;
     }
 
-    public function store($data)
+    public function store(JobData $data)
     {
         $this->datas[] = $data;
     }

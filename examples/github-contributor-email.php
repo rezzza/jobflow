@@ -6,9 +6,9 @@ use Rezzza\Jobflow\Extension;
 use Rezzza\Jobflow\Io;
 
 // Create RabbitMq Client
-$rmqClient = new Extension\RabbitMq\JobRpcClient(
-    new \PhpAmqpLib\Connection\AMQPConnection('localhost', 5672, 'guest', 'guest', '/')
-);
+$amqpConnection = new \PhpAmqpLib\Connection\AMQPConnection('localhost', 5672, 'guest', 'guest', '/');
+$amqpConnection->set_close_on_destruct(false);
+$rmqClient = new Extension\RabbitMq\JobRpcClient($amqpConnection);
 $rmqClient->initClient();
 
 // Add RabbitMqExtension
@@ -25,13 +25,13 @@ $rmqClient->setJobflowFactory($jobflowFactory);
 echo 'Started...'.PHP_EOL;
 // Now we can execute our job
 $jobflowFactory
-    ->create('php')
+    ->create('rabbitmq')
     ->run(
         'github_email',
         array(),
         new Io\IoDescriptor(
-            new Io\Input('https://api.github.com/repos/symfony/console/stargazers?access_token=236b93940ce523226035931f67d2de6bcc1aeab9'),
-            new Io\Output('file://'.__DIR__."/temp/email.csv")
+            new Io\Input(new Io\Driver\File('https://api.github.com/repos/symfony/console/stargazers?access_token=236b93940ce523226035931f67d2de6bcc1aeab9')),
+            new Io\Output(new Io\Driver\File('file://'.__DIR__."/temp/email.csv"))
         )
     )
 ;

@@ -2,6 +2,8 @@
 
 namespace Rezzza\Jobflow;
 
+use Rezzza\Jobflow\Io;
+
 class JobMessageFactory
 {
     public function createInitMsgs($contexts)
