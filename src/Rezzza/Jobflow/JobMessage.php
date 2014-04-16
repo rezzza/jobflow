@@ -84,7 +84,7 @@ class JobMessage
         return $msgFactory->createMsg($this->context, $this->payload);
     }
 
-    public function createPipeMsgs($job, $graph, $ctxFactory)
+    public function createPipeMsgs($job, $graph, $ctxFactory, $msgFactory)
     {
         $stdout = null;
         $msgs = [];

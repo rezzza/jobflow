@@ -28,7 +28,7 @@ class ClassicStrategy implements MessageStrategyInterface
         $graph = new JobGraph($job);
         $msg->initGraph($graph);
         $child = $msg->currentChild($job);
-        $msgs = $msg->createPipeMsgs($job, $graph, $this->ctxFactory);
+        $msgs = $msg->createPipeMsgs($job, $graph, $this->ctxFactory, $this->msgFactory);
 
         if (true === $child->getRequeue() || $msg->isTerminated()) {
             // Create following msg by reset position msg to the origin if needed
