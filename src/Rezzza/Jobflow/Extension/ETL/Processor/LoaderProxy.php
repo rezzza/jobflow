@@ -27,12 +27,13 @@ class LoaderProxy extends ETLProcessor implements LoaderInterface, JobProcessor
     public function execute(ExecutionContext $execution)
     {
         $property = $execution->getJobOption('property');
+        $data = $execution->read();
 
         if (null !== $property) {
             $accessor = PropertyAccess::createPropertyAccessor();
         }
 
-        foreach ($execution->read() as $k => $result) {
+        foreach ($data as $k => $result) {
             $context = $this->createContext($execution, $result->getMetadata());
             $data = $result->getValue();
 
@@ -43,10 +44,12 @@ class LoaderProxy extends ETLProcessor implements LoaderInterface, JobProcessor
             $this->load($data, $context);
         }
 
-        $context = $this->createContext($execution, $result->getMetadata());
+        if (count($data) > 0) {
+            $context = $this->createContext($execution, $result->getMetadata());
 
-        $this->flush($context);
-        $this->clear($context);
+            $this->flush($context);
+            $this->clear($context);
+        }
 
         if (false === $execution->getJobOption('requeue')) {
             // If a loader don't requeue message, the next job step will need the original data
@@ -59,7 +62,7 @@ class LoaderProxy extends ETLProcessor implements LoaderInterface, JobProcessor
         return $this->processor->flush($context);
     }
 
-    function clear(ContextInterface $context)
+    public function clear(ContextInterface $context)
     {
         return $this->processor->clear($context);
     }
