@@ -4,7 +4,6 @@ namespace Rezzza\Jobflow\Strategy;
 
 use Rezzza\Jobflow\JobMessageFactory;
 use Rezzza\Jobflow\JobMessage;
-use Rezzza\Jobflow\Job;
 use Rezzza\Jobflow\Scheduler\JobGraph;
 
 class ClassicStrategy implements MessageStrategyInterface
@@ -15,6 +14,11 @@ class ClassicStrategy implements MessageStrategyInterface
 
     private $msgFactory;
 
+    /**
+     * @param \Rezzza\Jobflow\JobFactory $jobFactory
+     * @param \Rezzza\Jobflow\JobContextFactory $ctxFactory
+     * @param JobMessageFactory $msgFactory
+     */
     public function __construct($jobFactory, $ctxFactory, $msgFactory)
     {
         $this->jobFactory = $jobFactory;

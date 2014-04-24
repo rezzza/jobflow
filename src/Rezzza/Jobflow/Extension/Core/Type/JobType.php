@@ -4,7 +4,6 @@ namespace Rezzza\Jobflow\Extension\Core\Type;
 
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-
 use Rezzza\Jobflow\AbstractJobType;
 use Rezzza\Jobflow\JobBuilder;
 use Rezzza\Jobflow\JobConfig;

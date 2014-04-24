@@ -6,7 +6,6 @@ use Knp\ETL\ExtractorInterface;
 use Knp\ETL\TransformerInterface;
 use Knp\ETL\LoaderInterface;
 use Psr\Log\LoggerInterface;
-
 use Rezzza\Jobflow\Extension\ETL\Processor\ETLProcessor;
 use Rezzza\Jobflow\Metadata\MetadataAccessor;
 use Rezzza\Jobflow\Processor\ProcessorConfig;

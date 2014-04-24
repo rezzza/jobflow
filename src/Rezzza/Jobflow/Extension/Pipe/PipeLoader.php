@@ -4,9 +4,7 @@ namespace Rezzza\Jobflow\Extension\Pipe;
 
 use Knp\ETL\LoaderInterface;
 use Knp\ETL\ContextInterface;
-
 use Psr\Log\LoggerAwareTrait;
-
 use Rezzza\Jobflow\Io;
 
 /**

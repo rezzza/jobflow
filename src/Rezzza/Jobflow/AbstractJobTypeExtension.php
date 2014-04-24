@@ -3,11 +3,7 @@
 namespace Rezzza\Jobflow;
 
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-
 use Rezzza\JobFlow\JobBuilder;
-use Rezzza\JobFlow\JobInput;
-use Rezzza\JobFlow\JobOutput;
-use Rezzza\Jobflow\Scheduler\ExecutionContext;
 
 /**
  * @author Timothée Barray <tim@amicalement-web.net>

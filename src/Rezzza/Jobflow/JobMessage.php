@@ -3,7 +3,6 @@
 namespace Rezzza\Jobflow;
 
 use Psr\Log\LoggerInterface;
-
 use Rezzza\Jobflow\Scheduler\ExecutionContext;
 use Rezzza\Jobflow\Scheduler\JobGraph;
 use Rezzza\Jobflow\Io;
@@ -71,6 +70,9 @@ class JobMessage
         return $msgFactory->createMsg($this->context, new JobPayload());
     }
 
+    /**
+     * @param JobGraph $graph
+     */
     public function createNextMsg($graph, $msgFactory)
     {
         $next = $graph->getNextJob();
@@ -84,6 +86,10 @@ class JobMessage
         return $msgFactory->createMsg($this->context, $this->payload);
     }
 
+    /**
+     * @param Job $job
+     * @param JobGraph $graph
+     */
     public function createPipeMsgs($job, $graph, $ctxFactory, $msgFactory)
     {
         $stdout = null;
@@ -112,6 +118,9 @@ class JobMessage
         return $msgs;
     }
 
+    /**
+     * @param JobGraph $graph
+     */
     public function shouldContinue($graph)
     {
         return !$this->isTerminated() && $graph->hasNextJob();
@@ -132,6 +141,9 @@ class JobMessage
         return $this->context->isTerminated();
     }
 
+    /**
+     * @param Job $job
+     */
     public function currentChild($job)
     {
         return $this->context->currentChild($job);

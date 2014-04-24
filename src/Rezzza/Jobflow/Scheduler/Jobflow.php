@@ -3,7 +3,6 @@
 namespace Rezzza\Jobflow\Scheduler;
 
 use Psr\Log\LoggerInterface;
-
 use Rezzza\Jobflow\Io;
 use Rezzza\Jobflow\JobInterface;
 use Rezzza\Jobflow\JobFactory;
@@ -207,6 +206,9 @@ class Jobflow
         return $this->executionFactory->create($job, $graph);
     }
 
+    /**
+     * @param string $job
+     */
     private function createJob($job, array $jobOptions = [])
     {
         return $this->jobFactory->create($job, $jobOptions);

@@ -87,6 +87,9 @@ class RezzzaJobflowExtension extends Extension
         );
     }
 
+    /**
+     * @param Reference $connection
+     */
     protected function createRpcClient($connection)
     {
         $rpcClient = new Definition('%rezzza_jobflow.rabbitmq.rpc_client.class%', array($connection));
@@ -96,6 +99,9 @@ class RezzzaJobflowExtension extends Extension
         return $rpcClient;
     }
 
+    /**
+     * @param Reference $connection
+     */
     protected function createRpcServer($connection)
     {
         $rpcServer = new Definition('%rezzza_jobflow.rabbitmq.rpc_server.class%', array($connection));
@@ -105,6 +111,9 @@ class RezzzaJobflowExtension extends Extension
         return $rpcServer;
     }
 
+    /**
+     * @param Reference $connection
+     */
     protected function createProducer($connection)
     {
         return new Definition('%rezzza_jobflow.rabbitmq.producer.class%', array($connection));

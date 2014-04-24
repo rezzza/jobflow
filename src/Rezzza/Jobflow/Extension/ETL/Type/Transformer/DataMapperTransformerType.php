@@ -4,7 +4,6 @@ namespace Rezzza\Jobflow\Extension\ETL\Type\Transformer;
 
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-
 use Rezzza\Jobflow\AbstractJobType;
 
 class DataMapperTransformerType extends AbstractJobType

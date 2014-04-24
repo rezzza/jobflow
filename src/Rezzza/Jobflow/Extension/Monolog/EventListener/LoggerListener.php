@@ -4,7 +4,6 @@ namespace Rezzza\Jobflow\Extension\Monolog\EventListener;
 
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-
 use Rezzza\Jobflow\Event\JobEvent;
 use Rezzza\Jobflow\Event\JobEvents;
 

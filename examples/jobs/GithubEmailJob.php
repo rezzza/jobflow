@@ -1,7 +1,6 @@
 <?php
 
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-
 use Rezzza\Jobflow\AbstractJobType;
 use Rezzza\Jobflow\JobBuilder;
 

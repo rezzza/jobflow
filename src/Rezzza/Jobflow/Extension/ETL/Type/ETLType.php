@@ -4,7 +4,6 @@ namespace Rezzza\Jobflow\Extension\ETL\Type;
 
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-
 use Rezzza\Jobflow\AbstractJobType;
 use Rezzza\Jobflow\Extension\ETL\Processor\ETLProcessorConfig;
 use Rezzza\Jobflow\JobBuilder;

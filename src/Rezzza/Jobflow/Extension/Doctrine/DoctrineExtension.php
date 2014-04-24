@@ -3,7 +3,6 @@
 namespace Rezzza\Jobflow\Extension\Doctrine\Type\Loader;
 
 use Doctrine\Common\Persistence\ManagerRegistry;
-
 use Rezzza\Jobflow\Extension\BaseExtension;
 use Rezzza\Jobflow\Extension\Doctrine\Type;
 

@@ -33,6 +33,7 @@ class JobRegistry
      * Look for an extension registred
      *
      * @parameter string $class
+     * @param string $class
      *
      * @return boolean
      */
@@ -50,7 +51,6 @@ class JobRegistry
     /**
      * Try to find a JobTypeInterface registered with $name as alias
      *
-     * @param string $id
      *
      * @return JobTypeInterface
      */
@@ -79,8 +79,8 @@ class JobRegistry
     /**
      * Try to find a IoWrapperInterface registered with $name as alias
      *
-     * @param string $id
      *
+     * @param string $name
      * @return JobTypeInterface
      */
     public function getTransport($name)

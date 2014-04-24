@@ -5,7 +5,6 @@ namespace Rezzza\Jobflow;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Psr\Log\LoggerInterface;
-
 use Rezzza\Jobflow\Scheduler\JobGraph;
 
 /**
@@ -183,11 +182,17 @@ class JobContext implements JobContextInterface
         return $this->options;
     }
 
+    /**
+     * @param string $name
+     */
     public function getOption($name, $default = null)
     {
         return array_key_exists($name, $this->options) ? $this->options[$name] : $default;
     }
 
+    /**
+     * @param string $key
+     */
     public function setOption($key, $value)
     {
         $this->options[$key] = $value;
@@ -195,6 +200,7 @@ class JobContext implements JobContextInterface
 
     /**
      * Adds step to keep trace
+     * @param string $step
      */
     protected function completeStep($step)
     {

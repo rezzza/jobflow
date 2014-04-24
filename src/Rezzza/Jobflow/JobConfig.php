@@ -4,7 +4,6 @@ namespace Rezzza\Jobflow;
 
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-
 use Rezzza\Jobflow\Metadata\MetadataAccessor;
 use Rezzza\Jobflow\Processor\ProcessorConfig;
 use Rezzza\Jobflow\Scheduler\ExecutionContext;
@@ -73,7 +72,6 @@ class JobConfig
 
     /**
      * @param string $name
-     * @param array $options
      */
     public function __construct($name, EventDispatcherInterface $dispatcher, array $initOptions = array(), array $execOptions = array())
     {
@@ -168,7 +166,7 @@ class JobConfig
     }
 
     /**
-     * @return array
+     * @return boolean
      */
     public function hasAttribute($name)
     {
@@ -270,7 +268,6 @@ class JobConfig
     }
 
     /**
-     * @param JobFactory $etlConfig
      *
      * @return JobConfig
      */
@@ -290,6 +287,7 @@ class JobConfig
 
     /**
      * Store objects builded from options
+     * @param string $name
      */
     public function setAttribute($name, $value)
     {

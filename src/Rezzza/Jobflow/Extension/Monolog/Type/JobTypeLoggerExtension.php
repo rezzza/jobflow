@@ -4,7 +4,6 @@ namespace Rezzza\Jobflow\Extension\Monolog\Type;
 
 use Psr\Log\LoggerInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-
 use Rezzza\Jobflow\AbstractJobTypeExtension;
 use Rezzza\Jobflow\Extension\Monolog\EventListener\LoggerListener;
 use Rezzza\JobFlow\JobBuilder;

@@ -5,7 +5,6 @@ namespace Rezzza\Jobflow\Extension\Doctrine\Type\Loader;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-
 use Rezzza\Jobflow\AbstractJobType;
 
 class EntityLoaderType extends AbstractJobType

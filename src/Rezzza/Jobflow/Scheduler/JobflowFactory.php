@@ -3,7 +3,6 @@
 namespace Rezzza\Jobflow\Scheduler;
 
 use Psr\Log\LoggerInterface;
-
 use Rezzza\Jobflow\JobFactory;
 use Rezzza\Jobflow\JobRegistry;
 use Rezzza\Jobflow\JobMessageFactory;
@@ -39,7 +38,7 @@ class JobflowFactory
     /**
      * Creates a Jobflow
      *
-     * @param string|TransportInterface $transport
+     * @param string $transport
      *
      * @return Jobflow
      */
