@@ -5,7 +5,6 @@ namespace Rezzza\Jobflow\Extension\ETL\Processor;
 use Psr\Log\LoggerInterface;
 use Knp\ETL\ContextInterface;
 use Knp\ETL\ExtractorInterface;
-
 use Rezzza\Jobflow\Metadata\MetadataAccessor;
 use Rezzza\Jobflow\Scheduler\ExecutionContext;
 use Rezzza\Jobflow\Processor\JobProcessor;

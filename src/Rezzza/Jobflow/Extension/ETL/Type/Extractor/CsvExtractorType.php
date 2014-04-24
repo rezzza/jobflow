@@ -2,9 +2,7 @@
 
 namespace Rezzza\Jobflow\Extension\ETL\Type\Extractor;
 
-use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-
 use Rezzza\Jobflow\AbstractJobType;
 
 class CsvExtractorType extends AbstractJobType

@@ -55,6 +55,7 @@ class JobGraph implements \IteratorAggregate, \Countable
     /**
      * Moves cursor to the given value.
      * Useful when using asynchronous transport
+     * @param string $value
      */
     public function move($value)
     {
@@ -75,7 +76,7 @@ class JobGraph implements \IteratorAggregate, \Countable
     /**
      * Ensure we have one more job next
      *
-     * @return boolean
+     * @return boolean|null
      */
     public function hasNextJob()
     {
@@ -124,7 +125,7 @@ class JobGraph implements \IteratorAggregate, \Countable
     }
 
     /**
-     * @return Iterator
+     * @return ArrayIterator
      */
     public function getIterator()
     {

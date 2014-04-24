@@ -2,8 +2,6 @@
 
 namespace Rezzza\Jobflow;
 
-use Rezzza\Jobflow\Io;
-
 class JobMessageFactory
 {
     public function createInitMsgs($contexts)
@@ -17,6 +15,9 @@ class JobMessageFactory
         return $messages;
     }
 
+    /**
+     * @param JobPayload $payload
+     */
     public function createMsg($context, $payload)
     {
         return new JobMessage($context, $payload);

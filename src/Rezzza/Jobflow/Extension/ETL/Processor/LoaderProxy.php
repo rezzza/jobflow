@@ -6,7 +6,6 @@ use Knp\ETL\ContextInterface;
 use Knp\ETL\LoaderInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
-
 use Rezzza\Jobflow\Metadata\MetadataAccessor;
 use Rezzza\Jobflow\Processor\JobProcessor;
 use Rezzza\Jobflow\Scheduler\ExecutionContext;

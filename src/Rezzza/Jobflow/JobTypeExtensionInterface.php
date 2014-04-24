@@ -3,7 +3,6 @@
 namespace Rezzza\Jobflow;
 
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-
 use Rezzza\JobFlow\JobBuilder;
 
 /**
@@ -19,6 +18,7 @@ interface JobTypeExtensionInterface
      *
      * @param JobBuilder $builder The job builder
      * @param array $options The options
+     * @return void
      */
     public function buildJob(JobBuilder $builder, array $options);
 
@@ -26,6 +26,7 @@ interface JobTypeExtensionInterface
      * Sets the init options for this type.
      *
      * @param OptionsResolverInterface $resolver The resolver for the options.
+     * @return void
      */
     public function setInitOptions(OptionsResolverInterface $resolver);
 
@@ -33,6 +34,7 @@ interface JobTypeExtensionInterface
      * Sets the exec options for this type.
      *
      * @param OptionsResolverInterface $resolver The resolver for the options.
+     * @return void
      */
     public function setExecOptions(OptionsResolverInterface $resolver);
 

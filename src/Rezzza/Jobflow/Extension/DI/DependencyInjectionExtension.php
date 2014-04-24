@@ -3,7 +3,6 @@
 namespace Rezzza\Jobflow\Extension\DI;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
-
 use Rezzza\Jobflow\Extension\BaseExtension;
 
 class DependencyInjectionExtension extends BaseExtension

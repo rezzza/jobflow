@@ -4,7 +4,6 @@ namespace Rezzza\Jobflow\Extension\ETL\Type\Loader;
 
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-
 use Rezzza\Jobflow\AbstractJobType;
 
 class FileLoaderType extends AbstractJobType

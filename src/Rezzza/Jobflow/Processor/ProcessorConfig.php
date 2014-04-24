@@ -3,7 +3,6 @@
 namespace Rezzza\Jobflow\Processor;
 
 use Psr\Log\LoggerInterface;
-
 use Rezzza\Jobflow\Metadata\MetadataAccessor;
 
 abstract class ProcessorConfig

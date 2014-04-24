@@ -4,7 +4,6 @@ namespace Rezzza\Jobflow;
 
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-
 use Rezzza\Jobflow\JobConfig;
 
 /**
@@ -74,7 +73,6 @@ class ResolvedJob
     /**
      * @param string $name
      * @param JobFactory $factory
-     * @param array $options
      *
      * @return JobBuilder
      */
@@ -144,7 +142,6 @@ class ResolvedJob
      *
      * @param string $name
      * @param JobFactory $factory
-     * @param array $options
      *
      * @return JobBuilder
      */

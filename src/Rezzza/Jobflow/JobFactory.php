@@ -27,7 +27,6 @@ class JobFactory
      * Create a job
      *
      * @param mixed $type The JobTypeInterface or the alias of the job type registered as a service
-     * @param array $options
      *
      * @return Job
      */
@@ -40,7 +39,6 @@ class JobFactory
      * Create a builder
      *
      * @param mixed $type The JobTypeInterface or the alias of the job type registered as a service
-     * @param array $options
      *
      * @return JobBuilder
      */
@@ -56,7 +54,6 @@ class JobFactory
     /**
      * @param string $name
      * @param mixed $type The JobTypeInterface or the alias of the job type registered as a service
-     * @param array $options
      *
      * @return JobBuilder
      */
@@ -95,6 +92,9 @@ class JobFactory
         return $this->createResolvedType($type, $parentType);
     }
 
+    /**
+     * @param JobTypeInterface $type
+     */
     public function createResolvedType($type, $parentType)
     {
         return new ResolvedJob($type, array(), $parentType);

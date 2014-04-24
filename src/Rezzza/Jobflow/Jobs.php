@@ -29,7 +29,7 @@ final class Jobs
     /**
      * Creates a form factory builder with the default configuration.
      *
-     * @return JobFactoryBuilder The job factory builder.
+     * @return JobsBuilder The job factory builder.
      */
     public static function createJobsBuilder()
     {

@@ -24,7 +24,6 @@ class JobBuilder extends JobConfig
     /**
      * @param string $name
      * @param JobFactory $jobFactory
-     * @param array $options
      */
     public function __construct($name, JobFactory $jobFactory, EventDispatcherInterface $dispatcher, array $initOptions = array(), array $execOptions = array())
     {
@@ -36,7 +35,7 @@ class JobBuilder extends JobConfig
      * Add sub job to a job
      *
      * @param string $child Name of the child
-     * @param mixed $type The JobTypeInterface or the alias of the job type registered as a service
+     * @param string $type The JobTypeInterface or the alias of the job type registered as a service
      * @param array $execOptions
      * @param array $initOptions
      *
@@ -76,7 +75,6 @@ class JobBuilder extends JobConfig
      *
      * @param string $name
      * @param mixed $type The JobTypeInterface or the alias of the job type registered as a service
-     * @param array $options
      *
      * @return JobBuilder
      */

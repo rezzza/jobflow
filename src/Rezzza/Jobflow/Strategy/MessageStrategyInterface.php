@@ -2,7 +2,6 @@
 
 namespace Rezzza\Jobflow\Strategy;
 
-use Rezzza\Jobflow\JobMessageFactory;
 use Rezzza\Jobflow\JobMessage;
 
 interface MessageStrategyInterface

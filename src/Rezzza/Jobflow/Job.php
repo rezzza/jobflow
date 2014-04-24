@@ -92,7 +92,7 @@ class Job implements \IteratorAggregate, JobInterface
     }
 
     /**
-     * @param $name
+     * @param string $name
      *
      * @return JobInterface
      */
@@ -130,6 +130,7 @@ class Job implements \IteratorAggregate, JobInterface
     }
 
     /**
+     * @param string $name
      * @return array
      */
     public function getOption($name, $default = null)
@@ -184,6 +185,9 @@ class Job implements \IteratorAggregate, JobInterface
         return $this->config->getRequeue();
     }
 
+    /**
+     * @return null|\Psr\Log\LoggerInterface
+     */
     public function getLogger()
     {
         return $this->config->getOption('logger');

@@ -2,15 +2,11 @@
 
 namespace Rezzza\Jobflow\Scheduler;
 
-use Rezzza\Jobflow\Io;
 use Rezzza\Jobflow\JobInterface;
 use Rezzza\Jobflow\JobContext;
-use Rezzza\Jobflow\JobMessage;
 use Rezzza\Jobflow\JobMessageFactory;
 use Rezzza\Jobflow\JobPayload;
 use Rezzza\Jobflow\JobData;
-use Rezzza\Jobflow\Metadata\MetadataAccessor;
-use Rezzza\Jobflow\Extension\Pipe\PipeData;
 
 /**
  * Wraps job execution around current context
@@ -52,6 +48,9 @@ class ExecutionContext
         return $this->input;
     }
 
+    /**
+     * @param \Rezzza\Jobflow\Metadata\Metadata $metadata
+     */
     public function write($result, $metadata = null)
     {
         $this->output->store(new JobData($result, $metadata));
@@ -130,6 +129,10 @@ class ExecutionContext
         return $this->jobContext->getOptions();
     }
 
+    /**
+     * @param string $name
+     * @param integer $default
+     */
     public function getJobOption($name, $default = null)
     {
         return $this->currentChild()->getOption($name, $default);

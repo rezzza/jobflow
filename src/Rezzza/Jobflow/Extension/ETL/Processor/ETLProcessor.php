@@ -4,7 +4,6 @@ namespace Rezzza\Jobflow\Extension\ETL\Processor;
 
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
-
 use Rezzza\Jobflow\Extension\ETL\Context\ETLProcessorContext;
 use Rezzza\Jobflow\Metadata\MetadataAccessor;
 
@@ -23,11 +22,17 @@ abstract class ETLProcessor
         $this->logger = $logger;
     }
 
+    /**
+     * @param \Rezzza\Jobflow\Scheduler\ExecutionContext $execution
+     */
     protected function createContext($execution = null, $metadata = null)
     {
         return new ETLProcessorContext($execution, $metadata);
     }
 
+    /**
+     * @param string $msg
+     */
     protected function debug($msg)
     {
         if (null !== $this->logger) {
