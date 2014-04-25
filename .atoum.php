@@ -3,6 +3,11 @@ use mageekguy\atoum;
 
 $runner->addTestsFromDirectory(__DIR__.'/tests/units/');
 
+$cloverWriter = new atoum\writers\file(__DIR__.'/data/coverage.clover');
+$cloverReport = new atoum\reports\asynchronous\clover();
+$cloverReport->addWriter($cloverWriter);
+$runner->addReport($cloverReport);
+
 $script
     ->addDefaultReport()
         ->addField(new atoum\report\fields\runner\result\logo())

@@ -1,6 +1,6 @@
 Jobflow
 =======
-[![Build Status](https://travis-ci.org/rezzza/jobflow.png?branch=master)](https://travis-ci.org/rezzza/jobflow)
+[![Build Status](https://travis-ci.org/rezzza/jobflow.png?branch=master)](https://travis-ci.org/rezzza/jobflow) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/rezzza/jobflow/badges/quality-score.png?s=85072af67a34f8a78a0cc0b22e67eb733a3263e0)](https://scrutinizer-ci.com/g/rezzza/jobflow/)
 
 Makes batch jobs creation Simpler, Easier, Faster.
 
