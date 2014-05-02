@@ -197,4 +197,9 @@ class Job implements \IteratorAggregate, JobInterface
     {
         return $this->getName();
     }
+
+    public function getResolvedInnerType()
+    {
+        return $this->config->getResolved()->getInnerType();
+    }
 }
