@@ -148,6 +148,11 @@ class ExecutionContext
         return $this->jobContext->metadata;
     }
 
+    public function getJobUniqId()
+    {
+        return $this->jobContext->jobUniqId;
+    }
+
     private function initContext(JobContext $context)
     {
         $this->jobContext = $context;
