@@ -16,6 +16,10 @@ class Jobflow extends Units\Test
 
     private $transport;
 
+    private $executionFactory;
+
+    private $strategy;
+
     public function beforeTestMethod($method)
     {
         $registry = new \mock\Rezzza\Jobflow\JobRegistry(array());

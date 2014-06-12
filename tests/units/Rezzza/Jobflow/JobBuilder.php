@@ -12,6 +12,8 @@ class JobBuilder extends Units\Test
 
     private $builder;
 
+    private $dispatcher;
+
     public function beforeTestMethod($method)
     {
         $this->mockGenerator->orphanize('__construct');

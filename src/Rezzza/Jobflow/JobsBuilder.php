@@ -56,7 +56,7 @@ class JobsBuilder
 
     public function addTransport(TransportInterface $transport)
     {
-        $this->transport[$transport->getName()] = $transport;
+        $this->transports[$transport->getName()] = $transport;
 
         return $this;
     }
