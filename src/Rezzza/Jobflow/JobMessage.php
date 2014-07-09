@@ -107,7 +107,6 @@ class JobMessage
                     $job,
                     $io,
                     $graph->getNextJob(),
-                    $this->context->transport,
                     $data->getMetadata()
                 );
 
@@ -129,11 +128,6 @@ class JobMessage
     public function getIo()
     {
         return $this->context->io;
-    }
-
-    public function getTransport()
-    {
-        return $this->context->transport;
     }
 
     public function isTerminated()
