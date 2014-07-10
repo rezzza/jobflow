@@ -25,7 +25,7 @@ $rmqClient->setJobflowFactory($jobflowFactory);
 echo 'Started...'.PHP_EOL;
 // Now we can execute our job
 $jobflowFactory
-    ->create('rabbitmq')
+    ->create('php')
     ->run(
         'github_email',
         array(),
