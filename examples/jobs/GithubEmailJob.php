@@ -33,10 +33,7 @@ class GithubEmailJob extends AbstractJobType
             )
             ->add(
                 'users_loader',
-                'pipe_loader',
-                [
-                    'forward' => 'url'
-                ]
+                'pipe_loader'
             )
             ->add(
                 'email_extractor',

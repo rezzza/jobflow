@@ -8,27 +8,23 @@ use Psr\Log\LoggerAwareTrait;
 use Rezzza\Jobflow\Io;
 
 /**
- * Build input and write them in the current ExecutionContext as $data
- * On handleMsg, all Input will be transform as a new JobMessage
+ * Forward $data as input for the next extractor
  */
 class PipeLoader implements LoaderInterface
 {
     use LoggerAwareTrait;
 
-    private $forward;
-
     private $execution;
 
-    public function __construct($forward, $execution)
+    public function __construct($execution)
     {
-        $this->forward = $forward;
         $this->execution = $execution;
     }
 
     public function load($data, ContextInterface $context)
     {
         $input = new Io\Input(
-            new Io\Driver\File($data[$this->forward])
+            new Io\Driver\File($data)
         );
         $this->execution->write($input, $context->metadata);
     }
