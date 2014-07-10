@@ -51,12 +51,12 @@ class Jobflow extends Units\Test
                 $this->ctxFactory->getMockController()->create = $context,
                 $this->msgFactory->getMockController()->createInitMsgs = [$msgStart]
             )
-            ->then(
+            ->when(
                 $jobflow->run($job, ['options1' => 'woot'])
             )
                 ->mock($this->ctxFactory)
                     ->call('create')
-                    ->withArguments($job, null, null, $this->transport)
+                    ->withArguments($job, null, null)
                     ->once()
 
                 ->mock($this->msgFactory)
@@ -100,7 +100,7 @@ class Jobflow extends Units\Test
             )
                 ->mock($this->ctxFactory)
                     ->call('create')
-                    ->withArguments($job, $io, null, $this->transport)
+                    ->withArguments($job, $io, null)
                     ->once()
         ;
     }
@@ -127,12 +127,12 @@ class Jobflow extends Units\Test
             )
                 ->mock($this->ctxFactory)
                     ->call('create')
-                    ->withArguments($job, new \Rezzza\Jobflow\Io\IoDescriptor($input), null, $this->transport)
+                    ->withArguments($job, new \Rezzza\Jobflow\Io\IoDescriptor($input), null)
                     ->once()
 
                 ->mock($this->ctxFactory)
                     ->call('create')
-                    ->withArguments($job, new \Rezzza\Jobflow\Io\IoDescriptor($input2), null, $this->transport)
+                    ->withArguments($job, new \Rezzza\Jobflow\Io\IoDescriptor($input2), null)
                     ->once()
         ;
     }
@@ -164,7 +164,7 @@ class Jobflow extends Units\Test
             )
                 ->mock($this->ctxFactory)
                     ->call('create')
-                    ->withArguments($job, null, null, $this->transport)
+                    ->withArguments($job, null, null)
                     ->once()
 
                 ->mock($this->msgFactory)
