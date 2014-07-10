@@ -28,8 +28,6 @@ class JobContext implements JobContextInterface
 
     public $jobOptions = array();
 
-    public $transport;
-
     public $metadata;
 
     public $terminated = false;
@@ -64,7 +62,6 @@ class JobContext implements JobContextInterface
         $current = null,
         array $options = [],
         array $jobOptions = [],
-        $transport = null,
         $metadata = null
     )
     {
@@ -72,7 +69,6 @@ class JobContext implements JobContextInterface
         $this->io = $io;
         $this->current = $current;
         $this->jobOptions = $jobOptions;
-        $this->transport = $transport;
         $this->metadata = $metadata;
         $this->initOptions($options);
 

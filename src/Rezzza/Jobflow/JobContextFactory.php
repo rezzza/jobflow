@@ -2,13 +2,11 @@
 
 namespace Rezzza\Jobflow;
 
+use Rezzza\Jobflow\Metadata\Metadata;
+
 class JobContextFactory
 {
-    /**
-     * @param JobInterface $job
-     * @param Scheduler\TransportInterface $transport
-     */
-    public function create($job, $input, $current, $transport, $metadata = null)
+    public function create(JobInterface $job, $input, $current, Metadata $metadata = null)
     {
         return new JobContext(
             $job->getName(),
@@ -16,7 +14,6 @@ class JobContextFactory
             $current,
             $job->getContextOption(),
             $job->getOptions(),
-            $transport,
             $metadata
         );
     }

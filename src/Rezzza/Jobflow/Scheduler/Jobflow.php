@@ -152,7 +152,7 @@ class Jobflow
         $inputs = $this->buildInputs($io);
 
         foreach ($inputs as $input) {
-            $contexts[] = $this->ctxFactory->create($job, $input, $graph->current(), $this->transport);
+            $contexts[] = $this->ctxFactory->create($job, $input, $graph->current());
         }
 
         $msgs = $this->msgFactory->createInitMsgs($contexts);
