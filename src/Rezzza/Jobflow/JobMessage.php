@@ -56,34 +56,27 @@ class JobMessage
         $this->context->logState($logger);
     }
 
-    public function createResetMsg($msgFactory)
-    {
-        $this->context->tick();
-
-        if ($this->context->isFinished()) {
-            return null;
-        }
-
-        // Create following msg by reset position msg to the origin
-        $this->context->reset();
-
-        return $msgFactory->createMsg($this->context, new JobPayload());
-    }
-
     /**
      * @param JobGraph $graph
      */
-    public function createNextMsg($graph, $msgFactory)
+    public function createNextMsg($graph, $msgFactory, $forceRequeue = false)
     {
         $next = $graph->getNextJob();
 
-        if ($next) {
+        if (false === $forceRequeue && $next) {
             $this->context->moveTo($next);
-        } else {
-            $this->context->reset();
+
+            return $msgFactory->createMsg($this->context, $this->payload);
         }
 
-        return $msgFactory->createMsg($this->context, $this->payload);
+        $this->context->tick();
+        $this->context->reset();
+
+        if (!$this->context->shouldRequeue()) {
+            throw new NoMoreMessageException();
+        }
+
+        return $msgFactory->createMsg($this->context, new JobPayload);
     }
 
     /**
@@ -122,7 +115,7 @@ class JobMessage
      */
     public function shouldContinue($graph)
     {
-        return !$this->isTerminated() && $graph->hasNextJob();
+        return !$this->isTerminated() && ($graph->hasNextJob() || $this->context->shouldRequeue());
     }
 
     public function getIo()

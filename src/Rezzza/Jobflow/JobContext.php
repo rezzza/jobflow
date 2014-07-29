@@ -104,9 +104,9 @@ class JobContext implements JobContextInterface
         return count($this->steps) === 0;
     }
 
-    public function isFinished()
+    public function shouldRequeue()
     {
-        return (is_integer($this->options['total']) && $this->options['total'] <= $this->options['offset']);
+        return (is_integer($this->options['total']) && $this->options['total'] > $this->options['offset']);
     }
 
     public function isTerminated()

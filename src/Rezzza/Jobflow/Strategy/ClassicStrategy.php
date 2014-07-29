@@ -4,6 +4,7 @@ namespace Rezzza\Jobflow\Strategy;
 
 use Rezzza\Jobflow\JobMessageFactory;
 use Rezzza\Jobflow\JobMessage;
+use Rezzza\Jobflow\NoMoreMessageException;
 use Rezzza\Jobflow\Scheduler\JobGraph;
 
 class ClassicStrategy implements MessageStrategyInterface
@@ -33,18 +34,19 @@ class ClassicStrategy implements MessageStrategyInterface
         $msg->initGraph($graph);
         $child = $msg->currentChild($job);
         $msgs = $msg->createPipeMsgs($job, $graph, $this->ctxFactory, $this->msgFactory);
+        $forceRequeue = $child->getRequeue();
 
-        if (true === $child->getRequeue() || $msg->isTerminated()) {
-            // Create following msg by reset position msg to the origin if needed
-            // If we go through all data, will return null
-            $resetMsg = $msg->createResetMsg($this->msgFactory);
 
-            if (null !== $resetMsg) {
-                $msgs[] = $resetMsg;
+        if (true === $forceRequeue || $msg->shouldContinue($graph)) {
+            try {
+                $m = $msg->createNextMsg($graph, $this->msgFactory, $forceRequeue);
+//                 if (count($msgs) > 0) {
+//     var_dump($m); exit;
+// }
+                $msgs[] = $m;
+            } catch (NoMoreMessageException $e) {
+                // We could log it ?
             }
-        } elseif ($msg->shouldContinue($graph)) {
-            // Create following msg by updating to next step
-            $msgs[] = $msg->createNextMsg($graph, $this->msgFactory);
         }
 
         return $msgs;

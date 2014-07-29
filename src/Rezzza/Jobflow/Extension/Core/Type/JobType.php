@@ -72,7 +72,7 @@ class JobType extends AbstractJobType
     {
         $resolver->setDefaults(array(
             'context' => array(),
-            'requeue' => null
+            'requeue' => false
         ));
     }
 
