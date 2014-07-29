@@ -31,7 +31,7 @@ class ExtractorProxy extends ETLProcessor implements ExtractorInterface, JobProc
 
         // Read data
         try {
-            $data = $this->slice($execution);
+            $data = $this->slice($execution, $metadata);
         } catch (\OutOfBoundsException $e) {
             // Message has no more data and should not be spread
             $execution->terminate();
@@ -52,7 +52,7 @@ class ExtractorProxy extends ETLProcessor implements ExtractorInterface, JobProc
         $execution->valid();
     }
 
-    public function slice(ExecutionContext $execution)
+    public function slice(ExecutionContext $execution, $metadata)
     {
         $offset = $execution->getOffset();
         $limit = $execution->getLimit();
@@ -65,7 +65,7 @@ class ExtractorProxy extends ETLProcessor implements ExtractorInterface, JobProc
         $data = [];
 
         for ($i = 0; $i < $limit && $this->valid(); $i++) {
-            $data[] = $this->extract($this->createContext($execution));
+            $data[] = $this->extract($this->createContext($execution, $metadata));
         }
 
         return $data;
