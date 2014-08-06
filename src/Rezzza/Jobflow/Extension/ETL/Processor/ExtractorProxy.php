@@ -24,11 +24,6 @@ class ExtractorProxy extends ETLProcessor implements ExtractorInterface, JobProc
         // For data from pipe, we need to get back global metadata... Little crappy I know...
         $metadata = $execution->getContextMetadata();
 
-        // Limit total to the max if lesser
-        if ($execution->hasNoTotal()) {
-            $execution->changeTotal($this->count());
-        }
-
         // Read data
         try {
             $data = $this->slice($execution, $metadata);
@@ -47,6 +42,11 @@ class ExtractorProxy extends ETLProcessor implements ExtractorInterface, JobProc
         foreach ($data as $k => $result) {
             $metadata = $this->metadataAccessor->createMetadata($result, $metadata);
             $execution->write($result, $metadata);
+        }
+
+        // Limit total to the max if lesser
+        if ($execution->hasNoTotal()) {
+            $execution->changeTotal($this->count());
         }
 
         $execution->valid();
