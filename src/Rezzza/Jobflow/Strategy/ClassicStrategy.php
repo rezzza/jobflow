@@ -36,14 +36,9 @@ class ClassicStrategy implements MessageStrategyInterface
         $msgs = $msg->createPipeMsgs($job, $graph, $this->ctxFactory, $this->msgFactory);
         $forceRequeue = $child->getRequeue();
 
-
         if (true === $forceRequeue || $msg->shouldContinue($graph)) {
             try {
-                $m = $msg->createNextMsg($graph, $this->msgFactory, $forceRequeue);
-//                 if (count($msgs) > 0) {
-//     var_dump($m); exit;
-// }
-                $msgs[] = $m;
+                $msgs[] = $msg->createNextMsg($graph, $this->msgFactory, $forceRequeue);
             } catch (NoMoreMessageException $e) {
                 // We could log it ?
             }
