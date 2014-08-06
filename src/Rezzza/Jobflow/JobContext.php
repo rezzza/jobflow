@@ -106,6 +106,11 @@ class JobContext implements JobContextInterface
 
     public function shouldRequeue()
     {
+        // While we don't know the total we continue to requeue...
+        if ($this->options['total'] === null) {
+            return true;
+        }
+
         return (is_integer($this->options['total']) && $this->options['total'] > $this->options['offset']);
     }
 
