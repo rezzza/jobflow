@@ -28,7 +28,7 @@ class MetadataAccessor
         }
 
         foreach ($this->writeMapping as $k => $v) {
-            if (is_scalar($v)) {
+            if (is_string($v)) {
                 $metadata[$k] = $this->accessor->getValue($result, $v);
             } else {
                 $metadata[$k] = $v;
