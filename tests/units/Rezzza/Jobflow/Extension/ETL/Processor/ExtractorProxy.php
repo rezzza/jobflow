@@ -153,7 +153,7 @@ class ExtractorProxy extends Units\Test
                 $proxy = new \mock\Rezzza\Jobflow\Extension\ETL\Processor\ExtractorProxy($extractor, $metadata)
             )
             ->if(
-                $result = $proxy->slice($execution)
+                $result = $proxy->slice($execution, new \Rezzza\Jobflow\Metadata\Metadata)
             )
                 ->mock($extractor)
                     ->call('extract')
@@ -191,7 +191,7 @@ class ExtractorProxy extends Units\Test
                 $proxy = new \mock\Rezzza\Jobflow\Extension\ETL\Processor\ExtractorProxy($extractor, $metadata)
             )
             ->if(
-                $result = $proxy->slice($execution)
+                $result = $proxy->slice($execution, new \Rezzza\Jobflow\Metadata\Metadata)
             )
                 ->mock($extractor)
                     ->call('extract')

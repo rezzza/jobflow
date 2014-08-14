@@ -2,11 +2,13 @@
 
 namespace Rezzza\Jobflow\Plugin\SymfonyBundle\Command;
 
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand as Command;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+
+use Rezzza\Jobflow\Scheduler\JobflowFactory;
 
 abstract class AbstractJobCommand extends Command
 {
@@ -16,11 +18,17 @@ abstract class AbstractJobCommand extends Command
 
     protected $transport;
 
+    protected $jobflow;
+
+    public function __construct(JobflowFactory $jobflow)
+    {
+        $this->jobflow = $jobflow;
+        parent::__construct();
+    }
+
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this
-            ->getContainer()
-            ->get('rezzza_jobflow.flow')
+        $this->jobflow
             ->create($this->transport)
             ->run($this->jobId, $this->jobOptions)
         ;

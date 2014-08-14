@@ -26,6 +26,7 @@ class RezzzaJobflowExtension extends Extension
         $definitions = array();
 
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config/services'));
+        $loader->load('cli.xml');
         $loader->load('job.xml');
         $loader->load('job_types.xml');
         $loader->load('orm.xml');
