@@ -33,7 +33,7 @@
         "symfony/yaml": "~2.3",
         "videlalvaro/thumper": "~0.3"
     },
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "autoload":     {
         "psr-0": {
             "Rezzza\\Jobflow": "src/"
@@ -44,7 +44,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "0.3.x-dev"
+            "dev-master": "0.4.x-dev"
         }
     },
     "config": {
