@@ -12,10 +12,5 @@
         <service id="rezzza_jobflow.job.command" class="Rezzza\Jobflow\Plugin\SymfonyBundle\Command\JobCommand" parent="rezzza_jobflow.command">
             <tag name="console.command" />
         </service>
-
-        <service id="rezzza_jobflow.worker.command" class="Rezzza\Jobflow\Plugin\SymfonyBundle\Command\WorkerCommand">
-            <argument type="service" id="rezzza_jobflow.rabbitmq.rpc_server" />
-            <tag name="console.command" />
-        </service>
     </services>
 </container>

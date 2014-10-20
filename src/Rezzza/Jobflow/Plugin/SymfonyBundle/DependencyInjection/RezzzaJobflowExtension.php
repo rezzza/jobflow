@@ -29,8 +29,11 @@ class RezzzaJobflowExtension extends Extension
         $loader->load('cli.xml');
         $loader->load('job.xml');
         $loader->load('job_types.xml');
-        $loader->load('orm.xml');
         $loader->load('monolog.xml');
+
+        if ($this->isDoctrineLoaded()) {
+            $loader->load('orm.xml');
+        }
 
         // Checks if Thumper lib is loaded to use rabbitmq extension
         if ($this->isRabbitMqLoaded()) {
@@ -54,6 +57,11 @@ class RezzzaJobflowExtension extends Extension
     public function isRabbitMqLoaded()
     {
         return class_exists('Thumper\RpcClient');
+    }
+
+    public function isDoctrineLoaded()
+    {
+        return class_exists('Doctrine\ORM\EntityManager');
     }
 
     protected function loadRabbitmqConnections($config)
