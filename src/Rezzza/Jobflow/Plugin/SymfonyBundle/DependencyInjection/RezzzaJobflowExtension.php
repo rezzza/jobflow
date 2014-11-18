@@ -31,7 +31,7 @@ class RezzzaJobflowExtension extends Extension
         $loader->load('job_types.xml');
         $loader->load('monolog.xml');
 
-        if ($this->isDoctrineLoaded()) {
+        if ($this->isDoctrineLoaded($container)) {
             $loader->load('orm.xml');
         }
 
@@ -59,9 +59,9 @@ class RezzzaJobflowExtension extends Extension
         return class_exists('Thumper\RpcClient');
     }
 
-    public function isDoctrineLoaded()
+    public function isDoctrineLoaded(ContainerBuilder $container)
     {
-        return class_exists('Doctrine\ORM\EntityManager');
+        return class_exists('Doctrine\ORM\EntityManager') && $container->hasDefinition('doctrine');
     }
 
     protected function loadRabbitmqConnections($config)
