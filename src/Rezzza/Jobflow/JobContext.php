@@ -21,6 +21,8 @@ class JobContext implements JobContextInterface
      */
     public $jobId;
 
+    public $jobUniqId;
+
     /**
      * IO
      */
@@ -66,6 +68,7 @@ class JobContext implements JobContextInterface
     )
     {
         $this->jobId = $jobId;
+        $this->jobUniqId = $jobId . '.' . uniqid();
         $this->io = $io;
         $this->current = $current;
         $this->jobOptions = $jobOptions;
